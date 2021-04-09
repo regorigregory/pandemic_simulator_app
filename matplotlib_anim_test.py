@@ -14,12 +14,17 @@ def get_initial_velocities(width, height, n_particles, speed_coefficient = 0.1):
 def get_new_locations(coordinates, velocities):
     return coordinates + velocities
 
-def generate_animation_function(ax, width, height, n_particles, speed_coefficient):
+def get_animation_function(ax, width, height, n_particles, speed_coefficient):
     coordinates = get_initial_coordinates(width, height, n_particles)
     velocities = get_initial_velocities(width, height, n_particles, speed_coefficient=speed_coefficient)
     data_points, = ax.plot(*coordinates)
 
 
+def animate(i):
+    global coordinates, velocities
+    coordinates = coordinates + velocities
+    line.set_data(*coordinates)
+    return line,
 
 if __name__ == "__main__":
     matplotlib.use("TkAgg")
