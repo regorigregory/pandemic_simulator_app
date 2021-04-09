@@ -13,6 +13,7 @@ class Constants(Enum):
                   [0, 1]]
     ACCELERATION_RANGE =  [[0, 1],
                   [0, 1]]
+    PARTICLE_RADIUS = 3
 class Edges(Enum):
     NOT = -1
     HORIZONTAL = 0
