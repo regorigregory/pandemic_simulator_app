@@ -7,16 +7,20 @@ VectorRange = List[List[float]]
 
 
 
-class MovingParticle():
+class Particle:
     def __init__(self, cnf):
-        self.position_vector = MovingParticle.init_random_vector(cnf.DIMENSIONS.value)
-        self.velocity_vector = MovingParticle.init_random_vector(cnf.VELOCITY_RANGE.value)
+        self.position_vector = Particle.init_random_vector(cnf.DIMENSIONS.value)
+        self.velocity_vector = Particle.init_random_vector(cnf.VELOCITY_RANGE.value)
         self.max_x = cnf.DIMENSIONS.value[0][1]
         self.max_y =  cnf.DIMENSIONS.value[1][1]
 
         self.min_x = cnf.DIMENSIONS.value[0][0]
         self.min_y = cnf.DIMENSIONS.value[1][0]
         self.radius = cnf.PARTICLE_RADIUS.value
+        self.subject = None
+
+    def get_particle_component(self):
+        return self
 
     @property
     def position_vector(self):
@@ -109,15 +113,25 @@ class MovingParticle():
             self.velocity_y = - self.velocity_y
 
 
+    def have_we_encountered(self, other)->bool:
+        #are we infecting each other
+        #check if we have crossed paths!
+        pass
+
+    def should_we_socially_distance(self)->bool:
+        #check if we should turn back
+        #bounce back at the point of collision
+        pass
 
     @staticmethod
     def init_random_vector(range:VectorRange)->Vector:
         x = np.random.uniform(*range[0])
         y = np.random.uniform(*range[1])
         return np.array([x,y])
+
 if __name__ == "__main__":
     from models.conf import Constants
-    testobject = MovingParticle(Constants)
+    testobject = Particle(Constants)
     testobject.position_x = -100
     testobject.velocity_x = -2
     testobject.update_location()

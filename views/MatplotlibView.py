@@ -2,12 +2,12 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-from models.BoxOfParticles import BoxOfParticles
-from models.MovingParticle import MovingParticle
+from models.BoxOfSomething import Box
+from models.Particle import Particle
 from models.conf import Constants
 import numpy as np
 
-class MatplotlibBox():
+class BoxView():
     def __init__(self, cnf):
         self.config = cnf
         self.width = cnf.DIMENSIONS.value[0][1]
@@ -31,7 +31,8 @@ class MatplotlibBox():
 
 
     def get_current_coordinates(self):
-        return np.array([[p.position_x for p in self._box_of_particles.particles], [p.position_y for p in self._box_of_particles.particles]])
+        return np.array([[p.get_particle_component().position_x for p in self._box_of_particles.contents],
+                         [p.get_particle_component().position_y for p in self._box_of_particles.contents]])
 
     def move_guys(self):
         self._box_of_particles.move_guys()
@@ -60,9 +61,8 @@ if __name__ == "__main__":
     from models.conf import Constants
 
     cnf = Constants
-    a_particle = MovingParticle(cnf)
-    ParticleBox = BoxOfParticles(cnf)
-    ViewBox = MatplotlibBox(cnf)
+    ParticleBox = Box(cnf)
+    ViewBox = BoxView(cnf)
 
     init_func = ViewBox.get_init_func(ParticleBox)
     animation_function = ViewBox.get_animation_function()
