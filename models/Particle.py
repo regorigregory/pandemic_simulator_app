@@ -16,11 +16,16 @@ class Particle:
 
         self.min_x = cnf.DIMENSIONS.value[0][0]
         self.min_y = cnf.DIMENSIONS.value[1][0]
-        self.radius = cnf.PARTICLE_RADIUS.value
+        self._radius = cnf.PARTICLE_RADIUS.value
         self.subject = None
+
+    def get_radius(self):
+        return self._radius
 
     def get_particle_component(self):
         return self
+
+
 
     @property
     def position_vector(self):

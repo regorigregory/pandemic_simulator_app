@@ -1,9 +1,8 @@
-import random
 import math
 from models.conf import InfectionStatuses, Constants
 from models.Particle import Particle
 from enum import Enum
-
+import numpy as np
 
 class Subject:
 
@@ -15,24 +14,23 @@ class Subject:
         self._infection_probability = Subject.set_random_attribute_safely(config.INFECTION_PROBABILITY_PER_TIME_PERIOD.value)
 
         self._particle = Particle(config)
-
-        if random.random() <= self.get_infection_probability():
+        self._infection_radius = self._particle.get_radius() + config.INFECTION_RADIUS.value
+        if np.random.uniform() <= self.get_infection_probability():
             self._infection_status = InfectionStatuses.INFECTED
             self._got_infected_at = 0
         else:
             self._infection_status = InfectionStatuses.SUSCEPTIBLE
             self._got_infected_at = -1
 
-        if(am_i_infected):
-            self.start_of_infection = 1
-        else:
-            self.start_of_infection = 0
+
+    def get_infection_radius(self):
+        return self._infection_radius
 
     def get_particle_component(self):
         return self._particle
 
     def _have_i_recovered(self, timestamp: int) -> bool:
-        if timestamp - self.start_of_infection >= self._recovery_time:
+        if timestamp - self._got_infected_at >= self._recovery_time:
             return True
         return False
 
@@ -67,11 +65,18 @@ class Subject:
         self.infect_me_if_you_can(timestamp, other)
         other.infect_me_if_you_can(timestamp, self)
 
+    def are_we_too_close(self, other):
+        p1 = self.get_particle_component().position_vector
+        p2 = other.get_particle_component().position_vector
+        distance = np.sqrt(np.sum((p2 - p1)**2))
+        if self.get_infection_radius() >= distance:
+            return True
+        return False
 
     @staticmethod
     def set_random_attribute_safely(const_or_arr):
         if isinstance(const_or_arr, list):
-            return random.uniform(*const_or_arr)
+            return np.random.uniform(*const_or_arr)
         return const_or_arr
 
 
@@ -96,3 +101,4 @@ if __name__ == "__main__":
     print("After testA and testB encounters with each other:")
     print("testA is {}.".format(testA.get_infection_status(infection_time).name))
     print("testB is {}.".format(testB.get_infection_status(infection_time).name))
+    testC = Subject(Constants)

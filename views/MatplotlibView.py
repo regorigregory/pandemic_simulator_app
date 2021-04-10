@@ -5,17 +5,24 @@ from matplotlib.animation import FuncAnimation
 from models.BoxOfSomething import Box
 from models.Particle import Particle
 from models.conf import Constants
+from models.InfectionHandlers import Naive
+
 import numpy as np
 
 class BoxView():
-    def __init__(self, cnf):
+    def __init__(self, cnf, infection_handler = Naive()):
         self.config = cnf
         self.width = cnf.DIMENSIONS.value[0][1]
         self.height = cnf.DIMENSIONS.value[1][1]
         self.DPI = cnf.DPI.value
+        self._infection_handler = infection_handler
+        self._marker_radius = cnf.PARTICLE_RADIUS.value
+        self._infection_zone_radius = cnf.INFECTION_RADIUS.value + cnf.PARTICLE_RADIUS.value
+
     @property
     def width(self):
         return self._width
+
     @width.setter
     def width(self, x):
         self._width = x
@@ -29,13 +36,12 @@ class BoxView():
         self._height = y
 
 
-
     def get_current_coordinates(self):
         return np.array([[p.get_particle_component().position_x for p in self._box_of_particles.contents],
                          [p.get_particle_component().position_y for p in self._box_of_particles.contents]])
 
-    def move_guys(self):
-        self._box_of_particles.move_guys()
+    def move_guys(self, i):
+        self._box_of_particles.move_guys(i, infection_handler = self._infection_handler)
 
     def get_init_func(self, BoxOfParticles):
         self._box_of_particles = BoxOfParticles
@@ -45,15 +51,21 @@ class BoxView():
         self.ax.set_ylim(0, self.height)
         #self.ax.set_xticks([])
         #self.ax.set_yticks([])
-        self.plot = self.ax.plot(*self.get_current_coordinates(), "ro")[0]
+        self.ax.plot(*self.get_current_coordinates(), marker = ".", fillstyle = "full", linestyle = "", markersize = self._marker_radius * 2)
+        self.ax.plot(*self.get_current_coordinates(), marker = ".", fillstyle = "none", color = "red", linestyle = "", markersize = self._infection_zone_radius * 2)
+
         def func():
-            return self.plot,
+            return self.ax.lines[0], self.ax.lines[1]
         return func
+
     def get_animation_function(self):
         def func(i):
-            self.move_guys()
-            self.plot.set_data(*self.get_current_coordinates())
-            return self.plot,
+            self.move_guys(i)
+            self.ax.lines[0].set_data(*self.get_current_coordinates())
+            self.ax.lines[1].set_data(*self.get_current_coordinates())
+
+            self._infection_handler.print_counts()
+            return self.ax.lines[0], self.ax.lines[1]
         return func
 
 if __name__ == "__main__":
@@ -62,8 +74,9 @@ if __name__ == "__main__":
 
     cnf = Constants
     ParticleBox = Box(cnf)
-    ViewBox = BoxView(cnf)
+    InfectionHanlder = Naive()
 
+    ViewBox = BoxView(cnf)
     init_func = ViewBox.get_init_func(ParticleBox)
     animation_function = ViewBox.get_animation_function()
 
