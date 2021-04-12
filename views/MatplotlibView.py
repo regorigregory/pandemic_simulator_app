@@ -36,9 +36,9 @@ class BoxView():
         self._height = y
 
 
-    def get_current_coordinates(self):
-        return np.array([[p.get_particle_component().position_x for p in self._box_of_particles.contents],
-                         [p.get_particle_component().position_y for p in self._box_of_particles.contents]])
+    def get_current_coordinates(self, subjects):
+        return np.array([[p.get_particle_component().position_x for p in subjects],
+                         [p.get_particle_component().position_y for p in subjects]])
 
     def move_guys(self, i):
         self._box_of_particles.move_guys(i, infection_handler = self._infection_handler)
@@ -49,23 +49,46 @@ class BoxView():
         self.ax = plt.gca()
         self.ax.set_xlim(0, self.width)
         self.ax.set_ylim(0, self.height)
+        self._infection_handler.count_them(0, self._box_of_particles.contents)
+
         #self.ax.set_xticks([])
         #self.ax.set_yticks([])
-        self.ax.plot(*self.get_current_coordinates(), marker = ".", fillstyle = "full", linestyle = "", markersize = self._marker_radius * 2)
-        self.ax.plot(*self.get_current_coordinates(), marker = ".", fillstyle = "none", color = "red", linestyle = "", markersize = self._infection_zone_radius * 2)
+
+        #immune
+        self.ax.plot(*self.get_current_coordinates(self._infection_handler.counts["IMMUNE"]), marker = ".",
+                     fillstyle = "full", linestyle = "", color="blue", markersize = self._marker_radius * 2)
+
+        #susceptible
+        self.ax.plot(*self.get_current_coordinates(self._infection_handler.counts["SUSCEPTIBLE"]), marker=".",
+                     fillstyle="full", linestyle="", color="orange", markersize=self._marker_radius * 2)
+
+        #infected
+        # immune
+        INFECTED_COORDS = self.get_current_coordinates(self._infection_handler.counts["INFECTED"])
+
+        self.ax.plot(*INFECTED_COORDS, marker=".",
+                     fillstyle="full", linestyle="",color = "red", markersize=self._marker_radius * 2)
+
+        self.ax.plot(*INFECTED_COORDS, marker = ".", fillstyle = "none", color = "red", linestyle = "", markersize = self._infection_zone_radius * 2)
 
         def func():
-            return self.ax.lines[0], self.ax.lines[1]
+            return self.ax.lines[0], self.ax.lines[1], self.ax.lines[2], self.ax.lines[3]
         return func
 
     def get_animation_function(self):
         def func(i):
             self.move_guys(i)
-            self.ax.lines[0].set_data(*self.get_current_coordinates())
-            self.ax.lines[1].set_data(*self.get_current_coordinates())
+            INFECTED_COORDS = self.get_current_coordinates(self._infection_handler.counts["INFECTED"])
+            IMMUNE_COORDS = self.get_current_coordinates(self._infection_handler.counts["IMMUNE"])
+            SUSCEPTIBLE_COORDS = self.get_current_coordinates(self._infection_handler.counts["SUSCEPTIBLE"])
 
-            self._infection_handler.print_counts()
-            return self.ax.lines[0], self.ax.lines[1]
+            self.ax.lines[0].set_data(*IMMUNE_COORDS)
+            self.ax.lines[1].set_data(*SUSCEPTIBLE_COORDS)
+            self.ax.lines[2].set_data(*INFECTED_COORDS)
+            self.ax.lines[3].set_data(*INFECTED_COORDS)
+
+            #self._infection_handler.print_counts()
+            return self.ax.lines[0], self.ax.lines[1], self.ax.lines[2], self.ax.lines[3]
         return func
 
 if __name__ == "__main__":

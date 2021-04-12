@@ -15,7 +15,7 @@ class Subject:
 
         self._particle = Particle(config)
         self._infection_radius = self._particle.get_radius() + config.INFECTION_RADIUS.value
-        if np.random.uniform() <= self.get_infection_probability():
+        if np.random.uniform() <= config.INITIAL_INFECTED_SUBJECTS_RATIO.value:
             self._infection_status = InfectionStatuses.INFECTED
             self._got_infected_at = 0
         else:
@@ -42,6 +42,12 @@ class Subject:
                 and self._have_i_recovered(timestamp)):
             self._infection_status = InfectionStatuses.IMMUNE
         return self._infection_status
+
+    def is_immune(self, timestamp):
+        return self.get_infection_status(timestamp) == InfectionStatuses.IMMUNE
+
+    def is_infected(self, timestamp):
+        return self.get_infection_status(timestamp) == InfectionStatuses.INFECTED
 
     def infect_me_if_you_can(self, timestamp, other):
         if (self.get_infection_status(timestamp) == InfectionStatuses.SUSCEPTIBLE
