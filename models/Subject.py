@@ -21,7 +21,7 @@ class Subject:
         else:
             self._infection_status = InfectionStatuses.SUSCEPTIBLE
             self._got_infected_at = -1
-
+        self._last_checkup = 0
 
     def get_infection_radius(self):
         return self._infection_radius
@@ -30,7 +30,11 @@ class Subject:
         return self._particle
 
     def _have_i_recovered(self, timestamp: int) -> bool:
+        if timestamp == self._last_checkup:
+            return self._infection_status == InfectionStatuses.IMMUNE
         if timestamp - self._got_infected_at >= self._recovery_time:
+            self._infection_status = InfectionStatuses.IMMUNE
+            self._last_checkup = timestamp
             return True
         return False
 
@@ -38,9 +42,12 @@ class Subject:
         return self._got_infected_at
 
     def get_infection_status(self, timestamp: int) -> InfectionStatuses:
+        if self._last_checkup == timestamp:
+            return self._infection_status
         if(self._infection_status == InfectionStatuses.INFECTED
                 and self._have_i_recovered(timestamp)):
             self._infection_status = InfectionStatuses.IMMUNE
+        self._last_checkup = timestamp
         return self._infection_status
 
     def is_immune(self, timestamp):
@@ -49,12 +56,8 @@ class Subject:
     def is_infected(self, timestamp):
         return self.get_infection_status(timestamp) == InfectionStatuses.INFECTED
 
-    def infect_me_if_you_can(self, timestamp, other):
-        if (self.get_infection_status(timestamp) == InfectionStatuses.SUSCEPTIBLE
-                and other.get_infection_status(timestamp) == InfectionStatuses.INFECTED
-            #and self.get_infection_probability() >= random.random()
-            ):
-            self.infect_me(timestamp)
+    def is_susceptible(self, timestamp):
+        return self.get_infection_status(timestamp) == InfectionStatuses.SUSCEPTIBLE
 
     def get_infection_probability(self) -> float:
         return self._infection_probability
@@ -62,14 +65,21 @@ class Subject:
     def get_recovery_time(self) -> float:
         return self._recovery_time
 
-    def infect_me(self, timestamp):
+    def _infect_me_if_you_can(self, timestamp, other):
+        if (self.get_infection_status(timestamp) == InfectionStatuses.SUSCEPTIBLE
+                and other.get_infection_status(timestamp) == InfectionStatuses.INFECTED
+            #and self.get_infection_probability() >= random.random()
+            ):
+            self._infect_me(timestamp)
+
+    def _infect_me(self, timestamp):
         if self.get_infection_status(timestamp) == InfectionStatuses.SUSCEPTIBLE:
             self._infection_status = InfectionStatuses.INFECTED
             self._got_infected_at = timestamp
 
     def encounter_with(self, timestamp, other) -> None:
-        self.infect_me_if_you_can(timestamp, other)
-        other.infect_me_if_you_can(timestamp, self)
+        self._infect_me_if_you_can(timestamp, other)
+        other._infect_me_if_you_can(timestamp, self)
 
     def are_we_too_close(self, other):
         p1 = self.get_particle_component().position_vector

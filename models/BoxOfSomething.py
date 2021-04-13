@@ -29,7 +29,7 @@ class Box:
         for i in range(0, config.NUMBER_OF_SUBJECTS.value):
             p = constructor(config)
             self.contents.append(p)
-            self.add_particle_to_grids(p)
+            #self.add_particle_to_grids(p)
 
     def add_particle_to_grids(self, particle):
         x, y = particle.get_particle_component().position_x,\
@@ -50,8 +50,8 @@ class Box:
     def move_guys(self, timestamp, infection_handler: InfectionHandlerInterface = None):
         for particle in self.contents:
             particle.get_particle_component().update_location()
-            self.add_particle_to_grids(particle)
+            #self.add_particle_to_grids(particle)
         if (infection_handler is not None):
-            infection_handler.many_to_many(timestamp, self._grids)
+            infection_handler.many_to_many(timestamp, [self.contents])
 if __name__ == "__main__":
     box = Box(Constants)

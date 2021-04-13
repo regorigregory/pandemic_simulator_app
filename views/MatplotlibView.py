@@ -5,7 +5,7 @@ from matplotlib.animation import FuncAnimation
 from models.BoxOfSomething import Box
 from models.Particle import Particle
 from models.conf import Constants
-from models.InfectionHandlers import Naive
+from models.InfectionHandlers import Naive, AxisBased
 
 import numpy as np
 
@@ -97,9 +97,9 @@ if __name__ == "__main__":
 
     cnf = Constants
     ParticleBox = Box(cnf)
-    InfectionHanlder = Naive()
+    InfectionHanlder = AxisBased(cnf)
 
-    ViewBox = BoxView(cnf)
+    ViewBox = BoxView(cnf, infection_handler = InfectionHanlder)
     init_func = ViewBox.get_init_func(ParticleBox)
     animation_function = ViewBox.get_animation_function()
 
@@ -107,5 +107,5 @@ if __name__ == "__main__":
     anim = FuncAnimation(ViewBox.fig,
                          animation_function,
                          init_func = init_func,
-                         frames=300,
+                         frames=150,
                          interval=20)

@@ -54,8 +54,7 @@ class Naive(InfectionHandlerInterface):
             t = threading.Thread(target = thread_function, args=(slice,))
             t.start()
 
-    def one_to_many(self, timestamp: int, a_subject: Subject, subjects: List[Subject]):
-
+    def one_to_many(self, timestamp: int, a_subject: Subject, subjects: List[List[Subject]]):
             for other in subjects:
                 if (a_subject == other):
                     continue
@@ -70,32 +69,34 @@ class Naive(InfectionHandlerInterface):
 
 class AxisBased(InfectionHandlerInterface):
     def __init__(self, config):
-        super().__init__(config)
-        self._gridsize = (config.INFECTION_RADIUS.value + config.PARTICLE_RADIUS.value) \
-                         * 2 * config.SUBJECTS_PER_GRID.value
+        super().__init__()
+
 
     def many_to_many(self, timestamp: int, subjects: List[Subject]):
+        subjects = subjects[0]
+        if(len(self.counts["INFECTED"]) == 0 and len(self.counts["IMMUNE"]) != 0):
+            return
+
+        x_sorted = sorted(subjects, key = lambda s: s.get_particle_component().position_x)
+        for i, current in enumerate(x_sorted):
+            self.one_to_many(timestamp, current, x_sorted, i)
         self.init_counts()
-        subjects.sort(key = lambda s: s.get_particle_component().position_x)
+        self.count_them(timestamp, subjects)
 
-        for a_subject in subjects:
-            if (a_subject.is_immune(timestamp)):
-                self.counts["IMMUNE"].add(a_subject)
-            else:
-                self.one_to_many(timestamp, a_subject, subjects)
+    def one_to_many(self, timestamp: int, current: Subject, x_sorted: List[Subject], i: int):
+        if (current.is_infected(timestamp)):
+            down = i - 1
+            up = i + 1
+            while (down > 0):
+                other = x_sorted[down]
+                if not current.are_we_too_close(other): break
+                current.encounter_with(timestamp, other)
+                down -= 1
 
-    def one_to_many(self, timestamp: int, a_subject: Subject, subjects: List[Subject]):
-
-            for other in subjects:
-                if (a_subject == other):
-                    continue
-                if(not other.is_immune(timestamp)):
-                    if (a_subject.are_we_too_close(other)
-                            and a_subject.is_infected(timestamp)
-                            != other.is_infected(timestamp)):
-
-                        a_subject.encounter_with(timestamp, other)
-                self.counts[a_subject.get_infection_status(timestamp).name].add(a_subject)
-
+            while (up < len(x_sorted)):
+                other = x_sorted[up]
+                if not current.are_we_too_close(other): break
+                current.encounter_with(timestamp, other)
+                up += 1
 if __name__ == "__main__":
     testObject = Naive()
