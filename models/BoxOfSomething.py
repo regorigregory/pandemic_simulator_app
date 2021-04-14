@@ -1,11 +1,11 @@
 from models.conf import SubjectTypes, Constants
 from models.Particle import Particle
 from models.Subject import Subject
-from models.InfectionHandlers import InfectionHandlerInterface, AxisBased
+from models.InfectionHandlers import InfectionHandlerInterface, AxisBased, ParallelAxisBased
 import math
 import numpy as np
 class BoxOfSubjects:
-    def __init__(self, config, infection_handler = AxisBased()):
+    def __init__(self, config, infection_handler = ParallelAxisBased()):
         self.contents = []
         self._gridsize = (config.INFECTION_RADIUS.value + config.PARTICLE_RADIUS.value) * config.SUBJECTS_PER_GRID.value
         self._n_horizontal_grids = math.ceil(config.DIMENSIONS.value[0][1] / self._gridsize)
@@ -47,11 +47,15 @@ class BoxOfSubjects:
                         self._grids[y_temp, x_temp,].add(particle)
 
 
-    def move_guys(self, timestamp, infection_handler: InfectionHandlerInterface = None):
+    def move_guys(self, timestamp):
         for particle in self.contents:
             particle.get_particle_component().update_location()
             #self.add_particle_to_grids(particle)
-        if (infection_handler is not None):
-            self._infection_handler.many_to_many(timestamp, [self.contents])
+
+        self._infection_handler.many_to_many(timestamp, [self.contents])
 if __name__ == "__main__":
+    from multiprocessing import Pool
+    import multiprocessing as mp
     box = BoxOfSubjects(Constants)
+    test_list = box.contents
+    mp_list = mp.Manager().list(test_list)
