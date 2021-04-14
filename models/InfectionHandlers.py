@@ -68,7 +68,7 @@ class Naive(InfectionHandlerInterface):
 
 
 class AxisBased(InfectionHandlerInterface):
-    def __init__(self, config):
+    def __init__(self):
         super().__init__()
 
 

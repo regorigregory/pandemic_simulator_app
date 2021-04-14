@@ -1,18 +1,18 @@
 from models.conf import SubjectTypes, Constants
 from models.Particle import Particle
 from models.Subject import Subject
-from models.InfectionHandlers import InfectionHandlerInterface
+from models.InfectionHandlers import InfectionHandlerInterface, AxisBased
 import math
 import numpy as np
-class Box:
-    def __init__(self, config):
+class BoxOfSubjects:
+    def __init__(self, config, infection_handler = AxisBased()):
         self.contents = []
         self._gridsize = (config.INFECTION_RADIUS.value + config.PARTICLE_RADIUS.value) * config.SUBJECTS_PER_GRID.value
         self._n_horizontal_grids = math.ceil(config.DIMENSIONS.value[0][1] / self._gridsize)
         self._n_vertical_grids = math.ceil(config.DIMENSIONS.value[1][1] / self._gridsize)
         self._n_grids = self._n_vertical_grids * self._n_horizontal_grids
         self._particle_radius= config.PARTICLE_RADIUS
-
+        self._infection_handler = infection_handler
         self._infection_radius = config.INFECTION_RADIUS.value + config.PARTICLE_RADIUS.value
         self.populate_subjects(config)
 
@@ -52,6 +52,6 @@ class Box:
             particle.get_particle_component().update_location()
             #self.add_particle_to_grids(particle)
         if (infection_handler is not None):
-            infection_handler.many_to_many(timestamp, [self.contents])
+            self._infection_handler.many_to_many(timestamp, [self.contents])
 if __name__ == "__main__":
-    box = Box(Constants)
+    box = BoxOfSubjects(Constants)
