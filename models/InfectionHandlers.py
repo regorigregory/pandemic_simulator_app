@@ -87,15 +87,29 @@ class AxisBased(InfectionHandlerInterface):
         if (current.is_infected(timestamp)):
             down = i - 1
             up = i + 1
+            current_x = current.get_particle_component().position_x
+            max_distance = current.get_infection_radius() + current.get_particle_component().get_radius()
             while (down > 0):
                 other = x_sorted[down]
-                if not current.are_we_too_close(other): break
+                other_x = other.get_particle_component().position_x
+                if(abs(current_x - other_x) > max_distance):
+                    break
+                if (other.is_infected(timestamp) or other.is_immune(timestamp)):
+                    continue
+                if not current.are_we_too_close(other):
+                    continue
                 current.encounter_with(timestamp, other)
                 down -= 1
 
             while (up < len(x_sorted)):
                 other = x_sorted[up]
-                if not current.are_we_too_close(other): break
+                other_x = other.get_particle_component().position_x
+                if (abs(current_x - other_x) > max_distance):
+                    break
+                if (other.is_infected(timestamp) or other.is_immune(timestamp)):
+                    continue
+                if not current.are_we_too_close(other):
+                    continue
                 current.encounter_with(timestamp, other)
                 up += 1
 if __name__ == "__main__":
