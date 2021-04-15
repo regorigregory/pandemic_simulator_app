@@ -10,8 +10,8 @@ class SubjectTypes(Enum):
     SUBJECT = 1
 
 class Constants(Enum):
-    NUMBER_OF_CORES = 8
-    NUMBER_OF_SUBJECTS = 250
+    NUMBER_OF_THREADS = 16
+    NUMBER_OF_SUBJECTS = 500
     SUBJECTS_PER_GRID = 10
 
     INITIAL_INFECTED_SUBJECTS_RATIO = 0.2

@@ -97,9 +97,11 @@ class BoxView():
         animation_function = ViewBox.get_animation_function()
         anim = FuncAnimation(ViewBox.fig,
                              animation_function,
+                             blit=True,
                              init_func=init_func,
                              frames=60,
-                             interval=int(1000/5))
+                             interval=int(1000/5),
+                             repeat = False)
         return anim
 
 class ResetButton:

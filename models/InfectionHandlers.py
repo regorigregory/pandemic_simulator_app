@@ -8,7 +8,7 @@ from multiprocessing import Manager, Process
 
 class InfectionHandlerInterface(ABC):
     def __init__(self):
-        self._n_threads = 8
+        self._n_threads = 32
         self.init_counts()
 
     def init_counts(self):
@@ -27,8 +27,25 @@ class InfectionHandlerInterface(ABC):
         ))
 
     def count_them(self, timestamp, subjects):
-        for subject in subjects:
-            self.counts[subject.get_infection_status(timestamp).name].add(subject)
+        l = threading.Lock()
+
+        def thread_helper(subjects, timestamp):
+            for subject in subjects:
+                l.acquire()
+                self.counts[subject.get_infection_status(timestamp).name].add(subject)
+                l.release()
+
+        index_increment = math.ceil(len(subjects) / (self._n_threads/8))
+        index_start = 0
+        threads = []
+        for thread in range(int(self._n_threads/8)):
+            subset = subjects[index_start: int(index_start + index_increment)]
+            t = threading.Thread(target=thread_helper, args=(subset, timestamp))
+            t.start()
+            threads.append(t)
+            index_start += index_increment
+        for t in threads:
+            t.join()
 
 class Naive(InfectionHandlerInterface):
     def __init__(self):
@@ -56,6 +73,7 @@ class Naive(InfectionHandlerInterface):
             t.start()
 
     def one_to_many(self, timestamp: int, a_subject: Subject, subjects: List[List[Subject]]):
+            l = threading.Lock()
             for other in subjects:
                 if (a_subject == other):
                     continue
@@ -63,8 +81,9 @@ class Naive(InfectionHandlerInterface):
                     if (a_subject.are_we_too_close(other)
                             and a_subject.is_infected(timestamp)
                             != other.is_infected(timestamp)):
-
+                        #l.acquire()
                         a_subject.encounter_with(timestamp, other)
+                        #l.release()
                 self.counts[a_subject.get_infection_status(timestamp).name].add(a_subject)
 
 
@@ -135,13 +154,15 @@ class ParallelAxisBased(AxisBased):
 
         index_increment = math.ceil(len(x_sorted)/ self._n_threads)
         index_start = 0
+        threads = []
         for thread in range(self._n_threads):
             subset = x_sorted[index_start: int(index_start + index_increment)].copy()
             t = threading.Thread(target=thread_helper, args=(subset, x_sorted.copy(), index_start, timestamp))
             t.start()
-            t.join()
+            threads.append(t)
             index_start += index_increment
-
+        for t in threads:
+            t.join()
         self.init_counts()
         self.count_them(timestamp, subjects)
 
