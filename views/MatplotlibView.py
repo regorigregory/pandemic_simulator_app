@@ -1,23 +1,25 @@
-import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+from matplotlib.animation import FuncAnimation, Animation, TimedAnimation
 
 from models.BoxOfSomething import BoxOfSubjects
 from matplotlib.widgets import Button
 
 import numpy as np
 
-class BoxView():
+class PlotOfSubjects():
     def __init__(self, config, container = None):
         self.config = config
         self.width = config.DIMENSIONS.value[0][1]
         self.height = config.DIMENSIONS.value[1][1]
         self.DPI = config.DPI.value
-        self._box_of_particles = container
-        self._infection_handler = self._box_of_particles._infection_handler
+
         self._marker_radius = config.PARTICLE_RADIUS.value
         self._infection_zone_radius = config.INFECTION_RADIUS.value + config.PARTICLE_RADIUS.value
+
+        self._box_of_particles = container
+
         self.fig = plt.figure(figsize = (self.width/self.DPI, self.height/self.DPI), dpi=self.DPI)
+        self._infection_handler = self._box_of_particles._infection_handler
         self.ax = plt.gca()
 
     @property
@@ -90,38 +92,32 @@ class BoxView():
             return self.ax.lines[0], self.ax.lines[1], self.ax.lines[2], self.ax.lines[3]
         return func
 
-    def show(self):
-        ViewBox = self
 
-        init_func = ViewBox.get_init_func()
-        animation_function = ViewBox.get_animation_function()
-        anim = FuncAnimation(ViewBox.fig,
+    def start_animation(self):
+        init_func = self.get_init_func()
+        animation_function = self.get_animation_function()
+
+        anim = FuncAnimation(self.fig,
                              animation_function,
-                             blit=True,
                              init_func=init_func,
-                             frames=60,
-                             interval=int(1000/5),
-                             repeat = False)
+                             interval=20)
         return anim
+    def reset(self):
+        self._box_of_particles.reset()
+        self._infection_handler = self._box_of_particles._infection_handler
+        self.ax = plt.gca()
 
-class ResetButton:
-
-    def reset(self, event):
-        print("oi")
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from models.conf import Constants
-
+    plt.ioff()
     cnf = Constants
-    ViewBox = BoxView(cnf, container = BoxOfSubjects(cnf))
-
-    init_func = ViewBox.get_init_func()
+    ViewBox = PlotOfSubjects(cnf, container = BoxOfSubjects(cnf))
+    """init_func = ViewBox.get_init_func()
     animation_function = ViewBox.get_animation_function()
 
     anim = FuncAnimation(ViewBox.fig,
                          animation_function,
                          init_func = init_func,
-                         frames=150,
-                         interval=20)
-    plt.show()
+                         interval=20)"""
 

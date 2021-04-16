@@ -7,20 +7,18 @@ import numpy as np
 import threading
 from typing import List
 import time
-from concurrent.futures import ThreadPoolExecutor
-
 class BoxOfSubjects:
     def __init__(self, config, infection_handler = AxisBased(), number_of_subjects = None):
+        self.config = config
         self.contents = []
-        self._gridsize = (config.INFECTION_RADIUS.value + config.PARTICLE_RADIUS.value) * config.SUBJECTS_PER_GRID.value
-        self._n_horizontal_grids = math.ceil(config.DIMENSIONS.value[0][1] / self._gridsize)
-        self._n_vertical_grids = math.ceil(config.DIMENSIONS.value[1][1] / self._gridsize)
-        self._n_grids = self._n_vertical_grids * self._n_horizontal_grids
+
         self._particle_radius= config.PARTICLE_RADIUS
         self._infection_handler = infection_handler
         self._infection_radius = config.INFECTION_RADIUS.value + config.PARTICLE_RADIUS.value
         self.populate_subjects(config, number_of_subjects)
-        self._n_threads = config.NUMBER_OF_THREADS.value
+
+    def reset(self):
+        self.populate_subjects(self.config, None)
 
     def populate_subjects(self, config, number_of_subjects):
         if config.SUBJECT_TYPE.value == SubjectTypes.PARTICLE:
@@ -47,11 +45,14 @@ class BoxOfSubjects:
             index_increment = math.ceil(len(subjects) / self._n_threads)
             index_start = 0
             threads = []
-            with ThreadPoolExecutor(4) as pool:
-                for thread in range(self._n_threads):
-                    subset = subjects[index_start: int(index_start + index_increment)]
-                    pool.submit(thread_helper, args=([subset]))
-                pool.shutdown(wait = True)
+            for thread in range(self._n_threads):
+                subset = subjects[index_start: int(index_start + index_increment)]
+                t = threading.Thread(target=thread_helper, args=([subset]))
+                t.start()
+                threads.append(t)
+                index_start += index_increment
+            for t in threads:
+                t.join()
                 #self.add_particle_to_grids(particle)
         if infection_handling:
             self._infection_handler.many_to_many(timestamp, [self.contents])
