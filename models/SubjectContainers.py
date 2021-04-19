@@ -7,8 +7,19 @@ import numpy as np
 import threading
 from typing import List
 import time
+from abc import ABC, abstractmethod
+class ContainerOfSubjects(ABC):
+    @abstractmethod
+    def reset(self):
+        pass
+    @abstractmethod
+    def populate_subjects(self, config, number_of_subjects):
+        pass
+    @abstractmethod
+    def move_guys(self, timestamp, parallel = False, infection_handling = True):
+        pass
 
-class BoxOfSubjects:
+class BoxOfSubjects(ContainerOfSubjects):
     def __init__(self, config = Constants(), infection_handler = AxisBased(), number_of_subjects = None):
         self.config = config
         self.contents = []
@@ -57,6 +68,9 @@ class BoxOfSubjects:
                 #self.add_particle_to_grids(particle)
         if infection_handling:
             self._infection_handler.many_to_many(timestamp, [self.contents])
+
+class GridOfSubjects(ContainerOfSubjects):
+    pass
 if __name__ == "__main__":
 
     NUMBER_OF_TESTS = 1

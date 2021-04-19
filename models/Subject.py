@@ -4,6 +4,8 @@ from models.Particle import Particle
 from enum import Enum
 import numpy as np
 from models.conf import Constants
+
+
 class Subject:
 
     def __init__(self, config = Constants(), am_i_infected = False):
@@ -68,8 +70,8 @@ class Subject:
     def _infect_me_if_you_can(self, timestamp, other):
         if (self.get_infection_status(timestamp) == InfectionStatuses.SUSCEPTIBLE
                 and other.get_infection_status(timestamp) == InfectionStatuses.INFECTED
-            #and self.get_infection_probability() >= random.random()
-            ):
+                and self.get_infection_probability() >= np.random.uniform()):
+
             self._infect_me(timestamp)
 
     def _infect_me(self, timestamp):

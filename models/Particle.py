@@ -135,7 +135,9 @@ class Particle:
         y = np.random.uniform(*range[1])
         return np.array([x,y])
 
+
 if __name__ == "__main__":
+
     from models.conf import Constants
     testobject = Particle(Constants)
     testobject.position_x = -100

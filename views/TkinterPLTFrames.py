@@ -3,7 +3,7 @@ from tkinter import Frame, Button
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from models.BoxOfSomething import BoxOfSubjects
+from models.SubjectContainers import BoxOfSubjects
 from models.conf import Constants
 import tkinter as tk
 
