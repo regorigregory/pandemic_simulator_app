@@ -3,19 +3,19 @@ from models.conf import InfectionStatuses, Constants
 from models.Particle import Particle
 from enum import Enum
 import numpy as np
-
+from models.conf import Constants
 class Subject:
 
-    def __init__(self, config: Enum, am_i_infected = False):
+    def __init__(self, config = Constants(), am_i_infected = False):
 
-        self._infection_radius = Subject.set_random_attribute_safely(config.INFECTION_RADIUS.value)
-        self._recovery_time = Subject.set_random_attribute_safely(config.INFECTION_RADIUS.value)
-        self._incubation_period = Subject.set_random_attribute_safely(config.INCUBATION_PERIOD.value)
-        self._infection_probability = Subject.set_random_attribute_safely(config.INFECTION_PROBABILITY_PER_TIME_PERIOD.value)
+        self._infection_radius = Subject.set_random_attribute_safely(config.INFECTION_RADIUS)
+        self._recovery_time = Subject.set_random_attribute_safely(config.INFECTION_RADIUS)
+        self._incubation_period = Subject.set_random_attribute_safely(config.INCUBATION_PERIOD)
+        self._infection_probability = Subject.set_random_attribute_safely(config.INFECTION_PROBABILITY_PER_TIME_PERIOD)
 
         self._particle = Particle(config)
-        self._infection_radius = self._particle.get_radius() + config.INFECTION_RADIUS.value
-        if np.random.uniform() <= config.INITIAL_INFECTED_SUBJECTS_RATIO.value:
+        self._infection_radius = self._particle.get_radius() + config.INFECTION_RADIUS
+        if np.random.uniform() <= config.INITIAL_INFECTED_SUBJECTS_RATIO:
             self._infection_status = InfectionStatuses.INFECTED
             self._got_infected_at = 0
         else:

@@ -4,25 +4,25 @@ if __name__ == "__main__":
     from matplotlib.animation import FuncAnimation
     from models.conf import Constants
     from models.BoxOfSomething import BoxOfSubjects
-    from views.MatplotlibView import PlotOfSubjects
+    from views.SubjectsBoxes import PLTBox
     import tkinter as tk
     from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+    from views.Frames import *
+    import controllers.TkinterPLTControllers as ButtonsController
+
     plt.ioff()
     window = tk.Tk()
-    window.geometry("1280x1000")
-
-    cnf = Constants
-    ViewBox = PlotOfSubjects(cnf, container=BoxOfSubjects(cnf))
-
-    canvas = FigureCanvasTkAgg(ViewBox.fig, window)
-    canvas.get_tk_widget().pack(side=tk.RIGHT, fill="x")
+    Constants().MAIN_CANVAS_SIZE = [window.winfo_screenwidth(), window.winfo_screenheight()]
+    window.geometry(Constants().get_main_canvas_size_tikinter())
 
 
-    window.ani = ViewBox.start_animation()
-    start = tk.Button(window, text="Start", fg='blue', command = window.ani.event_source.start)
-    stop = tk.Button(window, text="Stop", fg='blue', command = window.ani.event_source.stop)
+    my_builder = TkinterPLTBuilder(window = window)
+    my_builder.build()
 
-    start.pack(side=tk.LEFT)
-    stop.pack(side=tk.LEFT)
+
+    ButtonsController = ButtonsController.TkinterButtons(window.ani.event_source.start, window.ani.event_source.start,
+                                                         window.ani.event_source.stop, window.ani.event_source.start)
+
+    ButtonsController.bind_functions(my_builder.components["BUTTONS"])
 
     window.mainloop()

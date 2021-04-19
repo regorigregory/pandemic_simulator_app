@@ -3,18 +3,17 @@ from matplotlib.animation import FuncAnimation, Animation, TimedAnimation
 
 from models.BoxOfSomething import BoxOfSubjects
 from matplotlib.widgets import Button
-
+from models.conf import Constants
 import numpy as np
 
-class PlotOfSubjects():
-    def __init__(self, config, container = None):
+class PLTBox():
+    def __init__(self, config = Constants(), container = None):
         self.config = config
-        self.width = config.DIMENSIONS.value[0][1]
-        self.height = config.DIMENSIONS.value[1][1]
-        self.DPI = config.DPI.value
+        self.width, self.height = config.get_dimensions(1, "SIMULATION_DIM")
+        self.DPI = config.DPI
 
-        self._marker_radius = config.PARTICLE_RADIUS.value
-        self._infection_zone_radius = config.INFECTION_RADIUS.value + config.PARTICLE_RADIUS.value
+        self._marker_radius = config.PARTICLE_RADIUS
+        self._infection_zone_radius = config.INFECTION_RADIUS + config.PARTICLE_RADIUS
 
         self._box_of_particles = container
 
@@ -105,14 +104,16 @@ class PlotOfSubjects():
     def reset(self):
         self._box_of_particles.reset()
         self._infection_handler = self._box_of_particles._infection_handler
+        plt.cla()
+        plt.clf()
         self.ax = plt.gca()
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
-    from models.conf import Constants
     plt.ioff()
-    cnf = Constants
-    ViewBox = PlotOfSubjects(cnf, container = BoxOfSubjects(cnf))
+    ViewBox = PLTBox(container = BoxOfSubjects())
+    a = ViewBox.start_animation()
+    plt.show()
     """init_func = ViewBox.get_init_func()
     animation_function = ViewBox.get_animation_function()
 

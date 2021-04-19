@@ -1,6 +1,7 @@
 import random
 import math
 from typing import NewType, List
+from models.conf import Constants
 import numpy as np
 Vector = List[float]
 VectorRange = List[List[float]]
@@ -8,15 +9,15 @@ VectorRange = List[List[float]]
 
 
 class Particle:
-    def __init__(self, cnf):
-        self.position_vector = Particle.init_random_vector(cnf.DIMENSIONS.value)
-        self.velocity_vector = Particle.init_random_vector(cnf.VELOCITY_RANGE.value)
-        self.max_x = cnf.DIMENSIONS.value[0][1]
-        self.max_y =  cnf.DIMENSIONS.value[1][1]
+    def __init__(self, cnf = Constants()):
+        self.position_vector = Particle.init_random_vector(cnf.SUBJECT_CANVAS_DIMENSIONS)
+        self.velocity_vector = Particle.init_random_vector(cnf.VELOCITY_RANGE)
+        self.max_x, self.max_y = cnf.get_dimensions(1, "SIMULATION_DIM")
 
-        self.min_x = cnf.DIMENSIONS.value[0][0]
-        self.min_y = cnf.DIMENSIONS.value[1][0]
-        self._radius = cnf.PARTICLE_RADIUS.value
+
+        self.min_x = 0
+        self.min_y = 0
+        self._radius = cnf.PARTICLE_RADIUS
         self.subject = None
 
     def get_radius(self):
@@ -104,13 +105,13 @@ class Particle:
 
 
     def bounce_back_if_needed(self)->None:
-        if self.position_x < 0:
+        if self.position_x < self.min_x:
             self.position_x = - self.position_x
             self.velocity_x = - self.velocity_x
         elif(self.position_x > self.max_x):
             self.position_x= 2 * self.max_x - self.position_x
             self.velocity_x = - self.velocity_x
-        if self.position_y < 0:
+        if self.position_y < self.min_y:
             self.position_y = - self.position_y
             self.velocity_y = - self.velocity_y
         elif (self.position_y > self.max_y):

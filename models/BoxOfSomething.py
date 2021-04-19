@@ -7,25 +7,26 @@ import numpy as np
 import threading
 from typing import List
 import time
+
 class BoxOfSubjects:
-    def __init__(self, config, infection_handler = AxisBased(), number_of_subjects = None):
+    def __init__(self, config = Constants(), infection_handler = AxisBased(), number_of_subjects = None):
         self.config = config
         self.contents = []
 
         self._particle_radius= config.PARTICLE_RADIUS
         self._infection_handler = infection_handler
-        self._infection_radius = config.INFECTION_RADIUS.value + config.PARTICLE_RADIUS.value
+        self._infection_radius = config.INFECTION_RADIUS + config.PARTICLE_RADIUS
         self.populate_subjects(config, number_of_subjects)
 
     def reset(self):
         self.populate_subjects(self.config, None)
 
     def populate_subjects(self, config, number_of_subjects):
-        if config.SUBJECT_TYPE.value == SubjectTypes.PARTICLE:
+        if config.SUBJECT_TYPE == SubjectTypes.PARTICLE:
             constructor = Particle
         else:
             constructor = Subject
-        limit = number_of_subjects if number_of_subjects else config.NUMBER_OF_SUBJECTS.value
+        limit = number_of_subjects if number_of_subjects else config.NUMBER_OF_SUBJECTS
         for i in range(0, limit):
             p = constructor(config)
             self.contents.append(p)
