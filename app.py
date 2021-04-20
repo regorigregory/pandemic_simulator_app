@@ -2,7 +2,7 @@
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from matplotlib.animation import FuncAnimation
-    from models.conf import Constants
+    from models.ConfigureMe import Constants
     from models.SubjectContainers import BoxOfSubjects
     from views.SubjectsBoxes import PLTBox
     import tkinter as tk
@@ -11,7 +11,9 @@ if __name__ == "__main__":
     import controllers.TkinterPLTControllers as ButtonsController
 
     plt.ioff()
+
     window = tk.Tk()
+
     Constants().MAIN_CANVAS_SIZE = [window.winfo_screenwidth(), window.winfo_screenheight()]
     window.geometry(Constants().get_main_canvas_size_tkinter())
 

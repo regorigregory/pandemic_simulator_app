@@ -1,4 +1,4 @@
-from models.conf import Constants
+from models.ConfigureMe import Constants
 class TkinterButtons():
     def __init__(self, coldstart, restart, pause, clear):
         self.funcs = {}

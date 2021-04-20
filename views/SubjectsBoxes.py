@@ -3,7 +3,7 @@ from matplotlib.animation import FuncAnimation, Animation, TimedAnimation
 
 from models.SubjectContainers import BoxOfSubjects
 from matplotlib.widgets import Button
-from models.conf import Constants
+from models.ConfigureMe import Constants
 import numpy as np
 
 

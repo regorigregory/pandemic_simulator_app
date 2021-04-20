@@ -1,4 +1,4 @@
-from models.conf import SubjectTypes, Constants
+from models.ConfigureMe import SubjectTypes, Constants
 from models.Particle import Particle
 from models.Subject import Subject
 from models.InfectionHandlers import InfectionHandlerInterface, AxisBased, ParallelAxisBased
@@ -69,8 +69,7 @@ class BoxOfSubjects(ContainerOfSubjects):
         if infection_handling:
             self._infection_handler.many_to_many(timestamp, [self.contents])
 
-class GridOfSubjects(ContainerOfSubjects):
-    pass
+
 if __name__ == "__main__":
 
     NUMBER_OF_TESTS = 1

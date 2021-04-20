@@ -1,9 +1,9 @@
 import math
-from models.conf import InfectionStatuses, Constants
+from models.ConfigureMe import InfectionStatuses, Constants
 from models.Particle import Particle
 from enum import Enum
 import numpy as np
-from models.conf import Constants
+from models.ConfigureMe import Constants
 
 
 class Subject:

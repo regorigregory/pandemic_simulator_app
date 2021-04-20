@@ -3,7 +3,22 @@ from typing import List, Set
 from abc import ABC, abstractmethod
 import threading
 import math
-from models.conf import Constants
+from models.ConfigureMe import Constants
+
+class SingletonInfectionHandler(object):
+    _shared_data = dict()
+    instance = None
+
+    def __new__(cls):
+        if cls.instance is None:
+            return super(SingletonInfectionHandler, cls).__new__(cls)
+        else:
+            return cls.instance
+
+    def __init__(self):
+        if SingletonInfectionHandler.instance is None:
+            SingletonInfectionHandler.instance = self
+            SingletonInfectionHandler.instance.__dict__ = SingletonInfectionHandler._shared_data
 
 
 class InfectionHandlerInterface(ABC):
@@ -110,8 +125,11 @@ class Naive(InfectionHandlerInterface):
 
 
 class AxisBased(InfectionHandlerInterface):
+
     def __init__(self):
         super().__init__()
+        self.observers = []
+
 
     def many_to_many(self, timestamp: int, subjects: List[Subject]):
         subjects = subjects[0]
@@ -159,6 +177,20 @@ class AxisBased(InfectionHandlerInterface):
                 current.encounter_with(timestamp, other)
                 up += 1
 
+    def attach(self, observer):
+        if observer not in self.observers:
+            self.observers.append(observer)
+    def detach(self, observer):
+        if observer in self.observers:
+            self.observers.remove(observer)
+
+    def notify(self, data):
+        for observer in self.observers:
+            observer.update(data)
+
+    def count_them(self, timestamp, subjects) -> None:
+        super().count_them(timestamp, subjects)
+        self.notify(self.counts)
 
 class ParallelAxisBased(AxisBased):
 
