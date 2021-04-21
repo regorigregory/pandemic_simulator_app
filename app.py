@@ -6,7 +6,7 @@ if __name__ == "__main__":
     from views.PLT.Simulation import MovingSubjects
     import tkinter as tk
     from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-    from views.TkinterPLTFrames import *
+    from views.PLT.TkinterPLTFrames import *
     import controllers.TkinterPLTControllers as ButtonsController
 
     plt.ioff()
@@ -24,6 +24,6 @@ if __name__ == "__main__":
     ButtonsController = ButtonsController.TkinterButtons(window.ani.event_source.start, window.ani.event_source.start,
                                                          window.ani.event_source.stop, window.ani.event_source.start)
 
-    ButtonsController.bind_functions(my_builder.components["BUTTONS"])
+    ButtonsController.bind_functions(my_builder.components["ButtonsFrame"])
 
     window.mainloop()

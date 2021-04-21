@@ -17,7 +17,7 @@ class AreaChart:
         self.ax = plt.gca()
         self.frames = 0
 
-        self.log = dict(INFECTED = [[0, 0]], SUSCEPTIBLE = [[0, 0]], IMMUNE = [[0, 0]])
+        self.log = dict(INFECTED = [[0, 0]], SUSCEPTIBLE = [[0, 0]], IMMUNE = [[0, Constants().NUMBER_OF_SUBJECTS]])
 
         self.init_graph()
     @property
@@ -39,14 +39,19 @@ class AreaChart:
     def init_graph(self):
         self.x_data = 0
         self.y_data = 0
-        self.plot = plt.stackplot([], [], [], [], colors = ["red", "orange", "green"])
-        self.ax.set_ylim(0, Constants().NUMBER_OF_SUBJECTS + 100)
+        self.plot = plt.stackplot([], [], [], [], colors = ["#4A306D", "#0E273C"])
+        self.ax.set_facecolor("#D3BCCC")
+        self.ax.set_ylim(0, Constants().NUMBER_OF_SUBJECTS)
         self.ax.set_xticks([])
         self.ax.set_yticks([])
 
     def update_logs(self, newdata):
         for k, v in newdata.items():
-            self.log[k] = np.concatenate((self.log[k], [[self.frames, len(v)]]), axis = 0)
+            if(k == "IMMUNE"):
+                self.log[k] = np.concatenate((self.log[k], [[self.frames, Constants().NUMBER_OF_SUBJECTS - len(v)]]), axis = 0)
+
+            else:
+                self.log[k] = np.concatenate((self.log[k], [[self.frames, len(v)]]), axis = 0)
 
     def update(self, new_data):
         self.frames += 1
@@ -57,8 +62,10 @@ class AreaChart:
         # to be continued tomorrow
 
     def redraw_verts(self):
-        self.plot[0].set_verts([np.concatenate([self.log["INFECTED"], [[self.frames, 0]]])], closed = True)
-        self.plot[1].set_verts([np.concatenate([self.log["SUSCEPTIBLE"], [[self.frames, 0]]])], False)
+        self.plot[0].set_verts([np.concatenate([self.log["INFECTED"], [[self.frames, 0]]])],
+                               closed = True)
+        self.plot[1].set_verts([np.concatenate([self.log["IMMUNE"], [[self.frames, Constants().NUMBER_OF_SUBJECTS]]])],
+                               closed = True)
         self.fig.canvas.draw()
 
     def observe(self, observable):

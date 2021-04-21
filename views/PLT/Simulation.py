@@ -100,7 +100,8 @@ class MovingSubjects(ObserverClient):
         def func(i):
             self.move_guys(i)
             self._infection_handler.count_them(i, self._box_of_particles.contents)
-            self.notify(self._infection_handler.counts)
+            if(i%5 == 0):
+                self.notify(self._infection_handler.counts)
 
             INFECTED_COORDS = self.get_current_coordinates(self._infection_handler.counts["INFECTED"])
             IMMUNE_COORDS = self.get_current_coordinates(self._infection_handler.counts["IMMUNE"])
@@ -123,7 +124,7 @@ class MovingSubjects(ObserverClient):
         anim = FuncAnimation(self.fig,
                              animation_function,
                              init_func=init_func,
-                             interval=20)
+                             interval=60)
         return anim
 
     def reset(self):

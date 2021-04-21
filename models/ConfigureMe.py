@@ -136,22 +136,22 @@ class Constants(object):
             Constants.instance.__dict__ = Constants._shared_data
 
             self.NUMBER_OF_THREADS = 3
-            self.NUMBER_OF_SUBJECTS = 200
+            self.NUMBER_OF_SUBJECTS = 1000
 
-            self.INITIAL_INFECTED_SUBJECTS_RATIO = 0.05
-            self.INFECTION_RADIUS = 40
-            self.PARTICLE_RADIUS = 10
+            self.INITIAL_INFECTED_SUBJECTS_RATIO = 0.1
+            self.INFECTION_RADIUS = 15
+            self.PARTICLE_RADIUS = 5
 
             self.RECOVERY_TIME = [50, 100]
             self.INCUBATION_PERIOD = [2, 10]
 
-            self.INFECTION_PROBABILITY_PER_TIME_PERIOD = [0.01, 0.05]
+            self.INFECTION_PROBABILITY_PER_TIME_PERIOD = [0.6, 0.8]
 
             self.SOCIAL_DISTANCE_FACTOR = 0
 
-            self.MAIN_CANVAS_SIZE = [1024, 768]
+            self.MAIN_CANVAS_SIZE = [1024, 1024]
 
-            self.COLUMNS_RATIO = 0.5
+            self.COLUMNS_RATIO = 0.4
             self.SIMULATION_DIM = 0.4
             self.HEADER_DIM = 0.1
             self.GRAPH_DIM = 0.3
@@ -159,9 +159,24 @@ class Constants(object):
             self.PARAMETERS_DIM = 0.5
             self.BUTTONS_DIM = 0.1
             self.SCENARIO_DIM = 0.1
+            self.STATS_DIM = 0.1
 
-            self.VELOCITY_RANGE = [[-10, 10],
-                                   [-10, 10]]
+            # layout grid config
+            self.GRID_KWARGS = {}
+            self.GRID_KWARGS["MasterHeaderFrame"] = dict(row=0, column=0, columnspan=2, sticky="we")
+            self.GRID_KWARGS["MasterLeftFrame"] = dict(row=1, column=0, sticky="we")
+            self.GRID_KWARGS["MasterRightFrame"] = dict(row=1, column=1, sticky="we")
+
+            self.GRID_KWARGS["GraphFrame"] = dict(row=0, column=0)
+            self.GRID_KWARGS["SimulationFrame"] = dict(row=1, column=0)
+            self.GRID_KWARGS["ButtonsFrame"] = dict(row=2, column=0)
+            self.GRID_KWARGS["ScenarioFrame"] = dict(row=1, column=0)
+            self.GRID_KWARGS["ParametersFrame"] = dict(row=2, column=0)
+            self.GRID_KWARGS["StatsFrame"] = dict(row=0, column=0)
+
+
+            self.VELOCITY_RANGE = [[-1, 1],
+                                   [-1, 1]]
             self.ACCELERATION_RANGE = [[1, 1], [1, 1]]
             self.DPI = 96
             self.SOCIAL_DISTANCING = False
@@ -194,7 +209,7 @@ class Constants(object):
         if column == 0:
             col_ratio = 1
         else:
-            col_ratio = self.COLUMNS_RATIO if column == 1 else 1 - self.COLUMNS_RATIO
+            col_ratio = self.COLUMNS_RATIO if column == 1 else 0.8 - self.COLUMNS_RATIO
 
         col_width = col_ratio * self.MAIN_CANVAS_SIZE[0]
         row_ratio = getattr(self, key)
