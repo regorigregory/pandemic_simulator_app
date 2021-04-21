@@ -177,20 +177,10 @@ class AxisBased(InfectionHandlerInterface):
                 current.encounter_with(timestamp, other)
                 up += 1
 
-    def attach(self, observer):
-        if observer not in self.observers:
-            self.observers.append(observer)
-    def detach(self, observer):
-        if observer in self.observers:
-            self.observers.remove(observer)
 
-    def notify(self, data):
-        for observer in self.observers:
-            observer.update(data)
 
     def count_them(self, timestamp, subjects) -> None:
         super().count_them(timestamp, subjects)
-        self.notify(self.counts)
 
 class ParallelAxisBased(AxisBased):
 
@@ -218,7 +208,6 @@ class ParallelAxisBased(AxisBased):
         for t in threads:
             t.join()
         self.init_counts()
-        self.count_them(timestamp, subjects)
 
 
 if __name__ == "__main__":

@@ -1,10 +1,9 @@
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
-    from matplotlib.animation import FuncAnimation
     from models.ConfigureMe import Constants
     from models.SubjectContainers import BoxOfSubjects
-    from views.SubjectsBoxes import PLTBox
+    from views.PLT.Simulation import MovingSubjects
     import tkinter as tk
     from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
     from views.TkinterPLTFrames import *

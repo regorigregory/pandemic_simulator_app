@@ -7,8 +7,26 @@ from models.ConfigureMe import Constants
 import numpy as np
 
 
-class PLTBox:
+class ObserverClient(object):
+    def __init__(self):
+        self.observers = []
+
+    def attach(self, observer):
+        if observer not in self.observers:
+            self.observers.append(observer)
+
+    def detach(self, observer):
+        if observer in self.observers:
+            self.observers.remove(observer)
+
+    def notify(self, data):
+        for observer in self.observers:
+            observer.update(data)
+
+
+class MovingSubjects(ObserverClient):
     def __init__(self, config=Constants(), container=None):
+        super().__init__()
         self.config = config
         self.width, self.height = config.get_dimensions(1, "SIMULATION_DIM")
         self.DPI = config.DPI
@@ -50,6 +68,7 @@ class PLTBox:
         self.ax.set_xlim(0, self.width)
         self.ax.set_ylim(0, self.height)
         self._infection_handler.count_them(0, self._box_of_particles.contents)
+        self.notify(self._infection_handler.counts)
 
         self.ax.set_xticks([])
         self.ax.set_yticks([])
@@ -80,6 +99,9 @@ class PLTBox:
     def get_animation_function(self):
         def func(i):
             self.move_guys(i)
+            self._infection_handler.count_them(i, self._box_of_particles.contents)
+            self.notify(self._infection_handler.counts)
+
             INFECTED_COORDS = self.get_current_coordinates(self._infection_handler.counts["INFECTED"])
             IMMUNE_COORDS = self.get_current_coordinates(self._infection_handler.counts["IMMUNE"])
             SUSCEPTIBLE_COORDS = self.get_current_coordinates(self._infection_handler.counts["SUSCEPTIBLE"])
@@ -116,7 +138,7 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
     plt.ioff()
-    ViewBox = PLTBox(container=BoxOfSubjects())
+    ViewBox = MovingSubjects(container=BoxOfSubjects())
     a = ViewBox.start_animation()
     plt.show()
     """init_func = ViewBox.get_init_func()
