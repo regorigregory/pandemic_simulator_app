@@ -136,7 +136,7 @@ class Constants(object):
             Constants.instance.__dict__ = Constants._shared_data
 
             self.NUMBER_OF_THREADS = 3
-            self.NUMBER_OF_SUBJECTS = 10
+            self.NUMBER_OF_SUBJECTS = 300
 
             self.INITIAL_INFECTED_SUBJECTS_RATIO = 0.5
             self.INFECTION_RADIUS = 15

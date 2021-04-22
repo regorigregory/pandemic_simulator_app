@@ -14,10 +14,9 @@ class AreaChart:
         self.DPI = config.DPI
 
         self.fig = plt.figure(figsize=(self.width / self.DPI, self.height / self.DPI), dpi=self.DPI)
-        self.ax = plt.gca()
+        self.ax = self.fig.add_subplot()
         self.frames = 0
 
-        self.log = dict(INFECTED = [[0, 0]], SUSCEPTIBLE = [[0, 0]], IMMUNE = [[0, Constants().NUMBER_OF_SUBJECTS]])
 
         self.init_graph()
     @property
@@ -37,6 +36,7 @@ class AreaChart:
         self._height = y
 
     def init_graph(self):
+        self.log = dict(INFECTED = [[0, 0]], SUSCEPTIBLE = [[0, 0]], IMMUNE = [[0, Constants().NUMBER_OF_SUBJECTS]])
         self.x_data = 0
         self.y_data = 0
         self.plot = plt.stackplot([], [], [], [], colors = ["#4A306D", "#0E273C"])
@@ -54,11 +54,16 @@ class AreaChart:
                 self.log[k] = np.concatenate((self.log[k], [[self.frames, len(v)]]), axis = 0)
 
     def update(self, new_data):
-        self.frames += 1
-        self.update_logs(new_data)
-        self.ax.set_xlim(0, self.frames)
+        if not new_data:
+            self.frames = 0
+            self.init_graph()
+        else:
 
-        self.redraw_verts()
+            self.frames += 1
+            self.update_logs(new_data)
+            self.ax.set_xlim(0, self.frames)
+
+            self.redraw_verts()
         # to be continued tomorrow
 
     def redraw_verts(self):

@@ -49,7 +49,7 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         self._infection_handler = self._box_of_particles._infection_handler
 
         self.fig = plt.figure(figsize=(self.width / self.DPI, self.height / self.DPI), dpi=self.DPI)
-        self.ax = plt.gca()
+        self.ax = self.fig.add_subplot()
 
     @property
     def width(self):
@@ -143,8 +143,8 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         self._box_of_particles = BoxOfSubjects()
         self._infection_handler = self._box_of_particles._infection_handler
         self.fig.axes[0].clear()
-        self.fig.canvas.draw()
         self.start_animation()
+        self.notify(None)
         self.fig.canvas.draw()
 
 
