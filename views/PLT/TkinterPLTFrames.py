@@ -35,7 +35,8 @@ class MasterHeaderFrame(AbstractFrame):
 
 class MainFrame(AbstractFrame):
     def __init__(self, root, config = MainConfiguration(), side ="MasterLeftFrame"):
-        super().__init__(root, 0, "HEADER_DIM", config, grid_kwargs = config.GRID_KWARGS[side])
+        side_index = 1 if side == "MasterLeftFrame" else 2
+        super().__init__(root, side_index, "HEADER_DIM", config, grid_kwargs = config.GRID_KWARGS[side])
 
 
 class SimulationFrame(AbstractFrame):
@@ -53,7 +54,7 @@ class SimulationFrame(AbstractFrame):
 
 class GraphFrame(AbstractFrame):
     def __init__(self, root, config = MainConfiguration()):
-        super().__init__(root, 1, "GRAPH_DIM", config)
+        super().__init__(root, 2, "GRAPH_DIM", config)
         self.ViewBox = TKAreaChart(root = self)
         self.canvas = self.ViewBox.fig
         self.canvas.grid()
@@ -63,16 +64,18 @@ class IdentifiableScale(tk.Scale):
         super().__init__(root, kwargs)
         self.my_name_is = my_name
 
+
 class ParametersFrame(AbstractFrame):
     def __init__(self, root, config = MainConfiguration()):
         super().__init__(root, 1, "PARAMETERS_DIM", config)
         i = 0
-        width = config.get_dimensions(2, "PARAMETERS_DIM")[0]
+        dims = config.get_dimensions(1, "PARAMETERS_DIM")
 
-        canvas = tk.Canvas(self, width = width)
+        canvas = tk.Canvas(self, width = dims[0], height = dims[1])
+
         scrollbar = Scrollbar(self, orient = "vertical", command=canvas.yview)
 
-        scrollable_frame = Frame(canvas, bg = config.DEFAULT_BG, width = width)
+        scrollable_frame = Frame(canvas, bg = config.DEFAULT_BG, width = dims[0])
 
         scrollable_frame.bind(
             "<Configure>",
@@ -81,7 +84,7 @@ class ParametersFrame(AbstractFrame):
             )
         )
 
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw", width = width)
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw", width = dims[0])
 
         canvas.configure(yscrollcommand=scrollbar.set)
         self.sliders = []
@@ -90,23 +93,33 @@ class ParametersFrame(AbstractFrame):
             _constructor = IdentifiableScale
             label = tk.Label(scrollable_frame, text = v[1], bg = config.DEFAULT_BG)
             label.grid(row = i, column = 0, sticky = "we")
-            resolution = 1/100 if v[2][1] == 1 else 1/v[2][1]
+
+            resolution = 1/100 if v[2][1] == 1 else 1
 
             control_element = _constructor(scrollable_frame,
                                            k,
                                            from_ = v[2][0],
                                            to = v[2][1],
-                                           length=width/2,
-
+                                           length=dims[0]/2,
                                            resolution = resolution,
                                            orient = tk.HORIZONTAL,
                                            bg = config.DEFAULT_BG)
+            if "RANGE" in k:
+                config_key = k[0:-4]
+                index = 0 if "MIN" not in k else 1
+                config_value = getattr(MainConfiguration(), config_key)[index]
+            else:
+                config_value = getattr(MainConfiguration(), k)
+            control_element.set(config_value)
 
-            control_element.grid(row = i, column = 1, sticky = "we")
+
+
+
+            control_element.grid(row = i + 1, column = 0, sticky = "we")
             self.sliders.append(control_element)
-            i += 1
+            i += 2
 
-        canvas.grid(row=0, column=0, sticky="nwse")
+        canvas.grid(row=0, column=0, sticky = "nwse")
         scrollbar.grid(row=0, column=1, sticky="ns")
 
 
@@ -154,9 +167,9 @@ class TkinterPLTBuilder():
         self.components["MasterLeftFrame"] = MainFrame(self.window, side = "MasterLeftFrame")
         self.components["MasterRightFrame"] = MainFrame(self.window, side = "MasterRightFrame")
         # child components
-        self.components["GraphFrame"] = GraphFrame(self.components["MasterLeftFrame"])
         self.components["ScenarioFrame"] = ScenarioFrame(self.components["MasterLeftFrame"])
         self.components["ParametersFrame"] = ParametersFrame(self.components["MasterLeftFrame"])
+        self.components["GraphFrame"] = GraphFrame(self.components["MasterRightFrame"])
         self.components["StatsFrame"] = StatsFrame(self.components["MasterRightFrame"])
         self.components["SimulationFrame"] = SimulationFrame(self.components["MasterRightFrame"])
         self.components["ButtonsFrame"] = ButtonsFrame(self.components["MasterRightFrame"])

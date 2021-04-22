@@ -111,6 +111,7 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         def func(i):
             self.move_guys(i)
             self._infection_handler.count_them(i, self._box_of_particles.contents)
+
             self.notify(self._infection_handler.counts)
 
             INFECTED_COORDS = self.get_current_coordinates(self._infection_handler.counts["INFECTED"])

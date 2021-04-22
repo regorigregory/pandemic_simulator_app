@@ -12,7 +12,7 @@ if __name__ == "__main__":
     plt.ioff()
 
     window = tk.Tk()
-
+    window.title("Pandemic Simulator")
     MainConfiguration().MAIN_CANVAS_SIZE = [window.winfo_screenwidth(), window.winfo_screenheight()]
     window.geometry(MainConfiguration().get_main_canvas_size_tkinter())
 

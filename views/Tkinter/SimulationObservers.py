@@ -8,6 +8,8 @@ class Observer(ABC):
     def __init__(self):
         self.config = MainConfiguration()
         self.theme = Theme()
+        self.subject_number = MainConfiguration().SUBJECT_NUMBER
+
 
     @abstractmethod
     def update(self, new_data):
@@ -33,7 +35,6 @@ class TKStats(Observer):
         self.ui_elements["Infected"] = tk.Label(self.fig, text = "Infected: 0", bg = self.theme.default_bg)
         self.ui_elements["Susceptible"] = tk.Label(self.fig, text = "Susceptible: 0", bg = self.theme.default_bg)
         self.ui_elements["Immune"] = tk.Label(self.fig, text = "Immune: 0", bg = self.theme.default_bg)
-
         for v in self.ui_elements.values():
             v.grid()
 
@@ -41,7 +42,13 @@ class TKStats(Observer):
 
     def update_stats(self, data):
         for k,v in self.ui_elements.items():
-            v.configure({"text": "{}: {}".format(k, len(data[k.upper()]))})
+            if(data):
+                self.subject_number = MainConfiguration().SUBJECT_NUMBER
+                v.configure({"text": "{}: {}".format(k, len(data[k.upper()]))})
+            else:
+                self.subject_number = self.subject_number
+                v.configure({"text": "{}: {}".format(k, 0)})
+
 
     def update(self, data):
         self.update_stats(data)
@@ -75,6 +82,7 @@ class TKAreaChart(Observer):
 
     def update(self, new_data):
         if not new_data:
+            self.subject_number = MainConfiguration().SUBJECT_NUMBER
             self.frames = 0
             self.log = dict(INFECTED=[[0, 0]], SUSCEPTIBLE=[[0, 0]], IMMUNE=[[0, 0]])
             self.fig.delete("all")
@@ -86,7 +94,7 @@ class TKAreaChart(Observer):
 
     def redraw_verts(self):
         width_frame_ratio = self._width / self.frames
-        height_frame_ratio = self._height / MainConfiguration().SUBJECT_NUMBER
+        height_frame_ratio = self._height / self.subject_number
 
         infected_points = np.array(self.log["INFECTED"])
 

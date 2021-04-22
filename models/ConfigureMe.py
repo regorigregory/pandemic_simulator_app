@@ -33,7 +33,7 @@ class Theme(object):
             self.five = "#325D79"
 
             self.button_attributes = {"bg": self.one, "fg": self.three, "width": 30, "pady": 5, "padx": 5}
-            self.scenario_attributes = {"bg": self.four, "fg": self.three, "width": 30, "pady": 5, "padx": 5}
+            self.scenario_attributes = {"bg": self.four, "fg": self.three, "width": 15, "pady": 5, "padx": 5}
             self.default_bg = "white"
             self.area_plot_bg = "#D3BCCC"
             self.area_plot_colours = ["#4A306D", "#0E273C"]
@@ -67,7 +67,6 @@ class SimulationParametersUIConfig(object):
                                              "The number of subjects:",
                                               [1, 500]]
 
-            self.general["SUBJECT_VELOCITY_RANGE_MIN"] = ["Scale", "The minimum movement speed of a subject:", [1, 10]]
             self.general["SUBJECT_VELOCITY_RANGE_MAX"] = ["Scale", "The maximum movement speed of a subject:", [1, 10]]
 
             self.general["INITIAL_INFECTION_RATIO"] = ["Scale",
@@ -156,12 +155,11 @@ class MainConfiguration(object):
             self.NUMBER_OF_THREADS = 3
             self.SUBJECT_NUMBER = 300
 
-            self.SUBJECT_VELOCITY_RANGE = [[-1, 1],
-                                           [-1, 1]]
+            self.SUBJECT_VELOCITY_RANGE = [-1, 1]
 
             self.INITIAL_INFECTION_RATIO = 0.5
             self.INFECTION_RADIUS = 15
-            self.CHANCE_OF_INFECTION = [0.6, 0.8]
+            self.CHANCE_OF_INFECTION = 0.8
 
             self.SUBJECT_SIZE = 5
 
@@ -195,11 +193,14 @@ class MainConfiguration(object):
             self.DEFAULT_BG = Theme().default_bg
 
             self.COLUMNS_RATIO = 0.4
+
             self.SIMULATION_DIM = 0.4
             self.HEADER_DIM = 0.1
             self.GRAPH_DIM = 0.3
+
             self.FRAME_PADDING = dict(padx = 10, pady = 10)
-            self.PARAMETERS_DIM = 0.5
+
+            self.PARAMETERS_DIM = 0.8
             self.BUTTONS_DIM = 0.1
             self.SCENARIO_DIM = 0.1
             self.STATS_DIM = 0.1
@@ -214,19 +215,33 @@ class MainConfiguration(object):
                                     "COMMUNITIES": dict(text="Communities", **Theme().scenario_attributes)}
             self.GRID_KWARGS = dict()
             self.GRID_KWARGS["MasterHeaderFrame"] = dict(row=0, column=0, columnspan=2, sticky="we")
-            self.GRID_KWARGS["MasterLeftFrame"] = dict(row=1, column=0, sticky="we")
-            self.GRID_KWARGS["MasterRightFrame"] = dict(row=1, column=1, sticky="we")
+            self.GRID_KWARGS["MasterLeftFrame"] = dict(row=1, column=0, sticky="nwe")
+            self.GRID_KWARGS["MasterRightFrame"] = dict(row=1, column=1, sticky="nwe")
 
             self.GRID_KWARGS["GraphFrame"] = dict(row=0, column=0)
-            self.GRID_KWARGS["SimulationFrame"] = dict(row=1, column=0)
-            self.GRID_KWARGS["ButtonsFrame"] = dict(row=2, column=0)
-            self.GRID_KWARGS["ScenarioFrame"] = dict(row=1, column=0)
-            self.GRID_KWARGS["ParametersFrame"] = dict(row=2, column=0)
-            self.GRID_KWARGS["StatsFrame"] = dict(row=0, column=0)
+            self.GRID_KWARGS["StatsFrame"] = dict(row=1, column=0)
+
+            self.GRID_KWARGS["SimulationFrame"] = dict(row=2, column=0)
+            self.GRID_KWARGS["ButtonsFrame"] = dict(row=3, column=0)
+            self.GRID_KWARGS["ScenarioFrame"] = dict(row=0, column=0)
+            self.GRID_KWARGS["ParametersFrame"] = dict(row=1, column=0)
             self.PARAMETERS_UI_SETTINGS = SimulationParametersUIConfig()
 
-    #def __setattr__(self, key, value):
-        #pass
+    def __setattr__(self, key, value):
+        if("VELOCITY_MAX" in key):
+            value = [-value, value]
+            key = key[0:-3] + "RANGE"
+
+        elif("MIN" in key or "MAX" in key):
+            index = 0 if "MIN" in key else 1
+            key = key[0:-4]
+            val = super().__getattribute__(key)
+            val[index] = value
+            if val[0] > value[1] or val[1] < val[0]:
+                val[1-index] = val[index]
+            value = val
+
+        super().__setattr__(key, value)
 
     def get_main_canvas_size_tkinter(self):
         return "{}x{}".format(self.MAIN_CANVAS_SIZE[0], self.MAIN_CANVAS_SIZE[1])
@@ -243,8 +258,9 @@ class MainConfiguration(object):
         if column == 0:
             col_ratio = 1
         else:
-            col_ratio = self.COLUMNS_RATIO if column == 1 else 0.8 - self.COLUMNS_RATIO
-
+            col_ratio = self.COLUMNS_RATIO if column == 1 else 1 - self.COLUMNS_RATIO
+        if column == 2:
+            say_hi = 1
         col_width = col_ratio * self.MAIN_CANVAS_SIZE[0]
         row_ratio = getattr(self, key)
         row_height = row_ratio * self.MAIN_CANVAS_SIZE[1]
