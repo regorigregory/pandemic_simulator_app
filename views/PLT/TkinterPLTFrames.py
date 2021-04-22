@@ -57,6 +57,11 @@ class GraphFrame(AbstractFrame):
         self.canvas = FigureCanvasTkAgg(self.ViewBox.fig, self)
         self.canvas.get_tk_widget().grid()
 
+class IdentifiableScale(tk.Scale):
+    def __init__(self, root, my_name , **kwargs):
+        super().__init__(root, kwargs)
+        self.my_name_is = my_name
+
 class ParametersFrame(AbstractFrame):
     def __init__(self, root, config = Constants()):
         super().__init__(root, 1, "PARAMETERS_DIM", config)
@@ -78,13 +83,16 @@ class ParametersFrame(AbstractFrame):
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw", width = width)
 
         canvas.configure(yscrollcommand=scrollbar.set)
+        self.sliders = []
 
-        for k,v in config.PARAMETERS.all.items():
-            _consturctor = getattr(tk, v[0])
+        for k, v in config.PARAMETERS.all.items():
+            _constructor = IdentifiableScale
             label = tk.Label(scrollable_frame, text = v[1], bg = config.DEFAULT_BG)
             label.grid(row = i, column = 0, sticky = "we")
             resolution = 1/100 if v[2][1] == 1 else 1/v[2][1]
-            control_element = _consturctor(scrollable_frame,
+
+            control_element = _constructor(scrollable_frame,
+                                           k,
                                            from_ = v[2][0],
                                            to = v[2][1],
                                            length=width/2,
@@ -94,6 +102,7 @@ class ParametersFrame(AbstractFrame):
                                            bg = config.DEFAULT_BG)
 
             control_element.grid(row = i, column = 1, sticky = "we")
+            self.sliders.append(control_element)
             i += 1
 
         canvas.grid(row=0, column=0, sticky="nwse")

@@ -1,5 +1,14 @@
 from models.ConfigureMe import Constants
-class TkinterButtons():
+from abc import ABC, abstractmethod
+
+
+class AbstractController(ABC):
+    @abstractmethod
+    def bind_functions(self, frame_of_elements):
+        pass
+
+
+class TkinterButtons(AbstractController):
     def __init__(self, animated_object):
         self.funcs = {}
         self.paused = False
@@ -25,7 +34,22 @@ class TkinterButtons():
     def handle_clear(self, event):
         self.reset()
 
-    def bind_functions(self, buttons_frame):
-        self.buttons = buttons_frame.components
-        for button in buttons_frame.components:
+    def bind_functions(self, buttons):
+        self.ui_elements = buttons
+        for button in self.ui_elements:
             button.bind('<Button>',  self.funcs[button.cget("text")])
+
+class TkinterSimulationSettings(AbstractController):
+    def __init__(self):
+        pass
+
+    def update_config(self, event):
+        key = event.widget.my_name_is
+        value = event.widget.get()
+        setattr(Constants(), key, value)
+
+
+    def bind_functions(self, sliders):
+        self.ui_elements = sliders
+        for slider in self.ui_elements:
+            slider.bind("<ButtonRelease>", self.update_config)

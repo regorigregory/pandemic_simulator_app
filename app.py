@@ -7,7 +7,7 @@ if __name__ == "__main__":
     import tkinter as tk
     from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
     from views.PLT.TkinterPLTFrames import *
-    import controllers.TkinterPLTControllers as ButtonsController
+    import controllers.TkinterPLTControllers as Controllers
 
     plt.ioff()
 
@@ -21,8 +21,10 @@ if __name__ == "__main__":
     my_builder.build()
 
 
-    ButtonsController = ButtonsController.TkinterButtons(my_builder.get_component("SimulationFrame").get_animated_object())
+    ButtonsController = Controllers.TkinterButtons(my_builder.get_component("SimulationFrame").get_animated_object())
+    SlidersController = Controllers.TkinterSimulationSettings()
 
-    ButtonsController.bind_functions(my_builder.components["ButtonsFrame"])
+    ButtonsController.bind_functions(my_builder.components["ButtonsFrame"].components)
+    SlidersController.bind_functions(my_builder.get_component("ParametersFrame").sliders)
 
     window.mainloop()

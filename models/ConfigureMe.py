@@ -33,15 +33,20 @@ class Parameters(object):
             self.central = dict()
             self.communities = dict()
 
+            self.all["SUBJECT_NUMBER"] = ["Scale",
+                                             "The number of subjects:",
+                                             [1, 500]]
 
-            self.all["SUBJECT_VELOCITY_MIN"] = ["Scale", "The minimum movement speed of a subject:", [0, 1]]
-            self.all["SUBJECT_VELOCITY_MAX"] = ["Scale", "The maximum movement speed of a subject:", [0, 1]]
-            self.all["SUBJECT_SIZE"] = ["Scale", "Subject size (radius) in pixels:", [0, 15]]
-            self.all["INFECTION_RADIUS"] = ["Scale", "Infection radius around a subject in pixels:", [0, 100]]
+            self.all["SUBJECT_VELOCITY_MIN"] = ["Scale", "The minimum movement speed of a subject:", [1, 10]]
+            self.all["SUBJECT_VELOCITY_MAX"] = ["Scale", "The maximum movement speed of a subject:", [1, 10]]
+
+            self.all["SUBJECT_SIZE"] = ["Scale", "Subject size (radius) in pixels:", [1, 15]]
+            self.all["INFECTION_RADIUS"] = ["Scale", "Infection radius around a subject in pixels:", [1, 100]]
 
             self.all["CHANCE_OF_INFECTION"] = ["Scale",
                                                "Infection chance per each day:",
                                                [0,1]]
+
             self.all["INITIAL_INFECTION_RATIO"] = ["Scale",
                                                    "The ratio of the initially infected subjects:",
                                                    [0,1]]
@@ -63,9 +68,7 @@ class Parameters(object):
                                            [1, 100]]
 
 
-            self.simple["SUBJECT_NUMBER"] = ["Scale",
-                                             "The number of subjects:",
-                                             [1, 500]]
+
 
             self.quarantine["QUARANTINE_AFTER"] = ["Scale",
                                                    "Incubation period (subject moves into quarantine after this amount of days):",

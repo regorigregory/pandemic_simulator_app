@@ -62,9 +62,8 @@ class AreaChart:
             self.frames += 1
             self.update_logs(new_data)
             self.ax.set_xlim(0, self.frames)
-
             self.redraw_verts()
-        # to be continued tomorrow
+            # to be continued tomorrow
 
     def redraw_verts(self):
         self.plot[0].set_verts([np.concatenate([self.log["INFECTED"], [[self.frames, 0]]])],
