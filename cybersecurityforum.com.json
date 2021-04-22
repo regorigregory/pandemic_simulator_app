@@ -1,0 +1,425 @@
+[
+    {
+        "patterns": [
+            "What is cybersecurity?"
+        ],
+        "responses": [
+            "Alternative FAQ Phrasings: What is a cybersecurity? | What is cyber security?\n\nDefinition: cybersecurity (a.k.a. cyber security, computer network security) refers to the specialization of computer network security that consists of technologies, policies, and procedures that protect networked computer systems from unauthorized use or harm. Broadly speaking, cybersecurity topics can be subdivided into two complementary areas: cyber attacks, which are essentially offensive and emphasize network penetration techniques; and cyber defenses, which are essentially protective and emphasize counter-measures intended to eliminate or mitigate cyber attacks.\n\nCyber attacks can take aim at the enterprise, government, military, and other infrastructural assets of a nation or its citizens, where these assets can include physical infrastructure (e.g., power grids, nuclear reactors) as well as computational infrastructure (e.g., computers, networks). Cyber attacks can be classified by their participating actors (states vs. non-states) and their attack mechanisms (e.g., direct attack, malware, exploits). See the Cyber Attack Classifications, Cyber Attack Malware Taxonomy, and Cyber Attack Mechanism Taxonomy sub-sections in the Cyber Attacks section for more information.\nCorrespondingly, cyber defenses must protect the enterprise, government, military, and other infrastructural assets of a nation or its citizens. As is the case with cyber attacks, cyber defenses can be classified by their participating actors (states vs. non-states) and their attack mechanisms (e.g., direct attack, malware, exploits). See the Cyber Defense Classifications and Cyber Defense Countermeasure Taxonomy sub-sections in the Cyber Defenses section for more information.\nHow to Learn More About Cybersecurity\nTo learn more about how to specify cybersecurity and related technologies, please see the following Cybersecurity FAQs:\n\nCyberSecurity FAQ - Why do we need Cybersecurity?\nCyberSecurity FAQ - What is cyber hygiene?\nCyberSecurity FAQ - What is a cybersecurity architecture?\n\nIf you have constructive recommendations to correct, clarify, or otherwise improve this or any other Cybersecurity FAQ, please contact us.\n\nCYBERSECURITY & DESIGN HANDS-ON WORKSHOP TRAINING OPTIONS\nIf you seek professional cybersecurity architecture hands-on training that emphasizes robust architecture modeling languages (UML2, SysML, CyberML), strong cyptographic techniques, popular architecture modeling tools (Sparx EA, MagicDraw/Cameo, Rhapsody), and numerous practice exercises, check out PivotPoint's Essential Cybersecurity Architecture & Design Applied hands-on training workshops."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "Why do we need cybersecurity?"
+        ],
+        "responses": [
+            "The increasing reliance of our information-age economies and governments on cyber (computer-based) infrastructure makes them progressively more vulnerable to cyber attacks on our computer systems, networks, and data. In their most disruptive form, cyber attacks target the enterprise, government, military, or other infrastructural assets of a nation or its citizens. Both the volume and sophistication of cyber threats (cyber warfare, cyber terrorism, cyber espionage and malicious hacking) are monotonically increasing, and pose potent threats to our enterprise, government, military, or other infrastructural assets. Knowing that to be forewarned is to be forearmed, we are well advised to effect strong Cybersecurity defenses that will thwart rapidly evolving cyber threats.\nRecent newsworthy cyber attacks on critical cyber infrastructure (e.g., Target data breach, Mt. Gox bitcoin hacker attacks, NSA data leaks and subsequent PRISM revelations) demonstrate the urgent need for improved cybersecurity. As cyber threats grow, so must our abilities to neutralize them. Towards that end, the U.S. government issued an Executive Order for Improving Critical Infrastructure Cybersecurity in February 2013, and the 2014 President's Budget devoted over $13B to cyber-related programs and activities [Federal Information Technology FY 2014 Budget Priorities, p. 15]. The European Union Agency for Network and Information Security (ENISA) lists all known public documents of National Cyber Security Strategies in the EU, as well as the rest of the world."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is a cyber attack?"
+        ],
+        "responses": [
+            "Cyber attack: An offensive action by a malicious actor that is intended to undermine the functions of networked computers and their related resources, including unauthorized access, unapproved changes, and malicious destruction. Examples of cyber attacks include Distributed Denial of Service (DDoS) and Man-in-the-Middle (MITM) attacks."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is a cyber threat?"
+        ],
+        "responses": [
+            "cyber threat: A potential cyber attack, which may be assigned a probability of occurrence that can be used for cyber risk assessment."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is a cyber risk?"
+        ],
+        "responses": [
+            "cyber risk: A risk assessment that has been assigned to a cyber threat, such as DDoS attack or a data breach. A cyber risk assessment may be either qualitative or quantitative, where the latter should estimate risk (R) as a function of the magnitude of the potential loss (L) and the probability that L will occur (i.e., R = p * L)."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What are the differences among the terms cyber attack, cyber threat & cyber risk?"
+        ],
+        "responses": [
+            "The terms cyber attack, cyber threat, and cyber risk are interrelated as follows. A cyber attack is an offensive action, whereas a cyber threat is the possibility that a particular attack may occur, and the cyber risk associated with the subject threat estimates the probability of potential losses that may result.For example, a Distributed Denial of Service (DDoS) cyber attack by a botnet is a cyber threat for many enterprises with online retail websites, where the associated cyber risk is a function of lost revenues due to website downtime and the probability that a DDoS cyber attack will occur."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What are the differences among the terms cyber attack, cyber warfare, cyber crime & cyber terrorism?"
+        ],
+        "responses": [
+            "The differences among the terms cyber attack, cyber warfare, cyber crime, and cyber terrorism are best explained in terms of their actor (perpetrator) and attack effect (equivalent result) characteristics, as shown in the following table.   Classification   Actor   Attack EffectEquivalency \n     Cyber Attack [generic]   TBD   TBD \n     Cyber Warfare [includes Cyber Espionage, Cyber Sabotage]   State [nation]   war act \n     Cyber Crime   Non-State(individual/organization)   criminal act \n     Cyber Terrorism   Non-State(individual/organization)   terrorism act"
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is malware?"
+        ],
+        "responses": [
+            "Malware is an umbrella term derived from \"malicious software\", and refers to any software that is intrusive (unauthorized access), disruptive, or destructive to computer systems and networks. Malware may take many forms (executable code, data files) and includes, but is not limited to, computer viruses, worms, trojan horses (trojans), bots (botnets), spyware (system monitors, adware, tracking cookies), rogueware (scareware, ransomware), and other malicious programs. The majority of active malware threats are usually worms or trojans rather than viruses.\nThe following table summarizes the similarities and differences among selected common malware types.\n\n\n\n\n   Malware Type   Requires Host File to Infect?   Self-Spreading?   Appears legitimate (harmless)?   Can Carry Harmful Payload?   Can Commo with Command & Control Server?   Can Attack OS Kernel & Firmware? \n     Virus         N/A      N/A    \n     Worm         N/A      N/A    \n     Trojan               N/A    \n     Bots/Botnet   N/A   N/A   N/A          \n     Spyware         N/A          \n     Rootkit   N/A   N/A   N/A      N/A    \n     Blended Threat                   \n  \n\n\nFor more information about the various kinds of malware, check out the Malware Taxonomy comparison table on the Cyber Attacks page."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is cyber hygiene?"
+        ],
+        "responses": [
+            "Alternative FAQ Phrasings: What is a cyber hygiene? | What is cybersecurity hygiene? | What is cyber security hygiene?\n\nDefinition: cyber hygiene (a.k.a., cybersecurity hygiene, cyber security hygiene) is a colloquial term that refers to best practices and other activities that computer system administrators and users can undertake to improve their cybersecurity while engaging in common online activities, such as web browsing, emailing, texting, etc.\n\nEtymology\nThe term cyber hygiene was coined by Vinton Cerf, an Internet pioneer, who used the expression in his statement to the United States Congress Joint Economic Committee on 23 February 2000, where boldface is added for emphasis:\n\nIt is my judgment that the Internet itself is for the most part secure, though there are steps we know can be take to improve security and resilience. Most of the vulnerabilities arise from those who use the Internet--companies, governments, academic institutions, and individuals alike--but who do not practice what I refer to as good cyber hygiene. They are not sufficiently sensitive to the need to protect the security of the Internet community of which they are a part. The openness of the Internet is both its blessing and its curse when it comes to security.\n\nCyber Hygiene Best Practices\nCyber hygiene related best practices for computer network/system administrators include, but are not limited to:\n\nensuring that routers and firewalls are installed and properly configured;\nupdating both \u201cwhite lists\" (authorized users) and \"black lists\" (unauthorized users), and enforcing compartmentalized (\"need to know\") user permissions for authorized users;\nensuring that all anti-virus (AV), spamware, and other anti-malware protection software is properly installed and configured;\nupdating all Operating System (OS), application software, web browsers and firmware with latest security patches;\nenforcing strong password rules and 2-Factor/Multi-Factor Authorization (2FA/MFA) procedures;\nensuring that all computer networks are physically segmented with secure routers and active firewalls between segments;\n\nCyber hygiene related best practices for computer system users include, but are not limited to, using strong passwords and 2FA/MFA, avoiding accessing cybersecure systems on unauthorized and/or non-secure BYODs (Bring Your Own Devices), and avoiding mixing personal with cybersecure email and/or work documents.\nFor more information about Recommended Best Practices for Cyber Hygiene - Top 10, see the CyberSecurity FAQ - What are the best practices for cyber hygiene?.\nIf you have constructive recommendations to correct, clarify, or otherwise improve this or any other Cybersecurity FAQ, please contact us.\n\nCYBER HYGIENE HANDS-ON TRAINING OPTIONS\nIf you seek professional cyber hygiene training that demystifies the technobabble of cybersecurity and emphasizes pragmatic best practices for protecting your sensitive \"crown jewel\" data, check out PivotPoint's Essential Cyber Hygiene Applied hands-on training workshops."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What are the best practices for cyber hygiene?"
+        ],
+        "responses": [
+            "RECOMMENDED BEST PRACTICES FOR CYBER HYGIENE - TOP 10\nThe best practices for effective cyber hygiene should include and extend the following:\n\nProtect your computer network with secure routers with robust firewalls. While traveling, use a Virtual Private Network (VPN) and/or software firewall.\nThe 1st line of cyber defense in computer network security is to install and maintain a secure Internet Protocol (IP) router and a robust firewall that prevents unauthorized users from accessing data, email, applications, web browsers, etc. If you are a computer system administrator: install and configure a secure commerical IP router, white list all approved users, black list all unknown users, and ensure that the wireless (WiFi) communications use WPA2/WPA3 encryption for wireless comunications. If you are a home computer user, check out the Home Broadband Routers section of the LifeWire What Is a Router for Computer Networks? article. If you are traveling away from your business or home computer network, ensure that you are using a secure Virtual Private Network (VPN) and/or your Operating System (OS) has a secure software firewall turned on.\nInstall dependable anti-virus (AV) and anti-malware software that continuously scans your computer/mobile phone, and update it frequently\nThe 2nd line of cyber defense in computer network security is to install and maintain robust anti-virus (AV) and anti-malware software that scans and terminates computer viruses and other kinds of malicious sofware (malware). If you are a computer system administrator install a robust commericial Intrusion Protection Device/Intrusion Protection Device product; if you are a home computer user ensure that you install either a commercial or FOSS (Free & Open Source Software) AV software product.\nUpdate all OS, Web Browser and Application software with security patches in a timely manner.\nThe 3rd line of cyber defense in computer network security is to update all Operating System (OS), web browser, and application software regularly to ensure that security patches are properly installed in a timely manner. These security patches are essential to make sure that all currently-known cybersecurity vulnerabilities have been closed.\nDefine strong passwords and use Multi-Factor Authentication (MFA) whenever available\n\nDefine strong passwords that are unique and complex: 12+ characters, combo of lower case letters, upper case letters, numbers, and special chars (e.g., !@#$%^&*).\nDo not share passwords, change them regularly (say every 3 months), and do not share the same passwords.\nUse 2-Factor Authentication (2FA) or Multi-Factor Authentication (MFA), which adds an additional layer of security to passwords, whereever practical, especially to financial, health, and other confidential accounts. 2FA and MFA greatly increases security by corroborating your password with additional information such as a unique pin, biometrics (facial or fingerprint recognition), secondary device (e.g., a personal mobile phone can corroborate web browser password login on a desktop computer).\n\nPractice safe web browsing habits\nSince many commercial companies seek to harvest personal data it is essential that you practice safe web browing habits which include, but are not limited to, the following:\n\n\nConfigure your web browsers' privacy and security settings to block third party cookies, not save passwords, not autocomplete, and not save search histories. (If there is no configuration to not save search histories, purge these and all other saved information, regularly.\nSet your default web browser search engine to a choice that does not track your query content and habits, for example, DuckDuckGo.\nSet your default web browse to a choice that fully complies with current W3C standards and supports security plugins. For example, Free & Open Source Software (FOSS) FireFox fully complies with W3C web standards and supports the following security plugins:\n\n\nHTTPS Everywhere The Electronic Frontier Foundation (EFF) and The Tor Project jointly developed this Firefox, Chrome, and Opera extension to support the secure HTTPS communications protocol vs. the standard HTTP protocol, which is more widely used but less secure. (The \u2018S\u2019 in HTTPS stands for \u2018secure.\u2019) HTTPS Everywhere encrypts communications with many major websites to help secure your browsing experience.\nWeb of Trust (a.k.a. WOT). This extension for FireFox, Internet Explorer, Chrome, Safari, and Opera helps determine if a website is safe to surf. The extension displays traffic signal icons next to URLs and links. Green means the site is reliable; yellow indicates you should proceed with caution; red translates to \u201csteer clear.\u201d The ratings are crowdsourced from WOT\u2019s global user base and are supported by trusted third-party sources, such as up-to-date directories of malware sites.\n\nCheck out shortened links from a non-trusted source prior to clicking on them, since they have been known to mask malicious links. Check out via ExpandURL or CheckShort URL online utilities.\nOnly visit web sites with via HTTPS (= HTTP Secure) protocol and ensure that the web site's SSL Certificate is valid. (Typically the web URL will begin with \"https://\u2026\" and the web browser will show a \"padlock\" icon if the site's SSL certificate is valid.\nBeware when installing web browser plugins from unknown/untrusted sources. All plugins should be simple and single-purpose in nature; complex, multi-function plugins that are not properly maintained can increase cyber attack surfaces to exploit.\nFor more detailed information about safe web browsing habits check out the Department of Homeland Security\u2019s (DHS) Securing Your Web Browser guide, which explains web browser features and associated risks (e.g., ActiveX, Java, JavaScript, cookies, certain plug-ins, cookies, etc.).\n\nPractice safe email habits\nConsider that most free commerical email services (GMail, Outlook.com, iCloud Mail, Yahoo Mail, GMX Mail etc.) compromise your privacy to serve targeted ads or otherwise exploit your personal data, it is essential that you practice safe email habits, which include, but are not limited to, the following:\n\n\nBeware of spear fishing emails from unknown/untrusted sources that may link to or contain mailware! Do not click on a link or open an attachment from an unknown/untrusted source. Delete and purge subject email and blacklist the sender.\nDo not include sensitive or confidential information (e.g., financial, health) in your email subject, content or plaintext (unencrypted text, a.k.a. clear text) attachment. If you need to send sensitive or secure information via email, encrypt it as an attachment, and send the password via an alternative mechanism (e.g., voice communication, SMS/MMS text message, separate unassociated email).\nConsider a secure email service, with end-to-end encryption to ensure that your email content remains private. Check out: The 5 Best Secure Email Services for 2019: Encrypted email services keep your messages private.\n\nKeep your user data separate from applications, and apply strong encryption to all sensitive and confidential data\nKeep all user data separate from user applications, and keep personal data separate from business data. Apply strong encryption (AES-256 bit or higher) with strong passwords (see #4 above) to all sensive and confidential data including, but not limited to, financial and health data.\nKeep your user data separate from applications, and back up data regularly\nKeep all user data separate from user applications (see #6 above) and back up data to another network node (computer or server) frequently (weekly if not daily), and offsite (cloud-based and/or bank deposit box) regularly (monthly if not bi-weekly).\nBe wary and selective when buying goods or services online.\nYou should be specially wary when buying goods or services online, especially when it is a unknown/untrusted source. In general you should:\n\n\nCheck the website is secure. Check that the website URL starts with the letters \u201cHTTPS://\u201d and has an image of a small \"padlock\", usually in the top left-hand corner (see #5 above)\nSelect your item(s) you wish to purchase, add them to your Shopping Cart temporary storage, and proceed to the Check Out page to pay.\nEnter your credit card details (name, address, phone number, email, credit card#, CVV#, etc.) as needed.\nVerify that shipping and billing information are correct.\nConfirm payment and keep a soft copy of the payment information.\n\nWhen selling and disposing of computers and storage devices securely erase all persistent storage.\nWhen selling or disposing of your desktop, laptop, tablet, smartphone or USB drive, it\u2019s critical that you securely wipe (erase) all personal, sensitive and confidential data. Deleting files alone is insufficient, since they frequently can be recovered by hackers and forensic specialists. Conequently, you should securely erase as explained in the following PC World article How to securely erase your hard drive. Check out Scientific American's How to Destroy a Hard Drive\u2014Permanently article.\n\nKeep in mind that, like human hygiene, you need to practice cyber hygiene on a regular, systematic basis for it to be effective. Don't worry above implementing all ten of the best practices listed above immediately; you will be better served by implementing them incrementally and opportunistically as you become more cyber WOK (aware)!\nIf you have constructive recommendations to correct, clarify or otherwise improve this or any other Cybersecurity FAQ please contact us.\n\nCYBER HYGIENE HANDS-ON TRAINING OPTIONS\nIf you seek professional cyber hygiene training that demystifies the technobabble of cybersecurity and emphasizes pragmatic best practices for protecting your sensitive \"crown jewel\" data, check out PivotPoint's Essential Cyber Hygiene Applied hands-on training workshops."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "How does cybersecurity work?"
+        ],
+        "responses": [
+            "Cybersecurity technologies and processes are most effective when organizations diligently practice good cyber hygiene habits while concurrently checking their cyber defense vulnerabilities defenses via  aggressive white hat\" (a.k.a. \"ethical hacking\") Penetration Testing (\"pen testing\").The following Cyber Security in Focus infographic from GovLoop highlights major cyber threats along with their countermeasures."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What does the prefix cyber- mean?"
+        ],
+        "responses": [
+            "The cyber- prefix generally denotes something to do with cyberspace, the virtual environment that consists of all networked computers, whose interconnections comprise the Internet-of-Things (IoT). For example, in the context of cybersecurity (= cyber + security) it is common to speak of cyber threats, cyber attacks, cyber defenses, and cyber countermeasures."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is cyberspace?"
+        ],
+        "responses": [
+            "Cyberspace is the virtual environment that consists of computer systems and networks, where all computers communicate via networks and all networks are connected. The term originated in science fiction during the 1980s and became popular during the 1990s. More recently computer vendors are attempting to brand cyberspace as the \"Internet of Things\" (IoT)."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is the best way to learn cybersecurity?"
+        ],
+        "responses": [
+            "The best way to learn cybersecurity, as well as other technologies, is to combine the best of theory (principles and) with hands-on best practices. If you don't have ready access to a cybersecurity guru, check out the cybersecurity training services on the Cybersecurity Training page of this web."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "How can readers submit new questions for this FAQ?"
+        ],
+        "responses": [
+            "Please contact us to submit new questions for this Cybersecurity FAQ."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What are the differences among the various malware types: virus, worm, trojan, bot/botnet, etc.?"
+        ],
+        "responses": [
+            "Although most people understand what spamware is without a formal definition, the most common malware types (viruses, worms, trojans, and bots) are frequently confused by computer experts (who are not cybersecurity experts) and computer noobs like.\nThe following table summarizes the similarities and differences among viruses, worms, trojans, and bots.\n\n\n\n\n   Malware Type   Requires Host File to Infect?   Self-Spreading?   Appears legitimate (harmless)?   Can Carry Harmful Payload?   Can Commo with Command & Control Server?   Can Attack OS Kernel & Firmware? \n     Virus         N/A      N/A    \n     Worm         N/A      N/A    \n     Trojan               N/A    \n     Bots/Botnet   N/A   N/A   N/A          \n     Spyware         N/A          \n     Rootkit   N/A   N/A   N/A      N/A    \n     Blended Threat                   \n  \n\n\nFor more information about the various kinds of malware, check out the Cyber Attack Mechanism Taxonomy on the Cyber Attacks page."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What are the biggest cyber threats at present?"
+        ],
+        "responses": [
+            "You can find an overview of current and future cyber threats on the Cyber Threats page of this web."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is cyber threat mitigation?"
+        ],
+        "responses": [
+            "In the context of cyber threats mitigation refers to reducing the severity or damage caused by cyber attacks. Compare with cyber threat remediation, which refers to a more effective counter measure."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "Why is cyber threat remediation?"
+        ],
+        "responses": [
+            "In the context of cyber threats remediation refers to reversing or stopping the damage caused by cyber attacks. Compare with cyber threat mitigation, which refers to a less effective counter measure."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "Why is cyber warfare considered to be a kind of asymmetric warfare?"
+        ],
+        "responses": [
+            "Background: The term asymmetric warfare describes war between belligerents whose relative military powers differ significantly, or whose strategies or tactics differ significantly. The weaker belligerents in asymmetrical warfare frequently apply the strategies and tactics of unconventional warfare (a.k.a., guerrilla warfare) to offset their deficiencies in military quantity and quality. Compare with symmetric warfare, where the belligerents possess comparable military powers and apply similar strategies and tactics.Cyber warfare is considered to be a kind of asymmetric warfare because it potentially allows for significantly weaker actors (including nation states, terrorist organizations, criminal organizations, and \u201clone wolf\u201d individuals) to wreak substantial financial and infrastructure damage on vastly more powerful nation states."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "Who is winning cyber warfare? Who is winning/losing regarding cyber crimes? The cyber cops or the cyber criminals?"
+        ],
+        "responses": [
+            "With few exceptions, the number of cyber breaches and data records compromised have been monotonically increasing in both frequency and scope since 2005. See Annual number of data breaches and exposed records in the United States from 2005 to 2018 (in millions) [Statista 2018]. Since no reversal of this trend is currently in sight, it appears that the cyber criminals are on a winning streak, with no end in sight!"
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is the best cyber defense against cyber attacks?"
+        ],
+        "responses": [
+            "You can find an overview of current and future cyber defenses, including countermeasures for specific cyber attacks, on the Cyber Defenses page of this web."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is a cyber defense counter-measure?"
+        ],
+        "responses": [
+            "You can find an overview of current and future cyber threats on the Cyber Threats page of this web."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is a firewall and how does it work?"
+        ],
+        "responses": [
+            "Background: In general usage, a firewall is a fire-resistant barrier that is used to prevent the spread of fire for a prescribed period of time. Fire walls are built between or within buildings, or within an aircraft or vehicle.In the context of computer networks, a firewall is a network security system that monitors incoming and outgoing network message traffic and prevents the transmission of malicious messages based on an updatable rule set. In effect, a firewall establishes a barrier between a trusted, secure internal network and external networks (e.g., the Internet) that are assumed to be untrustworthy and non-secure. Firewalls can be implemented as software that runs on general-purpose hardware (e.g., an open source firewall on a Windows PC or Mac OS X computer) or a dedicated hardware device (appliance).How does a firewall work? In essence, firewalls function as a filter between a trusted, secure internal network and external networks (e.g., the Internet) that are assumed to be untrustworthy and non-secure. The firewall filter may be flexibly programmed to control what information packets are allowed and blocked."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is anti-virus software and how does it work?"
+        ],
+        "responses": [
+            "Anti-virus software, a.k.a anti-malware software, is computer software used to scan files to identify and eliminate malicious software (malware). Although anti-virus software was originally developed to detect and remove computer viruses (hence its name), it has been broadened in scope to detect other malware, such as worms, Trojan horses, adware, spyware, ransomware, etc.How does anti-virus software work? Anti-virus software typically uses two different techniques to identify and eliminate malware:Virus dictionary approach: The anti-virus software scans a file while referring to a dictionary of known virus signatures that have been previously identified. If a code segment in the file matches any virus signature in the virus dictionary, then the anti-virus software performs one or more of the following operations: deletes the file; quarantines the file so that it is unable to spread; or attempts to repair the file by removing the virus from the file.Suspicious behavior approach: The anti-virus software monitors the behavior of all programs, flagging suspicious behavior, such as one executing program attempting to write date to another executable program. The user is alerted to all suspicious behavior, and is queried regarding how the suspicious behavior should be handled.An advantage of the suspicious behavior approach over the virus dictionary approach is that the former can provide protection against new viruses whose signatures have not yet been incorporated into the latter\u2019s virus dictionary. The two approaches are complementary and can be synergistically combined."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is perimeter-based cybersecurity?"
+        ],
+        "responses": [
+            "Perimeter-based cybersecurity (a.k.a. perimeter-based cyber defense) refers to the passive cyber defense of static networks by making network external boundaries unpenetrable (unbreachable). Common perimeter-based cybersecurity technologies include, but are not limited to, firewalls, anti-virus software, anti-malware scanners, etc. While this traditional cyber defense approach may work against external malware attacks that are already known, it has been proven ineffective against cyber attacks by new malware (whose attack signatures are unknown) and knowledgeable trusted insiders (e.g., Edward Snowden\u2019s notorious insider attack on NSA in 2013).Perimeter-based security follows the Maginot Line Defensive Strategy anti-pattern, and is relatively easy to circumvent by competent cyber criminals and cyber warriors.Compare and contrast with Moving Target Defense (MTD) for cybersecurity. (See FAQ: What is a Moving Target Defense (MTD) for cybersecurity?)"
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is a Moving Target Defense (MTD) for cybersecurity?"
+        ],
+        "responses": [
+            "In the context of cybersecurity, Moving Target Defense (MTD) refers to the dynamic cyber defense of active networks with constantly changing attack surfaces. Since the MTD network attack surfaces are constantly changing, they are inherently more difficult for cyber attackers to probe and penetrate. MTD is based on the principle that cyber attackers cannot effectively \"hit\" (penetrate) what they cannot capably \"see\" (probe).MTD represents a significant evolution in cyber defenses, which traditionally have focused on the static and passive defense of static networks. (See FAQ: What is perimeter-based cybersecurity?) When properly deployed, MTD confuses cyber adversaries and makes them expend more resources, such as time or computation power, to expose vulnerabilities.Common MTD techniques include, but are not limited to:- shifting IP addresses so that attackers can't keep track of specific targets- randomizing network configurations to disorient attackers- fragmenting, encrypting, and moving sensitive data to protect \"crown jewels\"Compare and contrast with perimeter-based cybersecurity. (See FAQ: What is perimeter-based cybersecurity?)"
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is a Next Generation FireWall (NGFW)?"
+        ],
+        "responses": [
+            "A Next-Generation FireWall (NGFW) is the 3rd-generation of firewall technology that extends a traditional stateful network firewall with additional network device filtering functions. Stateful (2nd-generation) firewalls track the operating state of a computer network and the characteristics of network connections that traverse it. Stateful firewalls filter network packets, so that only packets matching a known, active connection are allowed to pass the firewall. In addition to packet filtering, other functions of stateful firewalls include Network\u2014and port\u2014Address Translation (NAT) and Virtual Private Network (VPN) support.Additional NGFW network device filtering functions may include, but are not limited to, Anti-Virus (AV) inspection, Deep Packet Inspection (DPI), Intrusion Prevention System (IPS) filtering, TLS/SSL encrypted traffic inspection, website filtering, QoS/bandwidth management, etc."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is a Unified Threat Management (UTM) system and how does it work?"
+        ],
+        "responses": [
+            "A Unified Threat Management (UTM) provides multiple security services in a single device or service on a network. UTM security services can include, but are not limited to:- scanning incoming date using Deep Packet Inspection (DPI) to secures the network from viruses and other malware;- filtering website URLs to prevent access to malicious websites; and- ensuring operating systems, applications, and Anti-Virus software are updated automatically with the latest patches and security updates"
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is a cybersecurity architecture?"
+        ],
+        "responses": [
+            "Alternative FAQ Phrasings: What is a cybersecurity architecture? | What is a cyber security architecture? | What is a network security architecture? | What is a cyber architecture?\n\nDefinition: cybersecurity architecture (a.k.a. cyber security architecture, network security architecture, or cyber architecture for short) specifies the organizational structure, functional behavior, standards, and policies of a computer network that includes both network and security features. The collective features of a cybersecurity architecture include, but are not limited to, the following:\n\nNetwork Elements\n\nnetwork nodes (computers, NICs, repeaters, hubs, bridges, switches, routers, modems, gateways, etc.)\nnetwork communication protocols (TCP/IP, DHCP, DNS, FTP, HTTP, HTTPS, IMAP, etc.)\nnetwork connections between nodes using specific protocols\nnetwork topologies among nodes (point-to-point, bus, star, ring or circular, mesh, tree, daisy chain, hybrid)\n\nSecurity Elements\n\ncybersecurity devices (firewalls, Intrusion Detection/Protection Systems [IDS/IPS], encryption/decryption devices, etc.)\ncybersecurity software (Anti-Virus (AV) software, spamware software, anti-malware software, etc.)\nsecure network communication protocols (TCP/IP, DHCP, DNS, FTP, HTTP, HTTPS, IMAP, etc.)\nstrong encryption techniques (end-to-end encryption, zero-knowledge privacy, blockchain, etc.)\n\nSecurity Frameworks & Standards\n\ncybersecurity framework standards (NIST Risk Management Framework (RMF) SP 800-37, DoD Instruction 8510.01, ISO IEC 27000-Series)\ntechnology standards for cybersecurity software choices\n\nSecurity Policies & Procedures\n\nsecurity policies and procedures that are customized and enforced for your organization and/or project.\n\n\nIdeally, a cybersecurity architecture should be definable and simulatable using an industry-standard architecture modeling language (e.g., SysML, UML2).\n\nIt is sometimes useful to consider a cybersecurity architecture to be a specialization of computer network architecture that emphasizes security features and capabilities. To learn more about the differences between cybersecurity architecture and network architecture, please see the following Cybersecurity FAQ:\n\nCyberSecurity FAQ - What is the difference between cybersecurity and network architectures?\n\nTo learn more about the purpose of a cybersecurity architecture, please see the following Cybersecurity FAQ:\n\nCyberSecurity FAQ - What is the purpose of cybersecurity architecture?\n\nHOW TO SPECIFY A CYBERSECURITY ARCHITECTURE\nTo learn more about how to specify cybersecurity architectures, please see the following Cybersecurity FAQs:\n\nCyberSecurity FAQ - How to specify a cybersecurity architecture?\nCyberSecurity FAQ - What are the essential elements of cybersecurity architecture?\nCyberSecurity FAQ - What are the best practices for specifying cybersecurity architectures?\nCyberSecurity FAQ - How to become a cybersecurity architect?\n\nIf you have constructive recommendations to correct, clarify, or otherwise improve this or any other Cybersecurity FAQ, please contact us.\n\nCYBERSECURITY & DESIGN HANDS-ON WORKSHOP TRAINING OPTIONS\nIf you seek professional cybersecurity architecture hands-on training that emphasizes robust architecture modeling languages (UML2, SysML, CyberML), strong cyptographic techniques, popular architecture modeling tools (Sparx EA, MagicDraw/Cameo, Rhapsody), and numerous practice exercises, check out PivotPoint's Essential Cybersecurity Architecture & Design Applied hands-on training workshops."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is the purpose of cybersecurity architecture?"
+        ],
+        "responses": [
+            "The purpose of precisely and comprehensively specifying a cybersecurity architecture is to ensure that the underlying network architecture, including its crown jewel sensitive data and critical applications, are fully protected against current and future cyber adversaries. Just as a competent military commander needs to fully understand different kinds of terrain (Sun Tzu, Art of War, Chapter 10: Terrain) and the weakpoints of his forces (Sun Tzu, Art of War, Chapter 6: Weak Points and Strong) to effectively defend her troops and territory, a savvy cybersecurity architect needs to thoroughly understand different network topologies and cyber attack surface vulnerabilities to effectively defend her crown jewel sensitive data and critical applications.\nThe primary goals of a bona fide cybersecurity architecture are to ensure that:\n\nAll cyber attack surfaces are minimized, hidden, and dynamic. All cyber attack surfaces should be relatively small in size, covertly stored, and constantly changing so that they are stealthy moving targets that are difficult for cyber adversaries to detect and penetrate;\nAll crown jewel sensitive/confidential/classified data is strongly encrypted at rest. In addition, it should be subject to end-to-end encryption techniques during transit;\nAll cyber attacks are aggressively detected, mitigated, and countered. Moving-Target Defenses (MTD) with aggressive counter-measures are strongly encouraged.\n\nIf you have constructive recommendations to correct, clarify, or otherwise improve this or any other Cybersecurity FAQ please contact us.\n\nCYBERSECURITY & DESIGN HANDS-ON WORKSHOP TRAINING OPTIONS\nIf you seek professional cybersecurity architecture hands-on training that emphasizes robust architecture modeling languages (UML2, SysML, CyberML), strong cyptographic techniques, popular architecture modeling tools (Sparx EA, MagicDraw/Cameo, Rhapsody), and numerous practice exercises, check out PivotPoint's Essential Cybersecurity Architecture & Design Applied hands-on training workshops."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is a the difference between cybersecurity architecture and network architecture?"
+        ],
+        "responses": [
+            "Consider the following defintion of a computer network architecture:\n\nDefinition: network architecture (computer network architecture, or net architecture for short) specifies the organizational structure, functional behavior, standards, and policies of a computer network including, but not limited to:\n\n\nnetwork nodes (computers, NICs, repeaters, hubs, bridges, switches, routers, modems, gateways, etc.);\nnetwork communication protocols (TCP/IP, DHCP, DNS, FTP, HTTP, HTTPS, IMAP, etc.);\nnetwork connections between nodes using specific protocols;\nnetwork topologies among nodes (point-to-point, bus, star, ring or circular, mesh, tree, daisy chain, hybrid);\nnetwork technology choices;\nnetwork policies and procedures.\n\n\nIdeally, a network architecture should be definable and simulatable using an industry-standard architecture modeling language (e.g., SysML, UML2).\n\n\nIt is sometimes useful to consider a cybersecurity architecture to be a specialization of computer network architecture that emphasizes security features and capabilities. Stated otherwise, a cybersecurity architecture elements can be considered a superset of a network architecture elements. To see the additional architecture elements that a cybersecurity architecture includes, please compare and contrast the definition of network architect provided above with the cybersecurity architecture definition provided in the following Cybersecurity FAQ:\n\nCyberSecurity FAQ - What is a cybersecurity architecture?\n\nIf you have constructive recommendations to correct, clarify, or otherwise improve this or any other Cybersecurity FAQ please contact us.\n\nCYBERSECURITY & DESIGN HANDS-ON WORKSHOP TRAINING OPTIONS\nIf you seek professional cybersecurity architecture hands-on training that emphasizes robust architecture modeling languages (UML2, SysML, CyberML), strong cyptographic techniques, popular architecture modeling tools (Sparx EA, MagicDraw/Cameo, Rhapsody), and numerous practice exercises, check out PivotPoint's Essential Cybersecurity Architecture & Design Applied hands-on training workshops."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is a cybersecurity architect?"
+        ],
+        "responses": [
+            "Alternative FAQ Phrasings: What is a cybersecurity architect? | What is a cyber security architect? | What is a cyber architect?\n\nDefinition: cybersecurity architect (a.k.a., cybersecurity architect, cyber architect, network security architect) is a person who specifies and oversees cybersecurity architectures. \n\nTo learn more about cybersecurity architects and what they do, please see the following Cybersecurity FAQs:\n\nCyberSecurity FAQ - What is a cybersecurity architecture?\nCyberSecurity FAQ - How to become a cybersecurity architect?\n\nIf you have constructive recommendations to correct, clarify, or otherwise improve this or any other Cybersecurity FAQ, please contact us.\n\nCYBERSECURITY & DESIGN HANDS-ON WORKSHOP TRAINING OPTIONS\nIf you seek professional cybersecurity architecture hands-on training that emphasizes robust architecture modeling languages (UML2, SysML, CyberML), strong cyptographic techniques, popular architecture modeling tools (Sparx EA, MagicDraw/Cameo, Rhapsody), and numerous practice exercises, check out PivotPoint's Essential Cybersecurity Architecture & Design Applied hands-on training workshops."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "How to become a cybersecurity architect?"
+        ],
+        "responses": [
+            "Alternative FAQ Phrasings: How to become a cybersecurity architect? | How to become a cyber security architect? | How to become a cyber architect?\nIn order to become a professional cybersecurity architect (a.k.a., cybersecurity architect, cyber architect, network security architect), consider the following recommendations for educational, work experience, and certifications:\nEDUCATIONAL BACKGROUND\n\nEarn a Bachelor\u2019s degree (Master's preferred) in computer science, information technology, cybersecurity, or a related technology field.\nComplete elective courses or disciplined independent study in network architecture, design, and simulation.\nComplete elective courses or disciplined independent study in system architecture modeling and simulation using industry-standard architecture modeling languages (SysML, UML2).\nComplete elective courses or disciplined independent study in theoretical cryptology and applied cryptography.\n\nWORK EXPERIENCE\n\n5+ years hands-on experience designing, administrating, and securing computer networks of moderate-to-high complexity (100-1000 end user nodes).\n3+ years hands-on experience applying strong cryptographics techniques that protect client or user \"crown jewels\" on a moderate-to-high complexity computer network.\n\nCERTIFICATIONS\n\nEC-Council Certified Security Analyst (ECSA)\nCertified Information System Security Professional (CISSP)\n\nIf you have constructive recommendations to correct, clarify, or otherwise improve this or any other Cybersecurity FAQ, please contact us.\n\nCYBERSECURITY & DESIGN HANDS-ON WORKSHOP TRAINING OPTIONS\nIf you seek professional cybersecurity architecture hands-on training that emphasizes robust architecture modeling languages (UML2, SysML, CyberML), strong cyptographic techniques, popular architecture modeling tools (Sparx EA, MagicDraw/Cameo, Rhapsody), and numerous practice exercises, check out PivotPoint's Essential Cybersecurity Architecture & Design Applied hands-on training workshops."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "How to specify a cybersecurity architecture?"
+        ],
+        "responses": [
+            "In order to specify a cybersecurity architecture precisely and completely, you should use a bona fide architecture modeling language (SysML, UML2, CyberML) to define the following kinds of architecture elements:\nNetwork Elements\n\nnetwork nodes (computers, NICs, repeaters, hubs, bridges, switches, routers, modems, gateways, etc.)\nnetwork communication protocols (TCP/IP, DHCP, DNS, FTP, HTTP, HTTPS, IMAP, etc.)\nnetwork connections between nodes using specific protocols\nnetwork topologies among nodes (point-to-point, bus, star, ring or circular, mesh, tree, daisy chain, hybrid)\n\nSecurity Elements\n\ncybersecurity devices (firewalls, Intrusion Detection/Protection Systems [IDS/IPS], encryption/decryption devices, etc.)\ncybersecurity software (Anti-Virus (AV) software, spamware software, anti-malware software, etc.)\nsecure network communication protocols (TCP/IP, DHCP, DNS, FTP, HTTP, HTTPS, IMAP, etc.)\nstrong encryption techniques (end-to-end encryption, zero-knowledge privacy, blockchain, etc.)\n\nSecurity Frameworks & Standards\n\ncybersecurity framework standards (NIST Risk Management Framework (RMF) SP 800-37, DoD Instruction 8510.01, ISO IEC 27000-Series)\ntechnology standards for cybersecurity software choices\n\nSecurity Policies & Procedures\n\nsecurity policies and procedures that are customized and enforced for your organization and/or project.\n\nIf you have constructive recommendations to correct, clarify, or otherwise improve this or any other Cybersecurity FAQ, please contact us.\n\nCYBERSECURITY & DESIGN HANDS-ON WORKSHOP TRAINING OPTIONS\nIf you seek professional cybersecurity architecture hands-on training that emphasizes robust architecture modeling languages (UML2, SysML, CyberML), strong cyptographic techniques, popular architecture modeling tools (Sparx EA, MagicDraw/Cameo, Rhapsody), and numerous practice exercises, check out PivotPoint's Essential Cybersecurity Architecture & Design Applied hands-on training workshops."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What are the essential elements of a cybersecurity architecture?"
+        ],
+        "responses": [
+            "When specifying cybersecurity architectures it is useful distinguish among the following kinds of architectural elements:\nNetwork Elements\n\nnetwork nodes (computers, NICs, repeaters, hubs, bridges, switches, routers, modems, gateways, etc.)\nnetwork communication protocols (TCP/IP, DHCP, DNS, FTP, HTTP, HTTPS, IMAP, etc.)\nnetwork connections between nodes using specific protocols\nnetwork topologies among nodes (point-to-point, bus, star, ring or circular, mesh, tree, daisy chain, hybrid)\n\nSecurity Elements\n\ncybersecurity devices (firewalls, Intrusion Detection/Protection Systems [IDS/IPS], encryption/decryption devices, etc.)\ncybersecurity software (Anti-Virus (AV) software, spamware software, anti-malware software, etc.)\nsecure network communication protocols (TCP/IP, DHCP, DNS, FTP, HTTP, HTTPS, IMAP, etc.)\nstrong encryption techniques (end-to-end encryption, zero-knowledge privacy, blockchain, etc.)\n\nSecurity Frameworks & Standards\n\ncybersecurity framework standards (NIST Risk Management Framework (RMF) SP 800-37, DoD Instruction 8510.01, ISO IEC 27000-Series)\ntechnology standards for cybersecurity software choices\n\nSecurity Policies & Procedures\n\nsecurity policies and procedures that are customized and enforced for your organization and/or project.\n\nIf you have constructive recommendations to correct, clarify, or otherwise improve this or any other Cybersecurity FAQ, please contact us.\n\nCYBERSECURITY & DESIGN HANDS-ON WORKSHOP TRAINING OPTIONS\nIf you seek professional cybersecurity architecture hands-on training that emphasizes robust architecture modeling languages (UML2, SysML, CyberML), strong cyptographic techniques, popular architecture modeling tools (Sparx EA, MagicDraw/Cameo, Rhapsody), and numerous practice exercises, check out PivotPoint's Essential Cybersecurity Architecture & Design Applied hands-on training workshops."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What are the best practices for specifying cybersecurity architectures?"
+        ],
+        "responses": [
+            "CYBERSECURITY ARCHITECTURE & DESIGN RECOMMENDATIONS\nCyber Architecture & Design Modeling Languages: SysML + CyberML\nCyber Architecture & Design Modeling Tools:\nSparx Enterprise Architecture (Sparx EA) or MagicDraw/Cameo\nCyber Architecture & Design Patterns: See Essential Cybersecurity Architecture & Design Applied hands-on training workshops\nIf you have constructive recommendations to correct, clarify, or otherwise improve this or any other Cybersecurity FAQ please contact us.\n\nCYBERSECURITY & DESIGN HANDS-ON WORKSHOP TRAINING OPTIONS\nIf you seek professional cybersecurity architecture hands-on training that emphasizes robust architecture modeling languages (UML2, SysML, CyberML), strong cyptographic techniques, popular architecture modeling tools (Sparx EA, MagicDraw/Cameo, Rhapsody), and numerous practice exercises, check out PivotPoint's Essential Cybersecurity Architecture & Design Applied hands-on training workshops."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What are the industry standards for cybersecurity?"
+        ],
+        "responses": [
+            "Cybersecurity industry standards are nascent, but rapidly evolving. You can find an overview of current and future cybersecurity standards on the Cybersecurity Standards & Frameworks page of this web."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is a cybersecurity framework?"
+        ],
+        "responses": [
+            "In the context of software-intensive systems the term framework may refer to either a computer/network architecture (i.e., an architecture framework) or a process (i.e., a process framework). Consequently, in the context of software-intensive cybersecurity systems the term cybersecurity framework may apply to either a cybersecurity architecture framework or a cybersecurity process framework, depending upon whether the framework emphasizes architecture elements (e.g., cybersecurity network devices, secure communication protocols) or process activities (e.g., guidelines, best practices).A prominent example of a cybersecurity process framework is the NIST (National Institute of Standards and Technology) Framework for Improving Critical Infrastructure, first published by NIST in 2014. The NIST cybersecurity process framework was created through collaboration between U.S. government and industry, and consists of industry standards, guidelines, and best practices aimed at protecting critical information infrastructure.At present, there are no industry-standard cybersecurity architecture frameworks, but there is a proliferation of ad hoc efforts to make computer network architectures more cybersecure by enhancing and extending network architectures with cybersecure hardware, firmware, and software mechanisms."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is the NIST cybersecurity framework?"
+        ],
+        "responses": [
+            "The NIST Framework for Improving Critical Infrastructure, commonly referred to as the NIST cybersecurity framework, is a cybersecurity process framework first published by National Institute of Standards and Technology (NIST) in February 2014. The NIST cybersecurity framework was created through collaboration between U.S. government and industry, and is voluntary guidance for a broad range of organizations to better manage and reduce their cybersecurity risks. The framework consists of industry standards, practical guidelines, and best practices for managing and reducing cybersecurity risks, and can be applied to diverse organizations\u2014both government and commercial, ranging from small to large in size. The NIST cybersecurity framework is also designed to foster communications among internal and external organization stakeholders, so they can better collaborate to manage and reduce cybersecurity risks.Since the NIST cybersecurity framework is voluntary guidance, rather than mandated regulations, organizations in different economic sectors are expected to customize the framework to address their specific cyber risks and cybersecurity needs. For more information about the NIST cybersecurity framework, see the NIST Cybersecurity Framework FAQ."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is cryptography?"
+        ],
+        "responses": [
+            "Cryptography (a.k.a. cryptology) is the practice of techniques for secure (confidential or private) communication in the presence of third parties, referred to as adversaries in this context, because the latter may intercept and compromise (usually by decoding or deciphering) the secure communication for nefarious purposes. In general practice, cryptography is concerned about designing and analyzing secure communication protocols that thwart adversaries. Cryptographic techniques tend to be multi-disciplinary, and involve the disciplines of mathematics, computer science, and electrical engineering. Common applications of cryptography include computer passwords, ATM cards, smart credit cards, and electronic commerce transactions. Usage Note: The term cryptography is sometimes conflated with the term cryptology, where the former is the practical application of secure communication techniques, whereas the latter is the formal study of these techniques."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is the relation between cybersecurity and cryptography?"
+        ],
+        "responses": [
+            "Since cybersecurity defenses are typically based on strong authentication and encryption techniques, which the latter are based on cryptography techniques, cryptography is a key enabling technology for cybersecurity.For a general overview of cryptography the application of encryption techniques to cybersecurity, see the following FAQs:What is cryptography?What is encryption? What is decryption?What is public-key encryption?What is end-to-end encryption?"
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is encryption? What is decryption?"
+        ],
+        "responses": [
+            "Encryption is the process of encoding messages or other information, referred to as plaintext, into ciphertext, in a manner in which only the encoder or other authorized parties can convert the ciphertext back to plaintext. Stated otherwise, ciphertext is encoded (i.e., encrypted), whereas plaintext is decoded (i.e., decrypted). Although encryption does not inherently prevent message interception or information access, it in effect denies information content to interceptors who may be adversarial in nature.Decryption is the inverse process of encryption, in which encoded messages, referred to as ciphertext, are decoded into plaintext, so that their original unencrypted content may be read."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is a cryptographic key?"
+        ],
+        "responses": [
+            "Alternative FAQ Phrasings: What is a cryptographic key? | What is an encryption/decryption key? | What is a crypto key?\n\nDefinition: cryptography key (a.k.a. encryption/decryption key, or crypto key for short) is an input parameter to a cryptographic algorithm or cipher function, which uniquely encodes plaintext (messages or other information) into ciphertext during encryption, and vice versa during decryption. \n\nTo explicate further, consider the following pseudocode for the complementary cryptographic algorithm functions encode and decode with parameters plaintext, cryptokey, and ciphertext:\n\nencode (plaintext: String; cryptokey: String): ciphertext: String\ndecode (ciphertext: String; cryptokey: String): plaintext: String\n\nThe input and output parameters for encode and decode functions are described below:\n\nplaintext: the unencrypted message or other information which is an input parameter to the encode function, and is a return parameter for the decode function.\nciphertext: the encrypted message or other information which is a return parameter for the encode function, and is an input parameter for the decode function.\ncryptokey: the cryptographic key used by both the encode and decode functions to encrypt and decrypt the plaintext and ciphertext parameters respectively. Note that the cryptokey need not be identical for both encryption and decryption.\n\nNote that the cryptographic keys used for for encryption and decryption needn\u2019t be symmetrical (i.e., identical). Indeed, for public-key encryption systems, the cryptographic keys are asymmetrical.\nIn addition to encryption and decryption algorithms, cryptographic keys can be used for other cryptographic algorithms, such as digital signature schemes and message authentication codes.\nTo learn more about encryption and decryption cryptography techniques, see the following Cybersecurity FAQs:\n\nCyberSecurity FAQ - What is encryption? What is decryption?\nCyberSecurity FAQ - What is public-key encryption?\nCyberSecurity FAQ - What is end-to-end encryption?\n\nIf you have constructive recommendations to correct, clarify, or otherwise improve this or any other Cybersecurity FAQ, please contact us.\n\nCYBERSECURITY & DESIGN HANDS-ON WORKSHOP TRAINING OPTIONS\nIf you seek professional cybersecurity architecture hands-on training that emphasizes robust architecture modeling languages (UML2, SysML, CyberML), strong cyptographic techniques, popular architecture modeling tools (Sparx EA, MagicDraw/Cameo, Rhapsody), and numerous practice exercises, check out PivotPoint's Essential Cybersecurity Architecture & Design Applied hands-on training workshops."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is public-key encryption?"
+        ],
+        "responses": [
+            "Alternative FAQ Phrasings: What is public-key encryption? | What is public-key cryptography?Public-key encryption is an asymmetrical cryptographic system which uses a pair of mathematically related cryptographic keys:\n\npublic key: As its name implies, the public cryptographic key is widely known. Public keys are typically made available via a public directory or repository.\nprivate key: As its name implies, the private cryptographic key is confidential, and is closely held by the message recipient or information concealor.\n\nThe cryptographic key pair is mathematically related in the sense that whatever is encrypted via a public key can only be decrypted via a private key, and vice versa.\nFor example, if Chauncey wants to send a confidential message to Chelsea, and wants to ensure that only Chelsea can read it, Chauncey can encrypt the message with Chelsea\u2019s public key. Only Chelsea, or someone with access to her corresponding private key, will be capable of decrypting the encrypted message back into its original unencrypted form. Even if someone intercepts Chelsea\u2019s encrypted message druing transmission, its contents will remain confidential if the interceptor lacks access to Chelsea\u2019s private key, which is essential for decryption.\nTo explicate further, consider the following pseudocode for the complementary cryptographic algorithm functions encode and decode with parameters plaintext, ciphertext, publickey, and privatekey, where the last two parameters represent a complementary public-private cryptographic key pair:\n\nencode (plaintext: String; publickey: String): ciphertext: String\ndecode (ciphertext: String; privatekey: String): plaintext: String\n\nThe input and output parameters for encode and decode functions are described below:\n\nplaintext: the unencrypted message or other information which is an input parameter to the encode function, and is a return parameter for the decode function;\nciphertext: the encrypted message or other information which is a return parameter for the encode function, and is an input parameter for the decode function;\npublickey: the public cryptographic key used by encode as an input parameter to encrypt the plaintext input parameter;\nprivatekey: the private cryptographic key used by decode as an input parameter to decrypt the ciphertext input parameters."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is end-to-end encryption?"
+        ],
+        "responses": [
+            "End-to-end encryption is a term used to describe a communication system where the only the sender (the origin end) and the recipient (the destination end) of a message, and no intermediaries, can read the subject message, which is rigorously encrypted throughout its transit from the source end to the receiver end. When end-to-end encryption is properly implemented, only the sender and the recipient of the message possess the cryptographic keys needed to decrypt the message\u2014even the intermediate message service has zero knowledge of the cryptographic keys required."
+        ],
+        "tag": "#tag_placehodler"
+    },
+    {
+        "patterns": [
+            "What is zero-knowledge privacy?"
+        ],
+        "responses": [
+            "Alternative FAQ Phrasings: What is Zero-Based Proof (ZBP)? | What is a Zero-Based Proof? | What is Zero-Based Privacy?\nZero-Based Privacy cybersecurity techniques for cybersecurity are based on Zero-Knowledge Proofs (a.k.a. ZK Proofs, or ZKP for short), which are among the most powerful tools cryptographers have ever devised. Zero-Knowledge Proofs are defined as follows:\n\nDefinition: Zero-Based Proof (ZK Proof, ZKP; a.k.a. ZBP) is a cryptographic method by which one party (the Prover, P) can prove to another party (the Verifier, V) that P knows information X, without conveying any information to V other than P knows a value X. The insight to understanding Zero-Knowledge Proofs is that while it is trivial to prove that one possesses knowledge of value by simply revealing it, it is relatively challenging to prove possession of such knowledge without revealing either a) the information itself; or b) additional information.\n\nFor an intuitive introduction to Zero-Knowledge Proofs without substantial mathematics, see Zero Knowledge Proofs: An illustrated primer.\nAs a practical application of Zero-Knowledge Proofs, Zero-Knowledge Privacy is defined as follows:\n\nDefinition: Zero-Based Privacy is the practical application of Zero-Based Proofs to improve the security of computer servers that store and transmit sensitive/confidential client data (messages, files, database entries, authentication information, cryptographic keys, file metadata). As a general principle, a Zero-Knowledge Privacy server must never be allowed to read or write client data as plaintext (i.e., unencrypted; compare ciphertext or encrypted), including authentication information, cryptographic keys, and file metadata. Consequently, for most practical purposes the confidentiality of the client data on the server cannot be compromised via internal mismanagement (including internal prying eyes) or external agents (e.g., cyber hackers).\n\nWhile many vendors of data storage claim end-to-end encryption, many fall short of zero knowledge privacy standards because they either read or write client data and authentication information as plaintext sometime during the end-to-end data transmission or storage processes, typically for client convenience. For example, consider the case of a File Synchronization & Sharing Tool user who uploads a local file on her desktop computer to her cloud-based storage server using a web-based interface. While the web-based interface may be convenient to the user, when she enters her authentication information directly into the web-based interface as plaintext, she is compromising the confidentiality of the file she is uploaded, since the cloud-based server can read the unencrypted file along with the associated metadata and authentication information prior to encryption. Consequently, if the cloud-based server is compromised by either an external or internal cyber threat, any encrypted stored data is also potentially compromised.\nCompare this with a bona fide Zero-Knowledge Privacy approach, where the user utilizes a dedicated secure app to fully encrypt the file prior to uploading it to the cloud-based server using the SSL (Secure Socket Layer) protocol during transmission, and the secure app provides neither metadata nor unencrypted password information to the cloud-based server.\nSee Review: Secure Enterprise File Sync & Sharing (EFSS) Services for a comparison of the cybersecurity features of popular file synchronization and sharing tools, some of which provide Zero-Knowledge Privacy.\nIf you have constructive recommendations to correct, clarify, or otherwise improve this or any other Cybersecurity FAQ, please contact us.\n\nCYBERSECURITY & DESIGN HANDS-ON WORKSHOP TRAINING OPTIONS\nIf you seek professional cybersecurity architecture hands-on training that emphasizes robust architecture modeling languages (UML2, SysML, CyberML), strong cyptographic techniques, popular architecture modeling tools (Sparx EA, MagicDraw/Cameo, Rhapsody), and numerous practice exercises, check out PivotPoint's Essential Cybersecurity Architecture & Design Applied hands-on training workshops."
+        ],
+        "tag": "#tag_placehodler"
+    }
+]

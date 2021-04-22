@@ -30,7 +30,7 @@ class BoxOfSubjects(ContainerOfSubjects):
         self.populate_subjects(config, number_of_subjects)
 
     def reset(self):
-        self.populate_subjects(self.config, None)
+        self = BoxOfSubjects()
 
     def populate_subjects(self, config, number_of_subjects):
         if config.SUBJECT_TYPE == SubjectTypes.PARTICLE:
@@ -44,28 +44,8 @@ class BoxOfSubjects(ContainerOfSubjects):
             #self.add_particle_to_grids(p)
 
     def move_guys(self, timestamp, parallel = False, infection_handling = True):
-        if(not parallel):
-            for particle in self.contents:
-                particle.get_particle_component().update_location()
-        else:
-            def thread_helper(particle_subset: List[Subject]):
-                for particle in particle_subset:
-                    particle.get_particle_component().update_location()
-
-
-            subjects = self.contents
-            index_increment = math.ceil(len(subjects) / self._n_threads)
-            index_start = 0
-            threads = []
-            for thread in range(self._n_threads):
-                subset = subjects[index_start: int(index_start + index_increment)]
-                t = threading.Thread(target=thread_helper, args=([subset]))
-                t.start()
-                threads.append(t)
-                index_start += index_increment
-            for t in threads:
-                t.join()
-                #self.add_particle_to_grids(particle)
+        for particle in self.contents:
+            particle.get_particle_component().update_location()
         if infection_handling:
             self._infection_handler.many_to_many(timestamp, [self.contents])
 

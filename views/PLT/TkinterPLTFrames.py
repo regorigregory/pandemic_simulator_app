@@ -6,7 +6,7 @@ from models.SubjectContainers import BoxOfSubjects
 from models.ConfigureMe import Constants
 import tkinter as tk
 
-from views.PLT.Simulation import MovingSubjects
+from views.PLT.Simulation import ConcreteSimulation
 from views.PLT.SimulationObervers import AreaChart
 
 
@@ -42,10 +42,13 @@ class SimulationFrame(AbstractFrame):
         super().__init__(root, 2, "SIMULATION_DIM", config)
 
 
-        self.ViewBox = MovingSubjects(container=BoxOfSubjects())
+        self.ViewBox = ConcreteSimulation(container=BoxOfSubjects())
         self.canvas = FigureCanvasTkAgg(self.ViewBox.fig, self)
         self.canvas.get_tk_widget().grid()
-        root.master.ani = self.ViewBox.start_animation()
+        self.ViewBox.start_animation()
+
+    def get_animated_object(self):
+        return self.ViewBox
 
 class GraphFrame(AbstractFrame):
     def __init__(self, root, config = Constants()):
@@ -96,6 +99,7 @@ class ParametersFrame(AbstractFrame):
         canvas.grid(row=0, column=0, sticky="nwse")
         scrollbar.grid(row=0, column=1, sticky="ns")
 
+
 class StatsFrame(AbstractFrame):
     def __init__(self, root, config = Constants()):
         super().__init__(root, 2, "STATS_DIM", config)
@@ -107,6 +111,7 @@ class StatsFrame(AbstractFrame):
 
         for i, c in enumerate(self.components):
             c.grid(row=1, column=i)
+
 
 class ScenarioFrame(AbstractFrame):
     def __init__(self, root, config = Constants()):
@@ -133,6 +138,7 @@ class ButtonsFrame(AbstractFrame):
         for i,c in enumerate(self.components):
             c.grid(row = 1, column  = i)
 
+
 class TkinterPLTBuilder():
     def __init__(self, config = Constants(), window = None):
         self.window = tk.TK() if not window else window
@@ -157,6 +163,12 @@ class TkinterPLTBuilder():
 
         for v in self.components.values():
             v.grid()
+
+    def get_component(self, key):
+        if key in list(self.components.keys()):
+            return self.components[key]
+        else:
+            raise KeyError("The provided key {} does not exist.")
 
 
 

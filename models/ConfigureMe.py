@@ -136,9 +136,9 @@ class Constants(object):
             Constants.instance.__dict__ = Constants._shared_data
 
             self.NUMBER_OF_THREADS = 3
-            self.NUMBER_OF_SUBJECTS = 1000
+            self.NUMBER_OF_SUBJECTS = 10
 
-            self.INITIAL_INFECTED_SUBJECTS_RATIO = 0.1
+            self.INITIAL_INFECTED_SUBJECTS_RATIO = 0.5
             self.INFECTION_RADIUS = 15
             self.PARTICLE_RADIUS = 5
 
@@ -183,13 +183,12 @@ class Constants(object):
 
             self.SUBJECT_TYPE = SubjectTypes.SUBJECT
 
-            self.BUTTONS_CONFIG = {"START": dict(text="Start", **Theme().button_attributes),
-                                   "PAUSE": dict(text="Pause", **Theme().button_attributes),
+            self.BUTTONS_CONFIG = {"PAUSE": dict(text="Pause", **Theme().button_attributes),
                                    "RESET": dict(text="Reset", **Theme().button_attributes)}
 
-            self.SCENARIO_CONFIG = {"START": dict(text="Simple", **Theme().scenario_attributes),
-                                   "PAUSE": dict(text="Central Location", **Theme().scenario_attributes),
-                                   "RESET": dict(text="Communities", **Theme().scenario_attributes)}
+            self.SCENARIO_CONFIG = {"SIMPLE": dict(text="Simple", **Theme().scenario_attributes),
+                                   "CENTRAL": dict(text="Central Location", **Theme().scenario_attributes),
+                                   "COMMUNITIES": dict(text="Communities", **Theme().scenario_attributes)}
 
             self.PARAMETERS = Parameters()
             self.DEFAULT_BG = Theme().default_bg

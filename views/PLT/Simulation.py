@@ -1,10 +1,21 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation, Animation, TimedAnimation
-
+from abc import ABC, abstractmethod
 from models.SubjectContainers import BoxOfSubjects
 from matplotlib.widgets import Button
 from models.ConfigureMe import Constants
 import numpy as np
+
+class AbstractSimulation(ABC):
+    @abstractmethod
+    def resume(self):
+        pass
+    def pause(self):
+        pass
+    def start_animation(self):
+        pass
+    def reset(self):
+        pass
 
 
 class ObserverClient(object):
@@ -24,7 +35,7 @@ class ObserverClient(object):
             observer.update(data)
 
 
-class MovingSubjects(ObserverClient):
+class ConcreteSimulation(ObserverClient, AbstractSimulation):
     def __init__(self, config=Constants(), container=None):
         super().__init__()
         self.config = config
@@ -35,9 +46,9 @@ class MovingSubjects(ObserverClient):
         self._infection_zone_radius = config.INFECTION_RADIUS + config.PARTICLE_RADIUS
 
         self._box_of_particles = container
+        self._infection_handler = self._box_of_particles._infection_handler
 
         self.fig = plt.figure(figsize=(self.width / self.DPI, self.height / self.DPI), dpi=self.DPI)
-        self._infection_handler = self._box_of_particles._infection_handler
         self.ax = plt.gca()
 
     @property
@@ -120,27 +131,37 @@ class MovingSubjects(ObserverClient):
     def start_animation(self):
         init_func = self.get_init_func()
         animation_function = self.get_animation_function()
-
-        anim = FuncAnimation(self.fig,
+        self.ani = FuncAnimation(self.fig,
                              animation_function,
                              init_func=init_func,
                              interval=60)
-        return anim
+        return self.ani
 
     def reset(self):
-        self._box_of_particles.reset()
+        self.ani._stop()
+        self.ani = None
+        self._box_of_particles = BoxOfSubjects()
         self._infection_handler = self._box_of_particles._infection_handler
-        plt.cla()
-        plt.clf()
-        self.ax = plt.gca()
+        self.fig.axes[0].clear()
+        self.fig.canvas.draw()
+        self.start_animation()
+        self.fig.canvas.draw()
+
+
+    def resume(self):
+        self.ani.event_source.start()
+
+    def pause(self):
+        self.ani.event_source.stop()
 
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
     plt.ioff()
-    ViewBox = MovingSubjects(container=BoxOfSubjects())
+    ViewBox = ConcreteSimulation(container=BoxOfSubjects())
     a = ViewBox.start_animation()
+    a.event_source.stop()
     plt.show()
     """init_func = ViewBox.get_init_func()
     animation_function = ViewBox.get_animation_function()

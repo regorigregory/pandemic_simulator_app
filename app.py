@@ -3,7 +3,7 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from models.ConfigureMe import Constants
     from models.SubjectContainers import BoxOfSubjects
-    from views.PLT.Simulation import MovingSubjects
+    from views.PLT.Simulation import ConcreteSimulation
     import tkinter as tk
     from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
     from views.PLT.TkinterPLTFrames import *
@@ -21,8 +21,7 @@ if __name__ == "__main__":
     my_builder.build()
 
 
-    ButtonsController = ButtonsController.TkinterButtons(window.ani.event_source.start, window.ani.event_source.start,
-                                                         window.ani.event_source.stop, window.ani.event_source.start)
+    ButtonsController = ButtonsController.TkinterButtons(my_builder.get_component("SimulationFrame").get_animated_object())
 
     ButtonsController.bind_functions(my_builder.components["ButtonsFrame"])
 
