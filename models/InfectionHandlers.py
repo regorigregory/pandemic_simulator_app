@@ -3,7 +3,7 @@ from typing import List, Set
 from abc import ABC, abstractmethod
 import threading
 import math
-from models.ConfigureMe import Constants
+from models.ConfigureMe import MainConfiguration
 
 class SingletonInfectionHandler(object):
     _shared_data = dict()
@@ -23,7 +23,7 @@ class SingletonInfectionHandler(object):
 
 class InfectionHandlerInterface(ABC):
     def __init__(self):
-        self._n_threads = Constants().NUMBER_OF_THREADS
+        self._n_threads = MainConfiguration().NUMBER_OF_THREADS
         self.init_counts()
 
     def init_counts(self) -> dict:

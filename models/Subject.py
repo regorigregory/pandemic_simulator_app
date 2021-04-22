@@ -1,23 +1,23 @@
 import math
-from models.ConfigureMe import InfectionStatuses, Constants
+from models.ConfigureMe import InfectionStatuses, MainConfiguration
 from models.Particle import Particle
 from enum import Enum
 import numpy as np
-from models.ConfigureMe import Constants
+from models.ConfigureMe import MainConfiguration
 
 
 class Subject:
 
-    def __init__(self, config = Constants(), am_i_infected = False):
+    def __init__(self, config = MainConfiguration(), am_i_infected = False):
 
         self._infection_radius = Subject.set_random_attribute_safely(config.INFECTION_RADIUS)
         self._recovery_time = Subject.set_random_attribute_safely(config.INFECTION_RADIUS)
-        self._incubation_period = Subject.set_random_attribute_safely(config.INCUBATION_PERIOD)
-        self._infection_probability = Subject.set_random_attribute_safely(config.INFECTION_PROBABILITY_PER_TIME_PERIOD)
+        self._incubation_period = Subject.set_random_attribute_safely(config.INCUBATION_PERIOD_RANGE)
+        self._infection_probability = Subject.set_random_attribute_safely(config.CHANCE_OF_INFECTION)
 
         self._particle = Particle(config)
         self._infection_radius = self._particle.get_radius() + config.INFECTION_RADIUS
-        if np.random.uniform() <= config.INITIAL_INFECTED_SUBJECTS_RATIO:
+        if np.random.uniform() <= config.INITIAL_INFECTION_RATIO:
             self._infection_status = InfectionStatuses.INFECTED
             self._got_infected_at = 0
         else:
@@ -99,8 +99,8 @@ class Subject:
 
 
 if __name__ == "__main__":
-    testA = Subject(Constants)
-    testB = Subject(Constants)
+    testA = Subject(MainConfiguration)
+    testB = Subject(MainConfiguration)
 
 
     infection_time = 1
@@ -119,4 +119,4 @@ if __name__ == "__main__":
     print("After testA and testB encounters with each other:")
     print("testA is {}.".format(testA.get_infection_status(infection_time).name))
     print("testB is {}.".format(testB.get_infection_status(infection_time).name))
-    testC = Subject(Constants)
+    testC = Subject(MainConfiguration)

@@ -3,7 +3,7 @@ from matplotlib.animation import FuncAnimation, Animation, TimedAnimation
 from abc import ABC, abstractmethod
 from models.SubjectContainers import BoxOfSubjects
 from matplotlib.widgets import Button
-from models.ConfigureMe import Constants
+from models.ConfigureMe import MainConfiguration
 import numpy as np
 
 class AbstractSimulation(ABC):
@@ -36,14 +36,14 @@ class ObserverClient(object):
 
 
 class ConcreteSimulation(ObserverClient, AbstractSimulation):
-    def __init__(self, config=Constants(), container=None):
+    def __init__(self, config=MainConfiguration(), container=None):
         super().__init__()
         self.config = config
         self.width, self.height = config.get_dimensions(1, "SIMULATION_DIM")
         self.DPI = config.DPI
 
-        self._marker_radius = config.PARTICLE_RADIUS
-        self._infection_zone_radius = config.INFECTION_RADIUS + config.PARTICLE_RADIUS
+        self._marker_radius = config.SUBJECT_SIZE
+        self._infection_zone_radius = config.INFECTION_RADIUS + config.SUBJECT_SIZE
 
         self._box_of_particles = container
         self._infection_handler = self._box_of_particles._infection_handler
@@ -111,8 +111,7 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         def func(i):
             self.move_guys(i)
             self._infection_handler.count_them(i, self._box_of_particles.contents)
-            if(i%5 == 0):
-                self.notify(self._infection_handler.counts)
+            self.notify(self._infection_handler.counts)
 
             INFECTED_COORDS = self.get_current_coordinates(self._infection_handler.counts["INFECTED"])
             IMMUNE_COORDS = self.get_current_coordinates(self._infection_handler.counts["IMMUNE"])
@@ -134,7 +133,8 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         self.ani = FuncAnimation(self.fig,
                              animation_function,
                              init_func=init_func,
-                             interval=60)
+                             interval=60,
+                             blit = True)
         return self.ani
 
     def reset(self):

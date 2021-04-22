@@ -1,7 +1,7 @@
 import random
 import math
 from typing import NewType, List
-from models.ConfigureMe import Constants
+from models.ConfigureMe import MainConfiguration
 import numpy as np
 Vector = List[float]
 VectorRange = List[List[float]]
@@ -9,15 +9,15 @@ VectorRange = List[List[float]]
 
 
 class Particle:
-    def __init__(self, cnf = Constants()):
+    def __init__(self, cnf = MainConfiguration()):
         self.position_vector = Particle.init_random_vector(cnf.get_main_subjects_box_dimensions())
-        self.velocity_vector = Particle.init_random_vector(cnf.VELOCITY_RANGE)
+        self.velocity_vector = Particle.init_random_vector(cnf.SUBJECT_VELOCITY_RANGE)
         self.max_x, self.max_y = cnf.get_dimensions(1, "SIMULATION_DIM")
 
 
         self.min_x = 0
         self.min_y = 0
-        self._radius = cnf.PARTICLE_RADIUS
+        self._radius = cnf.SUBJECT_SIZE
         self.subject = None
 
     def get_radius(self):
@@ -138,8 +138,8 @@ class Particle:
 
 if __name__ == "__main__":
 
-    from models.ConfigureMe import Constants
-    testobject = Particle(Constants)
+    from models.ConfigureMe import MainConfiguration
+    testobject = Particle(MainConfiguration)
     testobject.position_x = -100
     testobject.velocity_x = -2
     testobject.update_location()

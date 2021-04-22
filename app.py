@@ -1,7 +1,7 @@
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
-    from models.ConfigureMe import Constants
+    from models.ConfigureMe import MainConfiguration
     from models.SubjectContainers import BoxOfSubjects
     from views.PLT.Simulation import ConcreteSimulation
     import tkinter as tk
@@ -13,8 +13,8 @@ if __name__ == "__main__":
 
     window = tk.Tk()
 
-    Constants().MAIN_CANVAS_SIZE = [window.winfo_screenwidth(), window.winfo_screenheight()]
-    window.geometry(Constants().get_main_canvas_size_tkinter())
+    MainConfiguration().MAIN_CANVAS_SIZE = [window.winfo_screenwidth(), window.winfo_screenheight()]
+    window.geometry(MainConfiguration().get_main_canvas_size_tkinter())
 
 
     my_builder = TkinterPLTBuilder(window = window)

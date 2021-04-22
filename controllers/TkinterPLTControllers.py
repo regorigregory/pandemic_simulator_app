@@ -1,4 +1,4 @@
-from models.ConfigureMe import Constants
+from models.ConfigureMe import MainConfiguration
 from abc import ABC, abstractmethod
 
 
@@ -16,9 +16,9 @@ class TkinterButtons(AbstractController):
         self.pause = animated_object.pause
         self.resume = animated_object.resume
 
-        self.funcs[Constants().BUTTONS_CONFIG["RESET"]["text"]] = self.handle_clear
+        self.funcs[MainConfiguration().BUTTONS_CONFIG["RESET"]["text"]] = self.handle_clear
 
-        self.funcs[Constants().BUTTONS_CONFIG["PAUSE"]["text"]] = self.handle_pause
+        self.funcs[MainConfiguration().BUTTONS_CONFIG["PAUSE"]["text"]] = self.handle_pause
 
     def handle_pause(self, event):
         if(self.paused):
@@ -46,7 +46,7 @@ class TkinterSimulationSettings(AbstractController):
     def update_config(self, event):
         key = event.widget.my_name_is
         value = event.widget.get()
-        setattr(Constants(), key, value)
+        setattr(MainConfiguration(), key, value)
 
 
     def bind_functions(self, sliders):

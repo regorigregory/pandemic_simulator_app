@@ -1,4 +1,4 @@
-from models.ConfigureMe import SubjectTypes, Constants
+from models.ConfigureMe import SubjectTypes, MainConfiguration
 from models.Particle import Particle
 from models.Subject import Subject
 from models.InfectionHandlers import InfectionHandlerInterface, AxisBased, ParallelAxisBased
@@ -20,13 +20,13 @@ class ContainerOfSubjects(ABC):
         pass
 
 class BoxOfSubjects(ContainerOfSubjects):
-    def __init__(self, config = Constants(), infection_handler = AxisBased(), number_of_subjects = None):
+    def __init__(self, config = MainConfiguration(), infection_handler = AxisBased(), number_of_subjects = None):
         self.config = config
         self.contents = []
 
-        self._particle_radius= config.PARTICLE_RADIUS
+        self._particle_radius= config.SUBJECT_SIZE
         self._infection_handler = infection_handler
-        self._infection_radius = config.INFECTION_RADIUS + config.PARTICLE_RADIUS
+        self._infection_radius = config.INFECTION_RADIUS + config.SUBJECT_SIZE
         self.populate_subjects(config, number_of_subjects)
 
     def reset(self):
@@ -37,7 +37,7 @@ class BoxOfSubjects(ContainerOfSubjects):
             constructor = Particle
         else:
             constructor = Subject
-        limit = number_of_subjects if number_of_subjects else config.NUMBER_OF_SUBJECTS
+        limit = number_of_subjects if number_of_subjects else config.SUBJECT_NUMBER
         for i in range(0, limit):
             p = constructor(config)
             self.contents.append(p)
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     print('Evaluating Sequential Implementation...')
 
     for num_subjects in NUMBER_OF_SUBJECTS:
-        box = BoxOfSubjects(Constants, number_of_subjects=num_subjects)
+        box = BoxOfSubjects(MainConfiguration, number_of_subjects=num_subjects)
         if(num_subjects not in list(sequential.keys())):
             sequential[num_subjects] = 0.0000001
         for i in range(NUMBER_OF_TESTS):
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     print('Evaluating Thread based Implementation...')
 
     for num_subjects in NUMBER_OF_SUBJECTS:
-        box = BoxOfSubjects(Constants, number_of_subjects=num_subjects)
+        box = BoxOfSubjects(MainConfiguration, number_of_subjects=num_subjects)
         if(num_subjects not in list(parallel.keys())):
             parallel[num_subjects] = 0.0000001
         for i in range(NUMBER_OF_TESTS):
