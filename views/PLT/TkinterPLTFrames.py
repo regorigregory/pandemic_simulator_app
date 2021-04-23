@@ -12,14 +12,15 @@ from views.Tkinter.SimulationObservers import TKAreaChart, TKStats
 
 
 class AbstractFrame(Frame):
-    def __init__(self, root, col, key, config = MainConfiguration(), grid_kwargs = {}):
-        dim_dict = {}
-        dim_dict["width"], dim_dict["height"] = config.get_dimensions(col, key)
-        super().__init__(root, bg = config.DEFAULT_BG, **dim_dict, **config.FRAME_PADDING)
+    def __init__(self, root, config = MainConfiguration()):
+        self.config = config
+        self.dim_dict = {"width": (self.config.get_dimensions(self.__class__.__name__))[0],
+                         "height": (self.config.get_dimensions(self.__class__.__name__))[1]}
+        self.frame_settings = self.config.FRAME_SETTINGS[self.__class__.__name__]
+        super().__init__(root, bg = config.DEFAULT_BG, **self.dim_dict,
+                         **config.FRAME_PADDING)
         self.components = []
-        #label = tk.Label(self, text = self.__class__.__name__)
-        #label.grid(row = 0, column = 0)
-        self.grid_kwargs = grid_kwargs if(len(grid_kwargs)>0) else config.GRID_KWARGS[self.__class__.__name__]
+        self.grid_kwargs = self.frame_settings["grid_kwargs"]
 
     def grid(self, **kwargs):
         if(len(kwargs) == 0):
@@ -29,19 +30,22 @@ class AbstractFrame(Frame):
 
 
 class MasterHeaderFrame(AbstractFrame):
-    def __init__(self, root, config = MainConfiguration()):
-        super().__init__(root, 0, "HEADER_DIM", config)
+    def __init__(self, root):
+        super().__init__(root)
 
 
-class MainFrame(AbstractFrame):
-    def __init__(self, root, config = MainConfiguration(), side ="MasterLeftFrame"):
-        side_index = 1 if side == "MasterLeftFrame" else 2
-        super().__init__(root, side_index, "HEADER_DIM", config, grid_kwargs = config.GRID_KWARGS[side])
+class MasterLeftFrame(AbstractFrame):
+    def __init__(self, root):
+        super().__init__(root)
+
+class MasterRightFrame(AbstractFrame):
+    def __init__(self, root):
+        super().__init__(root)
 
 
 class SimulationFrame(AbstractFrame):
-    def __init__(self, root, config = MainConfiguration()):
-        super().__init__(root, 2, "SIMULATION_DIM", config)
+    def __init__(self, root):
+        super().__init__(root)
 
 
         self.ViewBox = ConcreteSimulation(container=BoxOfSubjects())
@@ -52,12 +56,14 @@ class SimulationFrame(AbstractFrame):
     def get_animated_object(self):
         return self.ViewBox
 
+
 class GraphFrame(AbstractFrame):
-    def __init__(self, root, config = MainConfiguration()):
-        super().__init__(root, 2, "GRAPH_DIM", config)
+    def __init__(self, root):
+        super().__init__(root)
         self.ViewBox = TKAreaChart(root = self)
         self.canvas = self.ViewBox.fig
         self.canvas.grid()
+
 
 class IdentifiableScale(tk.Scale):
     def __init__(self, root, my_name , **kwargs):
@@ -66,16 +72,15 @@ class IdentifiableScale(tk.Scale):
 
 
 class ParametersFrame(AbstractFrame):
-    def __init__(self, root, config = MainConfiguration()):
-        super().__init__(root, 1, "PARAMETERS_DIM", config)
+    def __init__(self, root):
+        super().__init__(root)
         i = 0
-        dims = config.get_dimensions(1, "PARAMETERS_DIM")
 
-        canvas = tk.Canvas(self, width = dims[0], height = dims[1])
+        canvas = tk.Canvas(self, **self.dim_dict)
 
         scrollbar = Scrollbar(self, orient = "vertical", command=canvas.yview)
 
-        scrollable_frame = Frame(canvas, bg = config.DEFAULT_BG, width = dims[0])
+        scrollable_frame = Frame(canvas, bg = self.config.DEFAULT_BG, width = self.dim_dict["width"])
 
         scrollable_frame.bind(
             "<Configure>",
@@ -84,14 +89,14 @@ class ParametersFrame(AbstractFrame):
             )
         )
 
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw", width = dims[0])
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw", width = self.dim_dict["width"])
 
         canvas.configure(yscrollcommand=scrollbar.set)
         self.sliders = []
 
-        for k, v in config.PARAMETERS_UI_SETTINGS.general.items():
+        for k, v in self.config.PARAMETERS_UI_SETTINGS.general.items():
             _constructor = IdentifiableScale
-            label = tk.Label(scrollable_frame, text = v[1], bg = config.DEFAULT_BG)
+            label = tk.Label(scrollable_frame, text = v[1], bg = self.config.DEFAULT_BG)
             label.grid(row = i, column = 0, sticky = "we")
 
             resolution = 1/100 if v[2][1] == 1 else 1
@@ -100,10 +105,10 @@ class ParametersFrame(AbstractFrame):
                                            k,
                                            from_ = v[2][0],
                                            to = v[2][1],
-                                           length=dims[0]/2,
+                                           length=self.dim_dict["width"],
                                            resolution = resolution,
                                            orient = tk.HORIZONTAL,
-                                           bg = config.DEFAULT_BG)
+                                           bg = self.config.DEFAULT_BG)
             if "RANGE" in k:
                 config_key = k[0:-4]
                 index = 0 if "MIN" not in k else 1
@@ -119,24 +124,23 @@ class ParametersFrame(AbstractFrame):
             self.sliders.append(control_element)
             i += 2
 
-        canvas.grid(row=0, column=0, sticky = "nwse")
-        scrollbar.grid(row=0, column=1, sticky="ns")
+        canvas.grid(row=0, column=1, sticky = "nwse")
+        scrollbar.grid(row=0, column=0, sticky="ns")
 
 
 class StatsFrame(AbstractFrame):
-    def __init__(self, root, config = MainConfiguration()):
-        super().__init__(root, 2, "STATS_DIM", config)
-
+    def __init__(self, root):
+        super().__init__(root)
         self.ViewBox =TKStats(self)
 
 
 class ScenarioFrame(AbstractFrame):
-    def __init__(self, root, config = MainConfiguration()):
-        super().__init__(root, 1, "SCENARIO_DIM", config)
+    def __init__(self, root):
+        super().__init__(root)
 
         self.components = []
 
-        for v in config.SCENARIO_CONFIG.values():
+        for v in self.config.SCENARIO_CONFIG.values():
             self.components.append(Button(self, **v))
 
         for i, c in enumerate(self.components):
@@ -144,12 +148,12 @@ class ScenarioFrame(AbstractFrame):
 
 class ButtonsFrame(AbstractFrame):
 
-    def __init__(self, root, config = MainConfiguration()):
-        super().__init__(root, 2, "BUTTONS_DIM", config)
+    def __init__(self, root):
+        super().__init__(root)
 
         self.components = []
 
-        for v in config.BUTTONS_CONFIG.values():
+        for v in self.config.BUTTONS_CONFIG.values():
             self.components.append(Button(self, **v))
 
         for i,c in enumerate(self.components):
@@ -159,28 +163,30 @@ class ButtonsFrame(AbstractFrame):
 class TkinterPLTBuilder():
     def __init__(self, config = MainConfiguration(), window = None):
         self.window = tk.TK() if not window else window
+        self.config = config
         self.components = {}
+
+        self.columns = [MasterLeftFrame(self.window),
+                         MasterRightFrame(self.window)]
 
     def build(self):
         # master grid components
         #self.components["MasterHeaderFrame"] = MasterHeaderFrame(self.window)
-        self.components["MasterLeftFrame"] = MainFrame(self.window, side = "MasterLeftFrame")
-        self.components["MasterRightFrame"] = MainFrame(self.window, side = "MasterRightFrame")
+        frames = [ScenarioFrame, ParametersFrame, GraphFrame, StatsFrame, SimulationFrame, ButtonsFrame]
         # child components
-        self.components["ScenarioFrame"] = ScenarioFrame(self.components["MasterLeftFrame"])
-        self.components["ParametersFrame"] = ParametersFrame(self.components["MasterLeftFrame"])
-        self.components["GraphFrame"] = GraphFrame(self.components["MasterRightFrame"])
-        self.components["StatsFrame"] = StatsFrame(self.components["MasterRightFrame"])
-        self.components["SimulationFrame"] = SimulationFrame(self.components["MasterRightFrame"])
-        self.components["ButtonsFrame"] = ButtonsFrame(self.components["MasterRightFrame"])
+        for f in frames:
+            name = f.__name__
+            frame_settings = self.config.FRAME_SETTINGS[name]
+            parent = self.columns[frame_settings["column"]]
+            self.components[name] = f(parent)
+            self.components[name].grid(**frame_settings["grid_kwargs"])
 
         # The plot observing the simulation
         self.components["GraphFrame"].ViewBox.observe(self.components["SimulationFrame"].ViewBox)
         self.components["StatsFrame"].ViewBox.observe(self.components["SimulationFrame"].ViewBox)
 
-
-        for v in self.components.values():
-            v.grid()
+        self.columns[0].grid(**self.config.FRAME_SETTINGS["MasterLeftFrame"]["grid_kwargs"])
+        self.columns[1].grid(**self.config.FRAME_SETTINGS["MasterRightFrame"]["grid_kwargs"])
 
     def get_component(self, key):
         if key in list(self.components.keys()):

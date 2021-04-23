@@ -191,19 +191,9 @@ class MainConfiguration(object):
 
             self.DPI = 96
             self.DEFAULT_BG = Theme().default_bg
-
-            self.COLUMNS_RATIO = 0.4
-
-            self.SIMULATION_DIM = 0.4
-            self.HEADER_DIM = 0.1
-            self.GRAPH_DIM = 0.3
-
             self.FRAME_PADDING = dict(padx = 10, pady = 10)
 
-            self.PARAMETERS_DIM = 0.8
-            self.BUTTONS_DIM = 0.1
-            self.SCENARIO_DIM = 0.1
-            self.STATS_DIM = 0.1
+            self.COLUMNS_RATIO = [0.4, 0.55]
 
             # scenario and buttons config
 
@@ -213,18 +203,35 @@ class MainConfiguration(object):
             self.SCENARIO_CONFIG = {"SIMPLE": dict(text="Simple", **Theme().scenario_attributes),
                                     "CENTRAL": dict(text="Central Location", **Theme().scenario_attributes),
                                     "COMMUNITIES": dict(text="Communities", **Theme().scenario_attributes)}
-            self.GRID_KWARGS = dict()
-            self.GRID_KWARGS["MasterHeaderFrame"] = dict(row=0, column=0, columnspan=2, sticky="we")
-            self.GRID_KWARGS["MasterLeftFrame"] = dict(row=1, column=0, sticky="nwe")
-            self.GRID_KWARGS["MasterRightFrame"] = dict(row=1, column=1, sticky="nwe")
 
-            self.GRID_KWARGS["GraphFrame"] = dict(row=0, column=0)
-            self.GRID_KWARGS["StatsFrame"] = dict(row=1, column=0)
+            self.FRAME_SETTINGS = dict()
+            self.FRAME_SETTINGS["MasterHeaderFrame"] = dict(height = 0.1, column = 0,
+                                                            grid_kwargs =dict(row=0, column=0, columnspan=2, sticky="we"))
 
-            self.GRID_KWARGS["SimulationFrame"] = dict(row=2, column=0)
-            self.GRID_KWARGS["ButtonsFrame"] = dict(row=3, column=0)
-            self.GRID_KWARGS["ScenarioFrame"] = dict(row=0, column=0)
-            self.GRID_KWARGS["ParametersFrame"] = dict(row=1, column=0)
+            self.FRAME_SETTINGS["MasterLeftFrame"] = dict(height = 0.9, column = 0,
+                                                          grid_kwargs =dict(row=0, column=0, sticky="nwe"))
+
+            self.FRAME_SETTINGS["MasterRightFrame"] = dict(height = 0.9, column = 1,
+                                                           grid_kwargs =dict(row=0, column=1, sticky="nwe"))
+
+            self.FRAME_SETTINGS["GraphFrame"] = dict(height = 0.3, column = 1,
+                                                     grid_kwargs =dict(row=0, column=0))
+
+            self.FRAME_SETTINGS["StatsFrame"] = dict(height = 0.05, column = 1,
+                                                     grid_kwargs =dict(row=1, column=0))
+
+            self.FRAME_SETTINGS["SimulationFrame"] = dict(height = 0.4, column = 1,
+                                                          grid_kwargs =dict(row=2, column=0))
+
+            self.FRAME_SETTINGS["ButtonsFrame"] = dict(height = 0.1, column = 1,
+                                                       grid_kwargs =dict(row=3, column=0))
+
+            self.FRAME_SETTINGS["ScenarioFrame"] = dict(height = 0.1, column = 0,
+                                                        grid_kwargs =dict(row=0, column=0))
+
+            self.FRAME_SETTINGS["ParametersFrame"] = dict(height = 0.8, column = 0,
+                                                          grid_kwargs =dict(row=1, column=0))
+
             self.PARAMETERS_UI_SETTINGS = SimulationParametersUIConfig()
 
     def __setattr__(self, key, value):
@@ -250,18 +257,15 @@ class MainConfiguration(object):
         return [self.MAIN_CANVAS_SIZE[0], self.HEADER_FRAME_HEIGHT]
 
     def get_main_subjects_box_dimensions(self):
-        max_x, max_y = self.get_dimensions(1, "SIMULATION_DIM")
+        max_x, max_y = self.get_dimensions("SimulationFrame")
         return [[0, max_x], [0, max_y]]
 
-    def get_dimensions(self, column, key):
+    def get_dimensions(self, key):
+        sett = self.FRAME_SETTINGS[key]
+        row_ratio = sett["height"]
+        column_ratio = self.COLUMNS_RATIO[sett["column"]]
 
-        if column == 0:
-            col_ratio = 1
-        else:
-            col_ratio = self.COLUMNS_RATIO if column == 1 else 1 - self.COLUMNS_RATIO
-        if column == 2:
-            say_hi = 1
-        col_width = col_ratio * self.MAIN_CANVAS_SIZE[0]
-        row_ratio = getattr(self, key)
+        col_width = column_ratio * self.MAIN_CANVAS_SIZE[0]
+
         row_height = row_ratio * self.MAIN_CANVAS_SIZE[1]
         return [int(col_width), int(row_height)]

@@ -39,7 +39,7 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
     def __init__(self, config=MainConfiguration(), container=None):
         super().__init__()
         self.config = config
-        self.width, self.height = config.get_dimensions(1, "SIMULATION_DIM")
+        self.width, self.height = config.get_dimensions("SimulationFrame")
         self.DPI = config.DPI
 
         self._marker_radius = config.SUBJECT_SIZE

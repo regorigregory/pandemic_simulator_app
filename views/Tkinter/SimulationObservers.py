@@ -57,7 +57,8 @@ class TKStats(Observer):
 class TKAreaChart(Observer):
     def __init__(self, root=None):
         super().__init__()
-        self.width, self.height = self.config.get_dimensions(1, "GRAPH_DIM")
+        self.width, self.height = self.config.get_dimensions("GraphFrame")
+        self.width = self.width - 150
         self.DPI = self.config.DPI
         self.frames = 0
         self.log = dict(INFECTED = [[0, 0]], SUSCEPTIBLE = [[0, 0]], IMMUNE = [[0, 0]])

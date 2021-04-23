@@ -10,7 +10,7 @@ class AreaChart:
     def __init__(self):
         self.config = MainConfiguration()
         self.theme = Theme()
-        self.width, self.height = self.config.get_dimensions(1, "GRAPH_DIM")
+        self.width, self.height = self.config.get_dimensions("GRAPH_DIM")
         self.DPI = self.config.DPI
 
         self.fig = plt.figure(figsize=(self.width / self.DPI, self.height / self.DPI), dpi=self.DPI)
