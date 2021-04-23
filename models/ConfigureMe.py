@@ -73,13 +73,12 @@ class SimulationParametersUIConfig(object):
                                                        "The ratio of the initially infected subjects:",
                                                        [0, 1]]
 
+            self.general["SUBJECT_SIZE"] = ["Scale", "Subject size (radius) in pixels:", [1, 15]]
+
             self.general["INFECTION_RADIUS"] = ["Scale", "Infection radius around a subject in pixels:", [1, 100]]
             self.general["CHANCE_OF_INFECTION"] = ["Scale",
                                                    "Infection chance per each day:",
                                                    [0, 1]]
-
-            self.general["SUBJECT_SIZE"] = ["Scale", "Subject size (radius) in pixels:", [1, 15]]
-
 
 
 
@@ -93,11 +92,11 @@ class SimulationParametersUIConfig(object):
                                                   [0,100]]
 
             self.general["INCUBATION_PERIOD_RANGE_MIN"] = ["Scale",
-                                                       "Minimum recovery time (days):",
+                                                       "Minimum incubation period (days):",
                                                        [0, 100]]
 
             self.general["INCUBATION_PERIOD_RANGE_MAX"] = ["Scale",
-                                                           "Maximum recovery time (days):",
+                                                           "Maximum incubation period (days):",
                                                            [0, 100]]
 
             self.general["SUBJECT_COMPLIANCE"] = ["Scale",
@@ -149,6 +148,7 @@ class MainConfiguration(object):
             return cls.instance
 
     def __init__(self):
+
         if MainConfiguration.instance is None:
             MainConfiguration.instance = self
             MainConfiguration.instance.__dict__ = MainConfiguration._shared_data
@@ -235,16 +235,16 @@ class MainConfiguration(object):
             self.PARAMETERS_UI_SETTINGS = SimulationParametersUIConfig()
 
     def __setattr__(self, key, value):
-        if("VELOCITY_MAX" in key):
+        if key == "SUBJECT_VELOCITY_RANGE_MAX":
             value = [-value, value]
-            key = key[0:-3] + "RANGE"
+            key = key[0:-4]
 
         elif("MIN" in key or "MAX" in key):
             index = 0 if "MIN" in key else 1
             key = key[0:-4]
             val = super().__getattribute__(key)
             val[index] = value
-            if val[0] > value[1] or val[1] < val[0]:
+            if val[0] > val[1] or val[1] < val[0]:
                 val[1-index] = val[index]
             value = val
 
