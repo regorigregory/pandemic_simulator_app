@@ -139,6 +139,8 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         return self.ani
 
     def reset(self):
+        self._marker_radius = MainConfiguration().SUBJECT_SIZE
+        self._infection_zone_radius = MainConfiguration().INFECTION_RADIUS + MainConfiguration().SUBJECT_SIZE
         self.ani._stop()
         self.ani = None
         self._box_of_particles = BoxOfSubjects()
