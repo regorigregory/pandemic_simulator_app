@@ -134,7 +134,7 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         self.ani = FuncAnimation(self.fig,
                              animation_function,
                              init_func=init_func,
-                             interval=60,
+                             interval=1000/(MainConfiguration().DAYS_PER_SECOND * MainConfiguration().FRAME_MULTIPLIER),
                              blit = True)
         return self.ani
 

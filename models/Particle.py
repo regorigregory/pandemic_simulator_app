@@ -11,7 +11,7 @@ VectorRange = List[List[float]]
 class Particle:
     def __init__(self, cnf = MainConfiguration()):
         self.position_vector = Particle.init_random_vector(cnf.get_main_subjects_box_dimensions())
-        self.velocity_vector = np.random.uniform(*cnf.SUBJECT_VELOCITY_RANGE, [2,])
+        self.velocity_vector = np.random.uniform(*cnf.SUBJECT_VELOCITY, [2,])
         self.max_x, self.max_y = cnf.get_dimensions("SimulationFrame")
 
 

@@ -66,8 +66,10 @@ class SimulationParametersUIConfig(object):
             self.general["SUBJECT_NUMBER"] = ["Scale",
                                              "The number of subjects:",
                                               [1, 500]]
-
-            self.general["SUBJECT_VELOCITY_RANGE_MAX"] = ["Scale", "The maximum movement speed of a subject:", [1, 10]]
+            self.general["DAYS_PER_SECOND"] = ["Scale",
+                                               "Days per second:",
+                                               [1, 300]]
+            self.general["SUBJECT_VELOCITY"] = ["Scale", "The maximum movement speed of a subject:", [1, 10]]
 
             self.general["INITIAL_INFECTION_RATIO"] = ["Scale",
                                                        "The ratio of the initially infected subjects:",
@@ -83,29 +85,23 @@ class SimulationParametersUIConfig(object):
 
 
 
-            self.general["RECOVERY_TIME_RANGE_MIN"] = ["Scale",
-                                              "Minimum recovery time (days):",
+            self.general["RECOVERY_TIME"] = ["Scale",
+                                              "Recovery time (days):",
                                                   [0,100]]
 
-            self.general["RECOVERY_TIME_RANGE_MAX"] = ["Scale",
-                                              "Maximum recovery time (days):",
-                                                  [0,100]]
 
-            self.general["INCUBATION_PERIOD_RANGE_MIN"] = ["Scale",
-                                                       "Minimum incubation period (days):",
+
+            self.general["INCUBATION_PERIOD"] = ["Scale",
+                                                       "Incubation period (days):",
                                                        [0, 100]]
 
-            self.general["INCUBATION_PERIOD_RANGE_MAX"] = ["Scale",
-                                                           "Maximum incubation period (days):",
-                                                           [0, 100]]
+
 
             self.general["SUBJECT_COMPLIANCE"] = ["Scale",
                                               "What ratio of subjects comply with restrictions:",
                                                   [0, 1]]
 
-            self.general["DAYS_PER_SECOND"] = ["Scale",
-                                           "Days per second:",
-                                               [1, 100]]
+
 
             self.general["LOCKDOWN_AFTER"] = ["Scale",
                                               "Start of the lockdown after the first infection (days):",
@@ -154,8 +150,9 @@ class MainConfiguration(object):
             MainConfiguration.instance.__dict__ = MainConfiguration._shared_data
             self.NUMBER_OF_THREADS = 3
             self.SUBJECT_NUMBER = 300
+            self.FRAME_MULTIPLIER = 5
 
-            self.SUBJECT_VELOCITY_RANGE = [-1, 1]
+            self.SUBJECT_VELOCITY = 1
 
             self.INITIAL_INFECTION_RATIO = 0.5
             self.INFECTION_RADIUS = 15
@@ -163,12 +160,12 @@ class MainConfiguration(object):
 
             self.SUBJECT_SIZE = 5
 
-            self.RECOVERY_TIME_RANGE = [50, 100]
-            self.INCUBATION_PERIOD_RANGE = [2, 10]
+            self.RECOVERY_TIME = 14
+            self.INCUBATION_PERIOD = 2
 
             self.SUBJECT_COMPLIANCE = 1
 
-            self.DAYS_PER_SECOND = 1
+            self.DAYS_PER_SECOND = 10
 
             self.QUARANTINE_AFTER = 0
             self.ASYMPTOMATIC_RATIO = 1
@@ -200,9 +197,15 @@ class MainConfiguration(object):
             self.BUTTONS_CONFIG = {"PAUSE": dict(text="Pause", **Theme().button_attributes),
                                    "RESET": dict(text="Reset", **Theme().button_attributes)}
 
-            self.SCENARIO_CONFIG = {"SIMPLE": dict(text="Simple", **Theme().scenario_attributes),
-                                    "CENTRAL": dict(text="Central Location", **Theme().scenario_attributes),
-                                    "COMMUNITIES": dict(text="Communities", **Theme().scenario_attributes)}
+            self.SCENARIO_CONFIG = {"SIMPLE": ["Button", dict(text="Simple", **Theme().scenario_attributes)],
+                                    "CENTRAL": ["Button", dict(text="Central Location", **Theme().scenario_attributes)],
+                                    "COMMUNITIES": ["Button", dict(text="Communities", **Theme().scenario_attributes)]}
+
+            self.CHECKBOX_CONFIG = {"SOCIAL_DISTANCING_CHECKBOX": ["Checkbutton", dict(text="Social distancing",
+                                                                                  **Theme().scenario_attributes)],
+                                    "QUARANTINE_CHECKBOX": ["Checkbutton", dict(text="Quarantine",
+                                                                       **Theme().scenario_attributes)]
+                                    }
 
             self.FRAME_SETTINGS = dict()
             self.FRAME_SETTINGS["MasterHeaderFrame"] = dict(height = 0.1, column = 0,
@@ -235,9 +238,8 @@ class MainConfiguration(object):
             self.PARAMETERS_UI_SETTINGS = SimulationParametersUIConfig()
 
     def __setattr__(self, key, value):
-        if key == "SUBJECT_VELOCITY_RANGE_MAX":
+        if key == "SUBJECT_VELOCITY":
             value = [-value, value]
-            key = key[0:-4]
 
         elif("MIN" in key or "MAX" in key):
             index = 0 if "MIN" in key else 1

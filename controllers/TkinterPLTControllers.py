@@ -53,3 +53,9 @@ class TkinterSimulationSettings(AbstractController):
         self.ui_elements = sliders
         for slider in self.ui_elements:
             slider.bind("<ButtonRelease>", self.update_config)
+
+class CheckboxController(AbstractController):
+    def bind_functions(self, checkboxes):
+        self.ui_elements = checkboxes
+        for slider in self.ui_elements:
+            slider.bind("<ButtonRelease>", self.update_config)

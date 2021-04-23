@@ -11,9 +11,9 @@ class Subject:
     def __init__(self, config = MainConfiguration(), am_i_infected = False):
 
         self._infection_radius = Subject.set_random_attribute_safely(config.INFECTION_RADIUS)
-        self._recovery_time = Subject.set_random_attribute_safely(config.INFECTION_RADIUS)
-        self._incubation_period = Subject.set_random_attribute_safely(config.INCUBATION_PERIOD_RANGE)
-        self._infection_probability = Subject.set_random_attribute_safely(config.CHANCE_OF_INFECTION)
+        self._recovery_time = Subject.set_random_attribute_safely(config.RECOVERY_TIME * config.FRAME_MULTIPLIER)
+        self._incubation_period = Subject.set_random_attribute_safely(config.INCUBATION_PERIOD * config.FRAME_MULTIPLIER)
+        self._infection_probability = Subject.set_random_attribute_safely(config.CHANCE_OF_INFECTION/config.FRAME_MULTIPLIER)
 
         self._particle = Particle(config)
         self._infection_radius = self._particle.get_radius() + config.INFECTION_RADIUS

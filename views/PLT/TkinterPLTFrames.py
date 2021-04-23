@@ -100,19 +100,28 @@ class ParametersFrame(AbstractFrame):
             label.grid(row = i, column = 0, sticky = "we")
 
             resolution = 1/100 if v[2][1] == 1 else 1
+            if "RANGE" not in k:
+                min, max = v[2]
+            elif "MIN" in k:
+                min, max = v[2][0], v[2][0] + v[2][1] /2
+            else:
+                min, max = v[2][0] + v[2][1] /2, v[2][1]
 
             control_element = _constructor(scrollable_frame,
                                            k,
-                                           from_ = v[2][0],
-                                           to = v[2][1],
+                                           from_ = min,
+                                           to = max,
                                            length=self.dim_dict["width"],
                                            resolution = resolution,
                                            orient = tk.HORIZONTAL,
                                            bg = self.config.DEFAULT_BG)
+
             if "RANGE" in k:
                 config_key = k[0:-4]
                 index = 0 if "MIN" not in k else 1
                 config_value = getattr(MainConfiguration(), config_key)[index]
+            elif "SUBJECT_VELOCITY" == k:
+                config_value = getattr(MainConfiguration(), k)[1]
             else:
                 config_value = getattr(MainConfiguration(), k)
             control_element.set(config_value)
@@ -141,7 +150,11 @@ class ScenarioFrame(AbstractFrame):
         self.components = []
 
         for v in self.config.SCENARIO_CONFIG.values():
-            self.components.append(Button(self, **v))
+            constructor = getattr(tk, v[0])
+            self.components.append(constructor(self, **v[1]))
+        for k, v in self.config.CHECKBOX_CONFIG.items():
+            constructor = getattr(tk, v[0])
+            self.components.append(constructor(self, **v[1]))
 
         for i, c in enumerate(self.components):
             c.grid(row=1, column=i)
