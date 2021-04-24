@@ -148,16 +148,24 @@ class ScenarioFrame(AbstractFrame):
         super().__init__(root)
 
         self.components = []
+        self.checkboxes = dict()
 
         for v in self.config.SCENARIO_CONFIG.values():
             constructor = getattr(tk, v[0])
             self.components.append(constructor(self, **v[1]))
         for k, v in self.config.CHECKBOX_CONFIG.items():
             constructor = getattr(tk, v[0])
-            self.components.append(constructor(self, **v[1]))
+            var = tk.BooleanVar(master = self, name = k, value = False)
+            self.checkboxes[k] = constructor(self, variable = var, **v[1])
+            self.components.append(self.checkboxes[k])
+            setattr(MainConfiguration(), k, var)
 
         for i, c in enumerate(self.components):
             c.grid(row=1, column=i)
+
+    def get_checkboxes(self):
+        return self.checkboxes
+
 
 class ButtonsFrame(AbstractFrame):
 

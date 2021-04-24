@@ -1,6 +1,5 @@
 from enum import Enum
-
-
+import tkinter as tk
 class InfectionStatuses(Enum):
     SUSCEPTIBLE = 0
     INFECTED = 1
@@ -10,6 +9,7 @@ class InfectionStatuses(Enum):
 class SubjectTypes(Enum):
     PARTICLE = 0,
     SUBJECT = 1
+
 
 class Theme(object):
     _shared_data = dict()
@@ -38,6 +38,7 @@ class Theme(object):
             self.area_plot_bg = "#D3BCCC"
             self.area_plot_colours = ["#4A306D", "#0E273C"]
 
+
 class SimulationParametersUIConfig(object):
     _shared_data = dict()
     instance = None
@@ -60,11 +61,10 @@ class SimulationParametersUIConfig(object):
             self.central = dict()
             self.communities = dict()
 
-
             self.mode = ["general"]
 
             self.general["SUBJECT_NUMBER"] = ["Scale",
-                                             "The number of subjects:",
+                                              "The number of subjects:",
                                               [1, 500]]
             self.general["DAYS_PER_SECOND"] = ["Scale",
                                                "Days per second:",
@@ -82,56 +82,44 @@ class SimulationParametersUIConfig(object):
                                                    "Infection chance per each day:",
                                                    [0, 1]]
 
-
-
-
             self.general["RECOVERY_TIME"] = ["Scale",
-                                              "Recovery time (days):",
-                                                  [0,100]]
-
-
+                                             "Recovery time (days):",
+                                             [0, 100]]
 
             self.general["INCUBATION_PERIOD"] = ["Scale",
-                                                       "Incubation period (days):",
-                                                       [0, 100]]
-
-
+                                                 "Incubation period (days):",
+                                                 [0, 100]]
 
             self.general["SUBJECT_COMPLIANCE"] = ["Scale",
-                                              "What ratio of subjects comply with restrictions:",
+                                                  "What ratio of subjects comply with restrictions:",
                                                   [0, 1]]
-
-
 
             self.general["LOCKDOWN_AFTER"] = ["Scale",
                                               "Start of the lockdown after the first infection (days):",
                                               [0, 100]]
             self.general["ASYMPTOMATIC_RATIO"] = ["Scale",
-                                                     "The ratio of infected subjects who are asymptomatic (won't be moved to quarantine):",
-                                                     [0, 1]]
+                                                  "The ratio of infected subjects who are asymptomatic (won't be moved to quarantine):",
+                                                  [0, 1]]
             self.quarantine["QUARANTINE_AFTER"] = ["Scale",
                                                    "Subject moves into quarantine after this amount of days after the infection:",
                                                    [1, 30]]
 
-
-
-
             self.central["CENTRAL_VISIT_CHANCE"] = ["Scale",
-                                            "Travelling chance to central location:",
-                                            [0, 1]]
-
+                                                    "Travelling chance to central location:",
+                                                    [0, 1]]
 
             self.central["CENTRAL_SUBJECT_NUMBER"] = ["Scale",
-                                              "The number of subjects:",
-                                              [0,500]]
+                                                      "The number of subjects:",
+                                                      [0, 500]]
 
             self.communities["COMMUNITIES_VISIT_CHANCE"] = ["Scale",
-                                                "Travelling chance between communities:",
-                                                [0,1]]
+                                                            "Travelling chance between communities:",
+                                                            [0, 1]]
 
             self.communities["COMMUNITIES_SUBJECT_PER"] = ["Scale",
-                                                             "Travelling chance between communities:",
-                                                             [0, 100]]
+                                                           "Travelling chance between communities:",
+                                                           [0, 100]]
+
 
 class MainConfiguration(object):
     _shared_data = dict()
@@ -176,7 +164,7 @@ class MainConfiguration(object):
             self.COMMUNITIES_VISIT_CHANCE = 1
             self.COMMUNITIES_SUBJECT_PER = 100
 
-            self.SOCIAL_DISTANCING = False
+            self.SOCIAL_DISTANCING_MODE = False
             self.QUARANTINE_MODE = False
             self.LOCKDOWN_MODE = False
 
@@ -188,7 +176,7 @@ class MainConfiguration(object):
 
             self.DPI = 96
             self.DEFAULT_BG = Theme().default_bg
-            self.FRAME_PADDING = dict(padx = 10, pady = 10)
+            self.FRAME_PADDING = dict(padx=10, pady=10)
 
             self.COLUMNS_RATIO = [0.4, 0.55]
 
@@ -201,53 +189,68 @@ class MainConfiguration(object):
                                     "CENTRAL": ["Button", dict(text="Central Location", **Theme().scenario_attributes)],
                                     "COMMUNITIES": ["Button", dict(text="Communities", **Theme().scenario_attributes)]}
 
-            self.CHECKBOX_CONFIG = {"SOCIAL_DISTANCING_CHECKBOX": ["Checkbutton", dict(text="Social distancing",
-                                                                                  **Theme().scenario_attributes)],
-                                    "QUARANTINE_CHECKBOX": ["Checkbutton", dict(text="Quarantine",
-                                                                       **Theme().scenario_attributes)]
+            self.CHECKBOX_CONFIG = {"SOCIAL_DISTANCING_MODE": ["Checkbutton", dict(text="Social distancing",
+                                                                                   name="SOCIAL_DISTANCING_MODE".lower(),
+                                                                                   **Theme().scenario_attributes)],
+
+                                    "QUARANTINE_MODE": ["Checkbutton", dict(text="Quarantine",
+                                                                            name = "QUARANTINE_MODE".lower(),
+                                                                            **Theme().scenario_attributes)],
+                                    "LOCKDOWN_MODE": ["Checkbutton",
+                                                      dict(text="Lockdown",
+                                                           name = "LOCKDOWN_MODE".lower(),
+                                                           **Theme().scenario_attributes)]
                                     }
 
             self.FRAME_SETTINGS = dict()
-            self.FRAME_SETTINGS["MasterHeaderFrame"] = dict(height = 0.1, column = 0,
-                                                            grid_kwargs =dict(row=0, column=0, columnspan=2, sticky="we"))
+            self.FRAME_SETTINGS["MasterHeaderFrame"] = dict(height=0.1, column=0,
+                                                            grid_kwargs=dict(row=0, column=0, columnspan=2,
+                                                                             sticky="we"))
 
-            self.FRAME_SETTINGS["MasterLeftFrame"] = dict(height = 0.9, column = 0,
-                                                          grid_kwargs =dict(row=0, column=0, sticky="nwe"))
+            self.FRAME_SETTINGS["MasterLeftFrame"] = dict(height=0.9, column=0,
+                                                          grid_kwargs=dict(row=0, column=0, sticky="nwe"))
 
-            self.FRAME_SETTINGS["MasterRightFrame"] = dict(height = 0.9, column = 1,
-                                                           grid_kwargs =dict(row=0, column=1, sticky="nwe"))
+            self.FRAME_SETTINGS["MasterRightFrame"] = dict(height=0.9, column=1,
+                                                           grid_kwargs=dict(row=0, column=1, sticky="nwe"))
 
-            self.FRAME_SETTINGS["GraphFrame"] = dict(height = 0.3, column = 1,
-                                                     grid_kwargs =dict(row=0, column=0))
+            self.FRAME_SETTINGS["GraphFrame"] = dict(height=0.3, column=1,
+                                                     grid_kwargs=dict(row=0, column=0))
 
-            self.FRAME_SETTINGS["StatsFrame"] = dict(height = 0.05, column = 1,
-                                                     grid_kwargs =dict(row=1, column=0))
+            self.FRAME_SETTINGS["StatsFrame"] = dict(height=0.05, column=1,
+                                                     grid_kwargs=dict(row=1, column=0))
 
-            self.FRAME_SETTINGS["SimulationFrame"] = dict(height = 0.4, column = 1,
-                                                          grid_kwargs =dict(row=2, column=0))
+            self.FRAME_SETTINGS["SimulationFrame"] = dict(height=0.4, column=1,
+                                                          grid_kwargs=dict(row=2, column=0))
 
-            self.FRAME_SETTINGS["ButtonsFrame"] = dict(height = 0.1, column = 1,
-                                                       grid_kwargs =dict(row=3, column=0))
+            self.FRAME_SETTINGS["ButtonsFrame"] = dict(height=0.1, column=1,
+                                                       grid_kwargs=dict(row=3, column=0))
 
-            self.FRAME_SETTINGS["ScenarioFrame"] = dict(height = 0.1, column = 0,
-                                                        grid_kwargs =dict(row=0, column=0))
+            self.FRAME_SETTINGS["ScenarioFrame"] = dict(height=0.1, column=0,
+                                                        grid_kwargs=dict(row=0, column=0))
 
-            self.FRAME_SETTINGS["ParametersFrame"] = dict(height = 0.8, column = 0,
-                                                          grid_kwargs =dict(row=1, column=0))
+            self.FRAME_SETTINGS["ParametersFrame"] = dict(height=0.8, column=0,
+                                                          grid_kwargs=dict(row=1, column=0))
 
             self.PARAMETERS_UI_SETTINGS = SimulationParametersUIConfig()
+
+    def __getattr__(self, item):
+        temp = super().__getattribute__(item)
+        if isinstance(temp, tk.BooleanVar):
+            return temp.get()
+        else:
+            return item
 
     def __setattr__(self, key, value):
         if key == "SUBJECT_VELOCITY":
             value = [-value, value]
 
-        elif("MIN" in key or "MAX" in key):
+        elif ("MIN" in key or "MAX" in key):
             index = 0 if "MIN" in key else 1
             key = key[0:-4]
             val = super().__getattribute__(key)
             val[index] = value
             if val[0] > val[1] or val[1] < val[0]:
-                val[1-index] = val[index]
+                val[1 - index] = val[index]
             value = val
 
         super().__setattr__(key, value)

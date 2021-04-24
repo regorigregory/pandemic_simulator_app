@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 
 
 class AbstractController(ABC):
+    def __init__(self):
+        self.ui_elements = []
     @abstractmethod
     def bind_functions(self, frame_of_elements):
         pass
@@ -41,7 +43,7 @@ class TkinterButtons(AbstractController):
 
 class TkinterSimulationSettings(AbstractController):
     def __init__(self):
-        pass
+        super().__init__()
 
     def update_config(self, event):
         key = event.widget.my_name_is
@@ -54,8 +56,7 @@ class TkinterSimulationSettings(AbstractController):
         for slider in self.ui_elements:
             slider.bind("<ButtonRelease>", self.update_config)
 
-class CheckboxController(AbstractController):
-    def bind_functions(self, checkboxes):
-        self.ui_elements = checkboxes
-        for slider in self.ui_elements:
-            slider.bind("<ButtonRelease>", self.update_config)
+class LambdaController(AbstractController):
+    def bind_functions(self, element, action, function):
+        self.ui_elements.append(element)
+        element.bind(action, function)

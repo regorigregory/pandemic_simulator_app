@@ -14,6 +14,8 @@ class Subject:
         self._recovery_time = Subject.set_random_attribute_safely(config.RECOVERY_TIME * config.FRAME_MULTIPLIER)
         self._incubation_period = Subject.set_random_attribute_safely(config.INCUBATION_PERIOD * config.FRAME_MULTIPLIER)
         self._infection_probability = Subject.set_random_attribute_safely(config.CHANCE_OF_INFECTION/config.FRAME_MULTIPLIER)
+        self._do_i_socially_distance = MainConfiguration().SUBJECT_COMPLIANCE > np.random.uniform(0, 1) \
+            if MainConfiguration().SOCIAL_DISTANCING_MODE else False
 
         self._particle = Particle(config)
         self._infection_radius = self._particle.get_radius() + config.INFECTION_RADIUS
