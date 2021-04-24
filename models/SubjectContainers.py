@@ -1,13 +1,15 @@
 from models.ConfigureMe import SubjectTypes, MainConfiguration
 from models.Particle import Particle
 from models.Subject import Subject
-from models.InfectionHandlers import InfectionHandlerInterface, AxisBased, ParallelAxisBased
+from models.InfectionHandlers import InfectionHandlerInterface, AxisBased
 import math
 import numpy as np
 import threading
 from typing import List
 import time
 from abc import ABC, abstractmethod
+
+
 class ContainerOfSubjects(ABC):
     @abstractmethod
     def reset(self):
@@ -39,15 +41,24 @@ class BoxOfSubjects(ContainerOfSubjects):
             constructor = Subject
         limit = number_of_subjects if number_of_subjects else config.SUBJECT_NUMBER
         for i in range(0, limit):
-            p = constructor(config)
-            self.contents.append(p)
+            j = 0
+            s = constructor(config)
+            while(j < len(self.contents)):
+                already_there = self.contents[j]
+                if s.are_we_too_close(already_there):
+                    s = constructor(config)
+                    j = 0
+                else:
+                    j += 1
+            self.contents.append(s)
             #self.add_particle_to_grids(p)
 
     def move_guys(self, timestamp, parallel = False, infection_handling = True):
-        for particle in self.contents:
-            particle.get_particle_component().update_location()
         if infection_handling:
             self._infection_handler.many_to_many(timestamp, [self.contents])
+        for particle in self.contents:
+            particle.get_particle_component().update_location()
+
 
 
 if __name__ == "__main__":

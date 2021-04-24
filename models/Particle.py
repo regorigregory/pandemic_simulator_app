@@ -1,11 +1,10 @@
-import random
+from __future__ import annotations
 import math
 from typing import NewType, List
 from models.ConfigureMe import MainConfiguration
 import numpy as np
 Vector = List[float]
 VectorRange = List[List[float]]
-
 
 
 class Particle:
@@ -97,43 +96,39 @@ class Particle:
         except Exception as e:
             print(e)
 
-
     def update_location(self, rate_of_change = 1)->None:
         #self.velocity_vector = self.velocity_vector + self.acceleration_vector * rate_of_change
+
         self.position_vector = self.position_vector + self.velocity_vector * rate_of_change
         self.bounce_back_if_needed()
-
 
     def bounce_back_if_needed(self)->None:
         if self.position_x < self.min_x:
             self.position_x = - self.position_x
             self.velocity_x = - self.velocity_x
-        elif(self.position_x > self.max_x):
+        elif self.position_x > self.max_x :
             self.position_x= 2 * self.max_x - self.position_x
             self.velocity_x = - self.velocity_x
+
         if self.position_y < self.min_y:
             self.position_y = - self.position_y
             self.velocity_y = - self.velocity_y
-        elif (self.position_y > self.max_y):
+        elif  self.position_y > self.max_y:
             self.position_y = 2 * self.max_y - self.position_y
             self.velocity_y = - self.velocity_y
 
 
-    def have_we_encountered(self, other)->bool:
-        #are we infecting each other
-        #check if we have crossed paths!
-        pass
-
-    def should_we_socially_distance(self)->bool:
-        #check if we should turn back
-        #bounce back at the point of collision
-        pass
-
     @staticmethod
-    def init_random_vector(range:VectorRange)->Vector:
+    def init_random_vector(range: VectorRange) -> Vector:
         x = np.random.uniform(*range[0])
         y = np.random.uniform(*range[1])
         return np.array([x,y])
+
+    def rotate_velocity(self, angle) -> Particle:
+        new_x_velocity = self.velocity_x * np.cos(angle) + self.velocity_y * np.sin(angle)
+        self.velocity_y = - self.velocity_x * np.sin(angle) + self.velocity_y * np.cos(angle)
+        self.velocity_x = new_x_velocity
+        return self.velocity_vector
 
 
 if __name__ == "__main__":

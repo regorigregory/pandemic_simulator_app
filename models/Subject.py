@@ -1,10 +1,9 @@
-import math
+from __future__ import annotations
 from models.ConfigureMe import InfectionStatuses, MainConfiguration
 from models.Particle import Particle
-from enum import Enum
 import numpy as np
 from models.ConfigureMe import MainConfiguration
-
+from typing import List, Union
 
 class Subject:
 
@@ -27,10 +26,10 @@ class Subject:
             self._got_infected_at = -1
         self._last_checkup = 0
 
-    def get_infection_radius(self):
+    def get_infection_radius(self) -> float:
         return self._infection_radius
 
-    def get_particle_component(self):
+    def get_particle_component(self) -> Particle:
         return self._particle
 
     def _have_i_recovered(self, timestamp: int) -> bool:
@@ -42,7 +41,7 @@ class Subject:
             return True
         return False
 
-    def get_infection_timestamp(self):
+    def get_infection_timestamp(self) -> int:
         return self._got_infected_at
 
     def get_infection_status(self, timestamp: int) -> InfectionStatuses:
@@ -54,13 +53,13 @@ class Subject:
         self._last_checkup = timestamp
         return self._infection_status
 
-    def is_immune(self, timestamp):
+    def is_immune(self, timestamp) -> bool:
         return self.get_infection_status(timestamp) == InfectionStatuses.IMMUNE
 
-    def is_infected(self, timestamp):
+    def is_infected(self, timestamp) -> bool:
         return self.get_infection_status(timestamp) == InfectionStatuses.INFECTED
 
-    def is_susceptible(self, timestamp):
+    def is_susceptible(self, timestamp) -> bool:
         return self.get_infection_status(timestamp) == InfectionStatuses.SUSCEPTIBLE
 
     def get_infection_probability(self) -> float:
@@ -69,14 +68,14 @@ class Subject:
     def get_recovery_time(self) -> float:
         return self._recovery_time
 
-    def _infect_me_if_you_can(self, timestamp, other):
+    def _infect_me_if_you_can(self, timestamp, other) -> None:
         if (self.get_infection_status(timestamp) == InfectionStatuses.SUSCEPTIBLE
                 and other.get_infection_status(timestamp) == InfectionStatuses.INFECTED
                 and self.get_infection_probability() >= np.random.uniform()):
 
             self._infect_me(timestamp)
 
-    def _infect_me(self, timestamp):
+    def _infect_me(self, timestamp) -> None:
         if self.get_infection_status(timestamp) == InfectionStatuses.SUSCEPTIBLE:
             self._infection_status = InfectionStatuses.INFECTED
             self._got_infected_at = timestamp
@@ -85,16 +84,48 @@ class Subject:
         self._infect_me_if_you_can(timestamp, other)
         other._infect_me_if_you_can(timestamp, self)
 
-    def are_we_too_close(self, other):
+    def are_we_too_close(self, other) -> bool:
+
         p1 = self.get_particle_component().position_vector
         p2 = other.get_particle_component().position_vector
+
         distance = np.sqrt(np.sum((p2 - p1)**2))
+
         if self.get_infection_radius() >= distance:
             return True
         return False
 
+    def resolve_collision(self, other: Subject):
+
+        particle = self.get_particle_component()
+        otherParticle = other.get_particle_component()
+        x_velocity_diff = particle.velocity_x - otherParticle.velocity_x
+        y_velocity_diff = particle.velocity_y - otherParticle.velocity_y
+
+        x_dist = otherParticle.position_x - particle.position_x
+        y_dist = otherParticle.position_y - particle.position_y
+
+        if x_velocity_diff * x_dist + y_velocity_diff * y_dist >= 0:
+
+            angle = np.arctan2(otherParticle.position_y - particle.position_y,
+                               otherParticle.position_x - particle.position_x)
+            u1 = particle.rotate_velocity(angle)
+            u2 = otherParticle.rotate_velocity(angle)
+
+            # one dimensional newtonian
+            # since each particle's mass == 1, the equation has been simplified
+            # https://en.wikipedia.org/wiki/Elastic_collision#:~:text=One%2Ddimensional%20Newtonian,-Play%20media&text=This%20simply%20corresponds%20to%20the,reference%20with%20constant%20translational%20velocity.
+
+            particle.velocity_vector = [u2[0], u1[1]]
+            otherParticle.velocity_vector = [u1[0], u2[1]]
+            particle.rotate_velocity(-angle)
+            otherParticle.rotate_velocity(-angle)
+
+
+
+
     @staticmethod
-    def set_random_attribute_safely(const_or_arr):
+    def set_random_attribute_safely(const_or_arr) -> Union[int, List, float]:
         if isinstance(const_or_arr, list):
             return np.random.uniform(*const_or_arr)
         return const_or_arr

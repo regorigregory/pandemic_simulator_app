@@ -137,7 +137,7 @@ class MainConfiguration(object):
             MainConfiguration.instance = self
             MainConfiguration.instance.__dict__ = MainConfiguration._shared_data
             self.NUMBER_OF_THREADS = 3
-            self.SUBJECT_NUMBER = 300
+            self.SUBJECT_NUMBER = 50
             self.FRAME_MULTIPLIER = 5
 
             self.SUBJECT_VELOCITY = 1
