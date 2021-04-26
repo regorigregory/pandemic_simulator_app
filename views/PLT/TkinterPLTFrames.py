@@ -74,7 +74,6 @@ class IdentifiableScale(tk.Scale):
 class ParametersFrame(AbstractFrame):
     def __init__(self, root):
         super().__init__(root)
-        i = 0
 
         canvas = tk.Canvas(self, **self.dim_dict)
 
@@ -93,12 +92,14 @@ class ParametersFrame(AbstractFrame):
 
         canvas.configure(yscrollcommand=scrollbar.set)
         self.sliders = []
-
+        i = j = 0
         for k, v in self.config.PARAMETERS_UI_SETTINGS.general.items():
             _constructor = IdentifiableScale
             label = tk.Label(scrollable_frame, text = v[1], bg = self.config.DEFAULT_BG)
-            label.grid(row = i, column = 0, sticky = "we")
+            col = j % 2
+            j += 1
 
+            label.grid(row = i, column = col, sticky = "we")
             resolution = 1/100 if v[2][1] == 1 else 1
             if "RANGE" not in k:
                 min, max = v[2]
@@ -111,7 +112,7 @@ class ParametersFrame(AbstractFrame):
                                            k,
                                            from_ = min,
                                            to = max,
-                                           length=self.dim_dict["width"],
+                                           length=self.dim_dict["width"] / 2,
                                            resolution = resolution,
                                            orient = tk.HORIZONTAL,
                                            bg = self.config.DEFAULT_BG)
@@ -126,13 +127,11 @@ class ParametersFrame(AbstractFrame):
                 config_value = getattr(MainConfiguration(), k)
             control_element.set(config_value)
 
-
-
-
-            control_element.grid(row = i + 1, column = 0, sticky = "we")
+            col = j % 2
+            j += 1
+            control_element.grid(row = i , column = col, sticky = "we")
             self.sliders.append(control_element)
-            i += 2
-
+            i += 1
         canvas.grid(row=0, column=1, sticky = "nwse")
         scrollbar.grid(row=0, column=0, sticky="ns")
 

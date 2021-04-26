@@ -1,5 +1,7 @@
 from enum import Enum
 import tkinter as tk
+
+
 class InfectionStatuses(Enum):
     SUSCEPTIBLE = 0
     INFECTED = 1
@@ -65,7 +67,7 @@ class SimulationParametersUIConfig(object):
 
             self.general["SUBJECT_NUMBER"] = ["Scale",
                                               "The number of subjects:",
-                                              [1, 500]]
+                                              [1, 200]]
             self.general["DAYS_PER_SECOND"] = ["Scale",
                                                "Days per second:",
                                                [1, 300]]
@@ -98,7 +100,7 @@ class SimulationParametersUIConfig(object):
                                               "Start of the lockdown after the first infection (days):",
                                               [0, 100]]
             self.general["ASYMPTOMATIC_RATIO"] = ["Scale",
-                                                  "The ratio of infected subjects who are asymptomatic (won't be moved to quarantine):",
+                                                  "Asymptomatic patients (won't be moved to quarantine):",
                                                   [0, 1]]
             self.quarantine["QUARANTINE_AFTER"] = ["Scale",
                                                    "Subject moves into quarantine after this amount of days after the infection:",
@@ -146,7 +148,7 @@ class MainConfiguration(object):
             self.INFECTION_RADIUS = 15
             self.CHANCE_OF_INFECTION = 0.8
 
-            self.SUBJECT_SIZE = 5
+            self.SUBJECT_SIZE = 4
 
             self.RECOVERY_TIME = 14
             self.INCUBATION_PERIOD = 2
@@ -213,22 +215,22 @@ class MainConfiguration(object):
             self.FRAME_SETTINGS["MasterRightFrame"] = dict(height=0.9, column=1,
                                                            grid_kwargs=dict(row=0, column=1, sticky="nwe"))
 
-            self.FRAME_SETTINGS["GraphFrame"] = dict(height=0.3, column=1,
-                                                     grid_kwargs=dict(row=0, column=0))
+            self.FRAME_SETTINGS["GraphFrame"] = dict(height=0.3, column=0,
+                                                     grid_kwargs=dict(row=3, column=0))
 
-            self.FRAME_SETTINGS["StatsFrame"] = dict(height=0.05, column=1,
-                                                     grid_kwargs=dict(row=1, column=0))
+            self.FRAME_SETTINGS["StatsFrame"] = dict(height=0.05, column=0,
+                                                     grid_kwargs=dict(row=2, column=0))
 
-            self.FRAME_SETTINGS["SimulationFrame"] = dict(height=0.4, column=1,
-                                                          grid_kwargs=dict(row=2, column=0))
+            self.FRAME_SETTINGS["SimulationFrame"] = dict(height=0.8, column=1,
+                                                          grid_kwargs=dict(row=0, column=0,  sticky = "n"))
 
-            self.FRAME_SETTINGS["ButtonsFrame"] = dict(height=0.1, column=1,
-                                                       grid_kwargs=dict(row=3, column=0))
+            self.FRAME_SETTINGS["ButtonsFrame"] = dict(height=0.05, column=1,
+                                                       grid_kwargs=dict(row=2, column=0))
 
             self.FRAME_SETTINGS["ScenarioFrame"] = dict(height=0.1, column=0,
                                                         grid_kwargs=dict(row=0, column=0))
 
-            self.FRAME_SETTINGS["ParametersFrame"] = dict(height=0.8, column=0,
+            self.FRAME_SETTINGS["ParametersFrame"] = dict(height=0.5, column=0,
                                                           grid_kwargs=dict(row=1, column=0))
 
             self.PARAMETERS_UI_SETTINGS = SimulationParametersUIConfig()

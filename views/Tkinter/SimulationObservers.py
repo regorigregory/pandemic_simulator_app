@@ -35,8 +35,8 @@ class TKStats(Observer):
         self.ui_elements["Infected"] = tk.Label(self.fig, text = "Infected: 0", bg = self.theme.default_bg)
         self.ui_elements["Susceptible"] = tk.Label(self.fig, text = "Susceptible: 0", bg = self.theme.default_bg)
         self.ui_elements["Immune"] = tk.Label(self.fig, text = "Immune: 0", bg = self.theme.default_bg)
-        for v in self.ui_elements.values():
-            v.grid()
+        for i, v in enumerate(self.ui_elements.values()):
+            v.grid(row = 0, column = i)
 
         self.fig.grid()
 
@@ -113,8 +113,16 @@ class TKAreaChart(Observer):
 
         immune_points = immune_points.tolist()
 
-        self.fig.create_polygon(infected_points, fill = self.theme.area_plot_colours[0])
-        self.fig.create_polygon(immune_points, fill = self.theme.area_plot_colours[1])
+        self.fig.create_polygon(infected_points,
+                                fill=self.theme.area_plot_colours[0],
+                                #fill=self.theme.area_plot_bg,
+                                #width=3
+                                )
+        self.fig.create_polygon(immune_points,
+                                outline=self.theme.area_plot_colours[1],
+                                #fill=self.theme.area_plot_bg,
+                                #width=3
+                                )
 
     def observe(self, observable):
         observable.attach(self)

@@ -14,7 +14,7 @@ class Subject:
         self._incubation_period = Subject.set_random_attribute_safely(config.INCUBATION_PERIOD * config.FRAME_MULTIPLIER)
         self._infection_probability = Subject.set_random_attribute_safely(config.CHANCE_OF_INFECTION/config.FRAME_MULTIPLIER)
         self._do_i_socially_distance = MainConfiguration().SUBJECT_COMPLIANCE > np.random.uniform(0, 1) \
-            if MainConfiguration().SOCIAL_DISTANCING_MODE else False
+            if MainConfiguration().SOCIAL_DISTANCING_MODE.get() else False
 
         self._particle = Particle(config)
         self._infection_radius = self._particle.get_radius() + config.INFECTION_RADIUS
@@ -40,6 +40,9 @@ class Subject:
             self._last_checkup = timestamp
             return True
         return False
+
+    def am_i_compliant(self) -> bool:
+        return self._do_i_socially_distance
 
     def get_infection_timestamp(self) -> int:
         return self._got_infected_at
@@ -71,8 +74,8 @@ class Subject:
     def _infect_me_if_you_can(self, timestamp, other) -> None:
         if (self.get_infection_status(timestamp) == InfectionStatuses.SUSCEPTIBLE
                 and other.get_infection_status(timestamp) == InfectionStatuses.INFECTED
-                and self.get_infection_probability() >= np.random.uniform()):
-
+                and self.get_infection_probability() >= np.random.uniform()
+                ):
             self._infect_me(timestamp)
 
     def _infect_me(self, timestamp) -> None:
@@ -84,28 +87,33 @@ class Subject:
         self._infect_me_if_you_can(timestamp, other)
         other._infect_me_if_you_can(timestamp, self)
 
+    def get_behavioural_distance(self):
+        if self.am_i_compliant():
+            return self.get_infection_radius()
+        return self.get_particle_component().get_radius()
+
     def are_we_too_close(self, other) -> bool:
 
         p1 = self.get_particle_component().position_vector
         p2 = other.get_particle_component().position_vector
-
+        distance1 = self.get_behavioural_distance()
+        distance2 = other.get_behavioural_distance()
         distance = np.sqrt(np.sum((p2 - p1)**2))
 
-        if self.get_infection_radius() >= distance:
+        if distance1 + distance2 >= distance:
             return True
         return False
 
     def resolve_collision(self, other: Subject):
-
         particle = self.get_particle_component()
         otherParticle = other.get_particle_component()
-        x_velocity_diff = particle.velocity_x - otherParticle.velocity_x
-        y_velocity_diff = particle.velocity_y - otherParticle.velocity_y
+        #x_velocity_diff = particle.velocity_x - otherParticle.velocity_x
+        #y_velocity_diff = particle.velocity_y - otherParticle.velocity_y
 
-        x_dist = otherParticle.position_x - particle.position_x
-        y_dist = otherParticle.position_y - particle.position_y
+        #x_dist = otherParticle.position_x - particle.position_x
+        #y_dist = otherParticle.position_y - particle.position_y
 
-        if x_velocity_diff * x_dist + y_velocity_diff * y_dist >= 0:
+        if True:#x_velocity_diff * x_dist + y_velocity_diff * y_dist >= 0:
 
             angle = np.arctan2(otherParticle.position_y - particle.position_y,
                                otherParticle.position_x - particle.position_x)
@@ -120,9 +128,6 @@ class Subject:
             otherParticle.velocity_vector = [u1[0], u2[1]]
             particle.rotate_velocity(-angle)
             otherParticle.rotate_velocity(-angle)
-
-
-
 
     @staticmethod
     def set_random_attribute_safely(const_or_arr) -> Union[int, List, float]:

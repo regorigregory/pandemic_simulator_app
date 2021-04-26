@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 import threading
 import math
 from models.ConfigureMe import MainConfiguration
-
+import numpy as np
 
 class InfectionHandlerInterface(ABC):
     def __init__(self):
@@ -85,54 +85,46 @@ class AxisBased(InfectionHandlerInterface):
         self.init_counts()
         self.count_them(timestamp, subjects)
 
-    def one_to_many(self, timestamp: int, current: Subject, x_sorted: List[Subject], i: int):
+    def one_to_many(self, timestamp: int, one: Subject, x_sorted: List[Subject], i: int):
         #if current.is_infected(timestamp):
         down = i - 1
         up = i + 1
-        current_x = current.get_particle_component().position_x
-        max_distance = current.get_infection_radius() + current.get_particle_component().get_radius()
 
-        while down > 0:
-            other = x_sorted[down]
-            other_x = other.get_particle_component().position_x
-            current_distance = abs(current_x - other_x)
+        downward_comparator = lambda index: index >= 0
+        self.handle_subjects(one, x_sorted, down, -1, downward_comparator, timestamp)
 
-            if current_distance > max_distance:
+        upward_comparator = lambda index: index < len(x_sorted)
+
+        self.handle_subjects(one, x_sorted, up, 1, upward_comparator, timestamp)
+
+    def handle_subjects(self, one, x_sorted, index, increment, comparator_function, timestamp):
+
+        infection_distance = MainConfiguration().SUBJECT_SIZE + MainConfiguration().INFECTION_RADIUS
+
+        while comparator_function(index):
+            another = x_sorted[index]
+            max_distance = one.get_behavioural_distance() + another.get_behavioural_distance()
+            my_x = one.get_particle_component().position_x + one.get_particle_component().velocity_x
+            other_x = another.get_particle_component().position_x + another.get_particle_component().velocity_x
+            x_distance = abs(my_x - other_x)
+
+            if x_distance > max_distance:
                 break
+            distance_norm = self.calulate_future_distance(one, another)
 
-            if not current.are_we_too_close(other):
-                down -= 1
-                continue
-            else:
-                current.resolve_collision(other)
-                if other.is_infected(timestamp) or other.is_immune(timestamp):
-                    down -= 1
-                    continue
-                current.encounter_with(timestamp, other)
-                down -= 1
-
-        while up < len(x_sorted):
-            other = x_sorted[up]
-            other_x = other.get_particle_component().position_x
-            current_distance = abs(current_x - other_x)
-
-            if current_distance > max_distance:
-                break
-
-            if not current.are_we_too_close(other):
-                up += 1
-                continue
-            else:
-                current.resolve_collision(other)
-                if other.is_infected(timestamp) or other.is_immune(timestamp):
-                    up += 1
-                    continue
-                current.encounter_with(timestamp, other)
-                up += 1
+            if distance_norm < max_distance:
+                one.resolve_collision(another)
+            if distance_norm < infection_distance:
+                one.encounter_with(timestamp, another)
+            index += increment
 
     def count_them(self, timestamp, subjects) -> None:
         super().count_them(timestamp, subjects)
 
+    def calulate_future_distance(self, one: Subject, another: Subject):
+        p1 = one.get_particle_component().position_vector + one.get_particle_component().velocity_vector
+        p2 = another.get_particle_component().position_vector + another.get_particle_component().velocity_vector
+        return np.sqrt(np.sum((p2 - p1) ** 2))
 
 if __name__ == "__main__":
     testObject = AxisBased()

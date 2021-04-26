@@ -13,7 +13,7 @@ class Particle:
         self.velocity_vector = np.random.uniform(*cnf.SUBJECT_VELOCITY, [2,])
         self.max_x, self.max_y = cnf.get_dimensions("SimulationFrame")
 
-
+        self.last_location_update = -1
         self.min_x = 0
         self.min_y = 0
         self._radius = cnf.SUBJECT_SIZE
@@ -75,45 +75,26 @@ class Particle:
     def velocity_y(self, value):
         self._velocity_vector[1] = value
 
-    @property
-    def acceleration_vector(self):
-        return self._acceleration_vector
-    @acceleration_vector.setter
-    def acceleration_vector(self, value):
-        self._acceleration_vector =  np.array(value)
 
-    def _get_vector_angle(self, attribute_name)->float:
-        dict_of_attributes: dict = self.__dict__
-        try:
-            if attribute_name in list(dict_of_attributes.keys()):
-                perhaps_vector = dict_of_attributes.get(attribute_name)
-                if isinstance(perhaps_vector, np.ndarray):
-                    return math.atan(perhaps_vector[1] / perhaps_vector[0])
-                else:
-                    raise Exception("The requested attribute is not a vector. Cannot calculate angle.")
-            else:
-                raise Exception("The requested attribute is not an atrribute.")
-        except Exception as e:
-            print(e)
-
-    def update_location(self, rate_of_change = 1)->None:
+    def update_location(self, rate_of_change = 1) -> None:
         #self.velocity_vector = self.velocity_vector + self.acceleration_vector * rate_of_change
 
         self.position_vector = self.position_vector + self.velocity_vector * rate_of_change
         self.bounce_back_if_needed()
 
-    def bounce_back_if_needed(self)->None:
+    def bounce_back_if_needed(self) -> None:
         if self.position_x < self.min_x:
             self.position_x = - self.position_x
             self.velocity_x = - self.velocity_x
-        elif self.position_x > self.max_x :
+
+        elif self.position_x > self.max_x:
             self.position_x= 2 * self.max_x - self.position_x
             self.velocity_x = - self.velocity_x
 
         if self.position_y < self.min_y:
             self.position_y = - self.position_y
             self.velocity_y = - self.velocity_y
-        elif  self.position_y > self.max_y:
+        elif self.position_y > self.max_y:
             self.position_y = 2 * self.max_y - self.position_y
             self.velocity_y = - self.velocity_y
 

@@ -85,14 +85,22 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         self.ax.set_yticks([])
 
         # immune
-        self.ax.plot(*self.get_current_coordinates(self._infection_handler.counts["IMMUNE"]), marker=".",
+        IMMUNE_COORDS = self.get_current_coordinates(self._infection_handler.counts["IMMUNE"])
+
+        self.ax.plot(*IMMUNE_COORDS,  marker=".",
                      fillstyle="full", linestyle="", color="blue", markersize=self._marker_radius * 2)
 
-        # susceptible
+        self.ax.plot(*IMMUNE_COORDS, marker=".",
+                     fillstyle="full", linestyle="", color="blue",
+                     markersize= self._infection_zone_radius * 2)
 
-        self.ax.plot(*self.get_current_coordinates(self._infection_handler.counts["SUSCEPTIBLE"]), marker=".",
+        # susceptible
+        SUSCEPTIBLE_COORDS = self.get_current_coordinates(self._infection_handler.counts["SUSCEPTIBLE"])
+        self.ax.plot(*SUSCEPTIBLE_COORDS, marker=".",
                      fillstyle="full", linestyle="", color="orange", markersize=self._marker_radius * 2)
 
+        self.ax.plot(*SUSCEPTIBLE_COORDS, marker=".", fillstyle="none", color="orange", linestyle="",
+                     markersize= self._infection_zone_radius * 2)
         # infected
         INFECTED_COORDS = self.get_current_coordinates(self._infection_handler.counts["INFECTED"])
 
@@ -103,7 +111,7 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
                      markersize=self._infection_zone_radius * 2)
 
         def func():
-            return self.ax.lines[0], self.ax.lines[1], self.ax.lines[2], self.ax.lines[3]
+            return self.ax.lines
 
         return func
 
@@ -119,12 +127,16 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
             SUSCEPTIBLE_COORDS = self.get_current_coordinates(self._infection_handler.counts["SUSCEPTIBLE"])
 
             self.ax.lines[0].set_data(*IMMUNE_COORDS)
-            self.ax.lines[1].set_data(*SUSCEPTIBLE_COORDS)
-            self.ax.lines[2].set_data(*INFECTED_COORDS)
-            self.ax.lines[3].set_data(*INFECTED_COORDS)
+            self.ax.lines[1].set_data(*IMMUNE_COORDS)
+
+            self.ax.lines[2].set_data(*SUSCEPTIBLE_COORDS)
+            self.ax.lines[3].set_data(*SUSCEPTIBLE_COORDS)
+
+            self.ax.lines[4].set_data(*INFECTED_COORDS)
+            self.ax.lines[5].set_data(*INFECTED_COORDS)
 
             # self._infection_handler.print_counts()
-            return self.ax.lines[0], self.ax.lines[1], self.ax.lines[2], self.ax.lines[3]
+            return self.ax.lines
 
         return func
 
