@@ -9,15 +9,24 @@ VectorRange = List[List[float]]
 
 class Particle:
     def __init__(self, cnf = MainConfiguration()):
-        self.position_vector = Particle.init_random_vector(cnf.get_main_subjects_box_dimensions())
+        bounding_box = cnf.get_particle_position_boundaries()
+        self.position_vector = Particle.init_random_vector(bounding_box)
         self.velocity_vector = np.random.uniform(*cnf.SUBJECT_VELOCITY, [2,])
-        self.max_x, self.max_y = cnf.get_dimensions("SimulationFrame")
-
+        #self.min_x, self.max_x, self.min_y,  self.max_y =
+        self.min_x = bounding_box[0][0]
+        self.max_x = bounding_box[0][1]
+        self.min_y = bounding_box[1][0]
+        self.max_y = bounding_box[0][1]
+        #self.max_x -= 10
+        #self.max_y -= 10
         self.last_location_update = -1
-        self.min_x = 0
-        self.min_y = 0
+
         self._radius = cnf.SUBJECT_SIZE
         self.subject = None
+
+
+
+
 
     def get_radius(self):
         return self._radius
@@ -84,7 +93,7 @@ class Particle:
 
     def bounce_back_if_needed(self) -> None:
         if self.position_x < self.min_x:
-            self.position_x = - self.position_x
+            self.position_x += np.abs(self.velocity_x) + 1
             self.velocity_x = - self.velocity_x
 
         elif self.position_x > self.max_x:
@@ -111,7 +120,29 @@ class Particle:
         self.velocity_x = new_x_velocity
         return self.velocity_vector
 
+    def resolve_collision(self, otherParticle: Particle):
+        particle = self
+        #x_velocity_diff = particle.velocity_x - otherParticle.velocity_x
+        #y_velocity_diff = particle.velocity_y - otherParticle.velocity_y
 
+        #x_dist = otherParticle.position_x - particle.position_x
+        #y_dist = otherParticle.position_y - particle.position_y
+
+        if True:#x_velocity_diff * x_dist + y_velocity_diff * y_dist >= 0:
+
+            angle = np.arctan2(otherParticle.position_y - particle.position_y,
+                               otherParticle.position_x - particle.position_x)
+            u1 = particle.rotate_velocity(angle)
+            u2 = otherParticle.rotate_velocity(angle)
+
+            # one dimensional newtonian
+            # since each particle's mass == 1, the equation has been simplified
+            # https://en.wikipedia.org/wiki/Elastic_collision#:~:text=One%2Ddimensional%20Newtonian,-Play%20media&text=This%20simply%20corresponds%20to%20the,reference%20with%20constant%20translational%20velocity.
+
+            particle.velocity_vector = [u2[0], u1[1]]
+            otherParticle.velocity_vector = [u1[0], u2[1]]
+            particle.rotate_velocity(-angle)
+            otherParticle.rotate_velocity(-angle)
 if __name__ == "__main__":
 
     from models.ConfigureMe import MainConfiguration

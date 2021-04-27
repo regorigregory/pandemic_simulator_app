@@ -53,11 +53,12 @@ class BoxOfSubjects(ContainerOfSubjects):
             self.contents.append(s)
             #self.add_particle_to_grids(p)
 
-    def move_guys(self, timestamp, parallel = False, infection_handling = True):
-        if infection_handling:
-            self._infection_handler.many_to_many(timestamp, [self.contents])
-        for particle in self.contents:
-            particle.get_particle_component().update_location()
+    def move_guys(self, timestamp):
+        self._infection_handler.many_to_many(timestamp, [self.contents])
+        categorized_boys = self._infection_handler.counts
+        for set in self.categorized_boys:
+            for particle in set:
+                particle.get_particle_component().update_location()
 
 
 
@@ -93,7 +94,7 @@ if __name__ == "__main__":
             parallel[num_subjects] += end
         parallel[num_subjects] /= NUMBER_OF_TESTS
 
-    for a,b in zip(sequential.items(), parallel.items()):
+    for a, b in zip(sequential.items(), parallel.items()):
         print('Average Sequential Time for {} particles: {:.2f} ns'.format(a[0], a[1] * 1000*1000))
         print('Average Parallell Time for {} particles: {:.2f} ns'.format(b[0], b[1] * 1000*1000))
         print('Speedup: {:.2f} ns'.format(a[1] / b[1]))

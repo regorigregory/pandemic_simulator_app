@@ -47,10 +47,11 @@ class SimulationFrame(AbstractFrame):
     def __init__(self, root):
         super().__init__(root)
 
-
         self.ViewBox = ConcreteSimulation(container=BoxOfSubjects())
+        self.ViewBox.fig.subplots_adjust(left=0, bottom=0.1, right=0.95, top=1, wspace=0, hspace=0)
         self.canvas = FigureCanvasTkAgg(self.ViewBox.fig, self)
-        self.canvas.get_tk_widget().grid()
+
+        self.canvas.get_tk_widget().grid(row = 0, column = 0, sticky = "n", ipady = 0, pady = 0)
         self.ViewBox.start_animation()
 
     def get_animated_object(self):
@@ -147,20 +148,36 @@ class ScenarioFrame(AbstractFrame):
         super().__init__(root)
 
         self.components = []
-        self.checkboxes = dict()
+        self.buttons = []
+        self.checkboxes = []
 
         for v in self.config.SCENARIO_CONFIG.values():
             constructor = getattr(tk, v[0])
             self.components.append(constructor(self, **v[1]))
+
+        first_row_counter = 0
+        for i, c in enumerate(self.components):
+            first_row_counter = i
+            c.grid(row=0, column=i, sticky = "we")
+
         for k, v in self.config.CHECKBOX_CONFIG.items():
             constructor = getattr(tk, v[0])
-            var = tk.BooleanVar(master = self, name = k, value = False)
-            self.checkboxes[k] = constructor(self, variable = var, **v[1])
-            self.components.append(self.checkboxes[k])
+            var = tk.BooleanVar(master = self, name = k, value = True)
+            cb = constructor(self, variable = var, **v[1])
+            self.checkboxes.append(cb)
+            self.components.append(cb)
             setattr(MainConfiguration(), k, var)
 
-        for i, c in enumerate(self.components):
-            c.grid(row=1, column=i)
+        for i, v in enumerate(self.checkboxes):
+            v.grid(row = 1, column = i)
+
+        for v in self.config.BUTTONS_CONFIG.values():
+            b = Button(self, **v)
+            self.components.append(b)
+            self.buttons.append(b)
+
+        self.buttons[0].grid(row = 0, column = 3)
+        self.buttons[1].grid(row = 1, column = 3)
 
     def get_checkboxes(self):
         return self.checkboxes
@@ -192,7 +209,8 @@ class TkinterPLTBuilder():
     def build(self):
         # master grid components
         #self.components["MasterHeaderFrame"] = MasterHeaderFrame(self.window)
-        frames = [ScenarioFrame, ParametersFrame, GraphFrame, StatsFrame, SimulationFrame, ButtonsFrame]
+        frames = [ScenarioFrame, ParametersFrame, GraphFrame, StatsFrame, SimulationFrame]
+        #ButtonsFrame has been removed
         # child components
         for f in frames:
             name = f.__name__

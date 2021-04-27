@@ -5,24 +5,27 @@ import threading
 import math
 from models.ConfigureMe import MainConfiguration
 import numpy as np
+import copy
 
 class InfectionHandlerInterface(ABC):
     def __init__(self):
         self._n_threads = MainConfiguration().NUMBER_OF_THREADS
         self.init_counts()
 
-    def init_counts(self) -> dict:
+    def init_counts(self) -> None:
 
         self.counts = dict(
             SUSCEPTIBLE=set(),
+            ASYMPTOMATIC=set(),
             INFECTED=set(),
             IMMUNE=set()
         )
 
     def print_counts(self) -> None:
         import sys
-        sys.stdout.write("\nInfected: {}, Immune: {}, Susceptible: {}".format(
+        sys.stdout.write("\nInfected: {}, Asymptomatic: {},  Immune: {}, Susceptible: {}".format(
             len(self.counts["INFECTED"]),
+            len(self.counts["ASYMPTOMATIC"]),
             len(self.counts["IMMUNE"]),
             len(self.counts["SUSCEPTIBLE"])
 
@@ -34,30 +37,6 @@ class InfectionHandlerInterface(ABC):
         for subject in subjects:
             self.counts[subject.get_infection_status(timestamp).name].add(subject)
 
-    def count_them_threaded(self, timestamp, subjects) -> None:
-
-        lock = threading.Lock()
-
-        self.init_counts()
-
-        def thread_helper(subjects, timestamp):
-            for subject in subjects:
-                lock.acquire()
-                self.counts[subject.get_infection_status(timestamp).name].add(subject)
-                lock.release()
-
-        index_increment = math.ceil(len(subjects) / (self._n_threads))
-        index_start = 0
-        threads = []
-
-        for thread in range(int(self._n_threads)):
-            subset = subjects[index_start: int(index_start + index_increment)]
-            t = threading.Thread(target=thread_helper, args=(subset, timestamp))
-            t.start()
-            threads.append(t)
-            index_start += index_increment
-        for t in threads:
-            t.join()
 
     @abstractmethod
     def many_to_many(self, timestamp, grids):
@@ -75,6 +54,7 @@ class AxisBased(InfectionHandlerInterface):
         self.observers = []
 
     def many_to_many(self, timestamp: int, subjects: List[Subject]):
+        self.init_counts()
         subjects = subjects[0]
         #if len(self.counts["INFECTED"]) == 0 and len(self.counts["IMMUNE"]) != 0:
         #    return
@@ -82,11 +62,9 @@ class AxisBased(InfectionHandlerInterface):
         x_sorted = sorted(subjects, key=lambda s: s.get_particle_component().position_x)
         for i, current in enumerate(x_sorted):
             self.one_to_many(timestamp, current, x_sorted, i)
-        self.init_counts()
-        self.count_them(timestamp, subjects)
+            self.counts[current.get_infection_status(timestamp).name].add(current)
 
     def one_to_many(self, timestamp: int, one: Subject, x_sorted: List[Subject], i: int):
-        #if current.is_infected(timestamp):
         down = i - 1
         up = i + 1
 

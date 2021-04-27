@@ -10,36 +10,30 @@ class Subject:
     def __init__(self, config = MainConfiguration(), am_i_infected = False):
 
         self._infection_radius = Subject.set_random_attribute_safely(config.INFECTION_RADIUS)
-        self._recovery_time = Subject.set_random_attribute_safely(config.RECOVERY_TIME * config.FRAME_MULTIPLIER)
-        self._incubation_period = Subject.set_random_attribute_safely(config.INCUBATION_PERIOD * config.FRAME_MULTIPLIER)
+
+        self._recovery_time = config.RECOVERY_TIME * config.FRAME_MULTIPLIER
+        self._incubation_period = config.INCUBATION_PERIOD * config.FRAME_MULTIPLIER
+
         self._infection_probability = Subject.set_random_attribute_safely(config.CHANCE_OF_INFECTION/config.FRAME_MULTIPLIER)
         self._do_i_socially_distance = MainConfiguration().SUBJECT_COMPLIANCE > np.random.uniform(0, 1) \
             if MainConfiguration().SOCIAL_DISTANCING_MODE.get() else False
 
         self._particle = Particle(config)
         self._infection_radius = self._particle.get_radius() + config.INFECTION_RADIUS
+
         if np.random.uniform() <= config.INITIAL_INFECTION_RATIO:
-            self._infection_status = InfectionStatuses.INFECTED
+            self._infection_status = InfectionStatuses.ASYMPTOMATIC
             self._got_infected_at = 0
         else:
             self._infection_status = InfectionStatuses.SUSCEPTIBLE
             self._got_infected_at = -1
         self._last_checkup = 0
 
-    def get_infection_radius(self) -> float:
-        return self._infection_radius
-
     def get_particle_component(self) -> Particle:
         return self._particle
 
     def _have_i_recovered(self, timestamp: int) -> bool:
-        if timestamp == self._last_checkup:
             return self._infection_status == InfectionStatuses.IMMUNE
-        if timestamp - self._got_infected_at >= self._recovery_time:
-            self._infection_status = InfectionStatuses.IMMUNE
-            self._last_checkup = timestamp
-            return True
-        return False
 
     def am_i_compliant(self) -> bool:
         return self._do_i_socially_distance
@@ -50,17 +44,26 @@ class Subject:
     def get_infection_status(self, timestamp: int) -> InfectionStatuses:
         if self._last_checkup == timestamp:
             return self._infection_status
-        if(self._infection_status == InfectionStatuses.INFECTED
-                and self._have_i_recovered(timestamp)):
+
+        if ((self._infection_status == InfectionStatuses.INFECTED
+            or self._infection_status == InfectionStatuses.ASYMPTOMATIC)
+            and self.get_infection_timestamp() + self._recovery_time + self._incubation_period< timestamp):
             self._infection_status = InfectionStatuses.IMMUNE
+        elif self._infection_status == InfectionStatuses.ASYMPTOMATIC and \
+            self.get_infection_timestamp() + self._incubation_period < timestamp:
+            self._infection_status = InfectionStatuses.INFECTED
+
         self._last_checkup = timestamp
+
         return self._infection_status
 
     def is_immune(self, timestamp) -> bool:
         return self.get_infection_status(timestamp) == InfectionStatuses.IMMUNE
 
     def is_infected(self, timestamp) -> bool:
-        return self.get_infection_status(timestamp) == InfectionStatuses.INFECTED
+        return \
+        self.get_infection_status(timestamp) == InfectionStatuses.INFECTED \
+        or self.get_infection_status(timestamp) == InfectionStatuses.ASYMPTOMATIC
 
     def is_susceptible(self, timestamp) -> bool:
         return self.get_infection_status(timestamp) == InfectionStatuses.SUSCEPTIBLE
@@ -72,15 +75,18 @@ class Subject:
         return self._recovery_time
 
     def _infect_me_if_you_can(self, timestamp, other) -> None:
-        if (self.get_infection_status(timestamp) == InfectionStatuses.SUSCEPTIBLE
-                and other.get_infection_status(timestamp) == InfectionStatuses.INFECTED
+        my_status = self.get_infection_status(timestamp)
+        other_status =  other.get_infection_status(timestamp)
+        if (my_status == InfectionStatuses.SUSCEPTIBLE
+                and (other_status == InfectionStatuses.ASYMPTOMATIC
+                or  other_status == InfectionStatuses.INFECTED)
                 and self.get_infection_probability() >= np.random.uniform()
                 ):
             self._infect_me(timestamp)
 
     def _infect_me(self, timestamp) -> None:
         if self.get_infection_status(timestamp) == InfectionStatuses.SUSCEPTIBLE:
-            self._infection_status = InfectionStatuses.INFECTED
+            self._infection_status = InfectionStatuses.ASYMPTOMATIC
             self._got_infected_at = timestamp
 
     def encounter_with(self, timestamp, other) -> None:
@@ -89,7 +95,7 @@ class Subject:
 
     def get_behavioural_distance(self):
         if self.am_i_compliant():
-            return self.get_infection_radius()
+            return MainConfiguration().INFECTION_RADIUS - 1
         return self.get_particle_component().get_radius()
 
     def are_we_too_close(self, other) -> bool:
@@ -105,29 +111,7 @@ class Subject:
         return False
 
     def resolve_collision(self, other: Subject):
-        particle = self.get_particle_component()
-        otherParticle = other.get_particle_component()
-        #x_velocity_diff = particle.velocity_x - otherParticle.velocity_x
-        #y_velocity_diff = particle.velocity_y - otherParticle.velocity_y
-
-        #x_dist = otherParticle.position_x - particle.position_x
-        #y_dist = otherParticle.position_y - particle.position_y
-
-        if True:#x_velocity_diff * x_dist + y_velocity_diff * y_dist >= 0:
-
-            angle = np.arctan2(otherParticle.position_y - particle.position_y,
-                               otherParticle.position_x - particle.position_x)
-            u1 = particle.rotate_velocity(angle)
-            u2 = otherParticle.rotate_velocity(angle)
-
-            # one dimensional newtonian
-            # since each particle's mass == 1, the equation has been simplified
-            # https://en.wikipedia.org/wiki/Elastic_collision#:~:text=One%2Ddimensional%20Newtonian,-Play%20media&text=This%20simply%20corresponds%20to%20the,reference%20with%20constant%20translational%20velocity.
-
-            particle.velocity_vector = [u2[0], u1[1]]
-            otherParticle.velocity_vector = [u1[0], u2[1]]
-            particle.rotate_velocity(-angle)
-            otherParticle.rotate_velocity(-angle)
+       self.get_particle_component().resolve_collision(other.get_particle_component())
 
     @staticmethod
     def set_random_attribute_safely(const_or_arr) -> Union[int, List, float]:

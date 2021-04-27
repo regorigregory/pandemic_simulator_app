@@ -2,10 +2,9 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation, Animation, TimedAnimation
 from abc import ABC, abstractmethod
 from models.SubjectContainers import BoxOfSubjects
-from matplotlib.widgets import Button
-from models.ConfigureMe import MainConfiguration
+from matplotlib import patches
+from models.ConfigureMe import MainConfiguration, Theme
 import numpy as np
-
 class AbstractSimulation(ABC):
     @abstractmethod
     def resume(self):
@@ -41,7 +40,6 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         self.config = config
         self.width, self.height = config.get_dimensions("SimulationFrame")
         self.DPI = config.DPI
-
         self._marker_radius = config.SUBJECT_SIZE
         self._infection_zone_radius = config.INFECTION_RADIUS + config.SUBJECT_SIZE
 
@@ -50,6 +48,7 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
 
         self.fig = plt.figure(figsize=(self.width / self.DPI, self.height / self.DPI), dpi=self.DPI)
         self.ax = self.fig.add_subplot()
+
 
     @property
     def width(self):
@@ -76,9 +75,12 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         self._box_of_particles.move_guys(i)
 
     def get_init_func(self):
+        self.ax.set_facecolor(Theme().plot_bg)
         self.ax.set_xlim(0, self.width)
         self.ax.set_ylim(0, self.height)
+
         self._infection_handler.count_them(0, self._box_of_particles.contents)
+
         self.notify(self._infection_handler.counts)
 
         self.ax.set_xticks([])
@@ -88,27 +90,45 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         IMMUNE_COORDS = self.get_current_coordinates(self._infection_handler.counts["IMMUNE"])
 
         self.ax.plot(*IMMUNE_COORDS,  marker=".",
-                     fillstyle="full", linestyle="", color="blue", markersize=self._marker_radius * 2)
+                     fillstyle="full", linestyle="", color=Theme().immune, markersize=self._marker_radius * 2)
 
         self.ax.plot(*IMMUNE_COORDS, marker=".",
-                     fillstyle="full", linestyle="", color="blue",
+                     fillstyle="none", linestyle="", color=Theme().immune,
                      markersize= self._infection_zone_radius * 2)
 
         # susceptible
         SUSCEPTIBLE_COORDS = self.get_current_coordinates(self._infection_handler.counts["SUSCEPTIBLE"])
         self.ax.plot(*SUSCEPTIBLE_COORDS, marker=".",
-                     fillstyle="full", linestyle="", color="orange", markersize=self._marker_radius * 2)
+                     fillstyle="full", linestyle="", color=Theme().susceptible, markersize=self._marker_radius * 2)
 
-        self.ax.plot(*SUSCEPTIBLE_COORDS, marker=".", fillstyle="none", color="orange", linestyle="",
+        self.ax.plot(*SUSCEPTIBLE_COORDS, marker=".", fillstyle="none", color=Theme().susceptible, linestyle="",
                      markersize= self._infection_zone_radius * 2)
+
+        # asymptomatic
+        ASYMPTOMATIC_COORDS = self.get_current_coordinates(self._infection_handler.counts["ASYMPTOMATIC"])
+        self.ax.plot(*ASYMPTOMATIC_COORDS, marker=".",
+                     fillstyle="full", linestyle="", color=Theme().asymptomatic, markersize=self._marker_radius * 2)
+
+        self.ax.plot(*ASYMPTOMATIC_COORDS, marker=".", fillstyle="none", color=Theme().asymptomatic, linestyle="",
+                     markersize=self._infection_zone_radius * 2)
         # infected
         INFECTED_COORDS = self.get_current_coordinates(self._infection_handler.counts["INFECTED"])
 
         self.ax.plot(*INFECTED_COORDS, marker=".",
-                     fillstyle="full", linestyle="", color="red", markersize=self._marker_radius * 2)
+                     fillstyle="full", linestyle="", color=Theme().infected, markersize=self._marker_radius * 2)
 
-        self.ax.plot(*INFECTED_COORDS, marker=".", fillstyle="none", color="red", linestyle="",
+        self.ax.plot(*INFECTED_COORDS, marker=".", fillstyle="none", color=Theme().infected, linestyle="",
                      markersize=self._infection_zone_radius * 2)
+
+        # adding quarantine bounding box
+
+        if MainConfiguration().QUARANTINE_MODE.get():
+            q_dims = MainConfiguration().get_quarantine_dimensions()
+            self.ax.text(q_dims["x"],
+                         q_dims["height"] - q_dims["y"],
+                         "QUARANTINE", color = Theme().infected,
+                         fontsize = "large")
+            self.ax.add_patch(patches.Rectangle([q_dims["x"], q_dims["y"]], q_dims["width"], q_dims["height"], facecolor = "none", linewidth = 1, edgecolor = Theme().infected, linestyle = "--"))
 
         def func():
             return self.ax.lines
@@ -118,13 +138,14 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
     def get_animation_function(self):
         def func(i):
             self.move_guys(i)
-            self._infection_handler.count_them(i, self._box_of_particles.contents)
+            #self._infection_handler.count_them(i, self._box_of_particles.contents)
 
             self.notify(self._infection_handler.counts)
 
             INFECTED_COORDS = self.get_current_coordinates(self._infection_handler.counts["INFECTED"])
             IMMUNE_COORDS = self.get_current_coordinates(self._infection_handler.counts["IMMUNE"])
             SUSCEPTIBLE_COORDS = self.get_current_coordinates(self._infection_handler.counts["SUSCEPTIBLE"])
+            ASYMPTOMATIC_COORDS = self.get_current_coordinates(self._infection_handler.counts["ASYMPTOMATIC"])
 
             self.ax.lines[0].set_data(*IMMUNE_COORDS)
             self.ax.lines[1].set_data(*IMMUNE_COORDS)
@@ -132,8 +153,11 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
             self.ax.lines[2].set_data(*SUSCEPTIBLE_COORDS)
             self.ax.lines[3].set_data(*SUSCEPTIBLE_COORDS)
 
-            self.ax.lines[4].set_data(*INFECTED_COORDS)
-            self.ax.lines[5].set_data(*INFECTED_COORDS)
+            self.ax.lines[4].set_data(*ASYMPTOMATIC_COORDS)
+            self.ax.lines[5].set_data(*ASYMPTOMATIC_COORDS)
+
+            self.ax.lines[6].set_data(*INFECTED_COORDS)
+            self.ax.lines[7].set_data(*INFECTED_COORDS)
 
             # self._infection_handler.print_counts()
             return self.ax.lines

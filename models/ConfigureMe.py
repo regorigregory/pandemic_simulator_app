@@ -4,8 +4,10 @@ import tkinter as tk
 
 class InfectionStatuses(Enum):
     SUSCEPTIBLE = 0
-    INFECTED = 1
-    IMMUNE = 2
+    ASYMPTOMATIC = 1
+    INFECTED = 2
+    IMMUNE = 3
+
 
 
 class SubjectTypes(Enum):
@@ -28,17 +30,24 @@ class Theme(object):
     def __init__(self):
 
         if Theme.instance is None:
-            self.one = "#F26627"
-            self.two = "#F9A26C"
+            self.one = "#03A0D3"
+            self.two = "#CC1F7F"
             self.three = "#EFEEEE"
             self.four = "#9BD7D1"
-            self.five = "#325D79"
+            self.five = "#21213D"
 
-            self.button_attributes = {"bg": self.one, "fg": self.three, "width": 30, "pady": 5, "padx": 5}
-            self.scenario_attributes = {"bg": self.four, "fg": self.three, "width": 15, "pady": 5, "padx": 5}
+            self.button_attributes = {"bg": self.two, "fg": self.three, "width": 30, "pady": 5, "padx": 5}
+            self.scenario_attributes = {"bg": self.one, "fg": self.three, "width": 15, "pady": 5, "padx": 5}
+            self.checkbox_attributes = {"bg": self.five, "fg": self.three, "width": 15, "pady": 5, "padx": 5}
+
             self.default_bg = "white"
-            self.area_plot_bg = "#D3BCCC"
-            self.area_plot_colours = ["#4A306D", "#0E273C"]
+
+            self.plot_bg = "#21213D"
+            self.infected = "#CC1F7F"
+            self.asymptomatic = "#E58342"
+            self.susceptible = "#E6C645"
+            self.immune = "#03A0D3"
+
 
 
 class SimulationParametersUIConfig(object):
@@ -67,7 +76,7 @@ class SimulationParametersUIConfig(object):
 
             self.general["SUBJECT_NUMBER"] = ["Scale",
                                               "The number of subjects:",
-                                              [1, 200]]
+                                              [1, 300]]
             self.general["DAYS_PER_SECOND"] = ["Scale",
                                                "Days per second:",
                                                [1, 300]]
@@ -139,7 +148,7 @@ class MainConfiguration(object):
             MainConfiguration.instance = self
             MainConfiguration.instance.__dict__ = MainConfiguration._shared_data
             self.NUMBER_OF_THREADS = 3
-            self.SUBJECT_NUMBER = 50
+            self.SUBJECT_NUMBER = 300
             self.FRAME_MULTIPLIER = 5
 
             self.SUBJECT_VELOCITY = 1
@@ -150,8 +159,8 @@ class MainConfiguration(object):
 
             self.SUBJECT_SIZE = 4
 
-            self.RECOVERY_TIME = 14
-            self.INCUBATION_PERIOD = 2
+            self.RECOVERY_TIME = 30
+            self.INCUBATION_PERIOD = 15
 
             self.SUBJECT_COMPLIANCE = 1
 
@@ -175,12 +184,13 @@ class MainConfiguration(object):
             # Layout configuration
 
             self.MAIN_CANVAS_SIZE = [1024, 1024]
-
+            self.INNER_PADDING = 10
+            self.QUARANTINE_WIDTH = 0.1
             self.DPI = 96
             self.DEFAULT_BG = Theme().default_bg
             self.FRAME_PADDING = dict(padx=10, pady=10)
 
-            self.COLUMNS_RATIO = [0.4, 0.55]
+            self.COLUMNS_RATIO = [0.35, 0.6]
 
             # scenario and buttons config
 
@@ -193,27 +203,26 @@ class MainConfiguration(object):
 
             self.CHECKBOX_CONFIG = {"SOCIAL_DISTANCING_MODE": ["Checkbutton", dict(text="Social distancing",
                                                                                    name="SOCIAL_DISTANCING_MODE".lower(),
-                                                                                   **Theme().scenario_attributes)],
+                                                                                   **Theme().checkbox_attributes)],
 
                                     "QUARANTINE_MODE": ["Checkbutton", dict(text="Quarantine",
                                                                             name = "QUARANTINE_MODE".lower(),
-                                                                            **Theme().scenario_attributes)],
+                                                                            **Theme().checkbox_attributes)],
                                     "LOCKDOWN_MODE": ["Checkbutton",
                                                       dict(text="Lockdown",
                                                            name = "LOCKDOWN_MODE".lower(),
-                                                           **Theme().scenario_attributes)]
+                                                           **Theme().checkbox_attributes)]
                                     }
-
             self.FRAME_SETTINGS = dict()
             self.FRAME_SETTINGS["MasterHeaderFrame"] = dict(height=0.1, column=0,
                                                             grid_kwargs=dict(row=0, column=0, columnspan=2,
                                                                              sticky="we"))
 
             self.FRAME_SETTINGS["MasterLeftFrame"] = dict(height=0.9, column=0,
-                                                          grid_kwargs=dict(row=0, column=0, sticky="nwe"))
+                                                          grid_kwargs=dict(row=0, column=0, sticky="nwes"))
 
             self.FRAME_SETTINGS["MasterRightFrame"] = dict(height=0.9, column=1,
-                                                           grid_kwargs=dict(row=0, column=1, sticky="nwe"))
+                                                           grid_kwargs=dict(row=0, column=1, sticky="nwes"))
 
             self.FRAME_SETTINGS["GraphFrame"] = dict(height=0.3, column=0,
                                                      grid_kwargs=dict(row=3, column=0))
@@ -221,8 +230,8 @@ class MainConfiguration(object):
             self.FRAME_SETTINGS["StatsFrame"] = dict(height=0.05, column=0,
                                                      grid_kwargs=dict(row=2, column=0))
 
-            self.FRAME_SETTINGS["SimulationFrame"] = dict(height=0.8, column=1,
-                                                          grid_kwargs=dict(row=0, column=0,  sticky = "n"))
+            self.FRAME_SETTINGS["SimulationFrame"] = dict(height= 1, column=1,
+                                                          grid_kwargs=dict(row=0, column=0))
 
             self.FRAME_SETTINGS["ButtonsFrame"] = dict(height=0.05, column=1,
                                                        grid_kwargs=dict(row=2, column=0))
@@ -257,6 +266,16 @@ class MainConfiguration(object):
 
         super().__setattr__(key, value)
 
+    def get_quarantine_dimensions(self):
+        plot_dimensions = self.get_dimensions("SimulationFrame")
+        dimensions = dict()
+        dimensions["x"] = self.INNER_PADDING
+        dimensions["y"] = self.INNER_PADDING
+        dimensions["width"] = plot_dimensions[0] * self.QUARANTINE_WIDTH
+        dimensions["height"] = plot_dimensions[1] - 2 * self.INNER_PADDING
+
+        return dimensions
+
     def get_main_canvas_size_tkinter(self):
         return "{}x{}".format(self.MAIN_CANVAS_SIZE[0], self.MAIN_CANVAS_SIZE[1])
 
@@ -266,6 +285,13 @@ class MainConfiguration(object):
     def get_main_subjects_box_dimensions(self):
         max_x, max_y = self.get_dimensions("SimulationFrame")
         return [[0, max_x], [0, max_y]]
+
+    def get_particle_position_boundaries(self):
+        canvas_dims = self.get_main_subjects_box_dimensions()
+        if self.QUARANTINE_MODE.get():
+            q_dims = self.get_quarantine_dimensions()
+            canvas_dims[0][0] = q_dims["x"] + q_dims["width"] + 1
+        return canvas_dims
 
     def get_dimensions(self, key):
         sett = self.FRAME_SETTINGS[key]
