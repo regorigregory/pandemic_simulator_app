@@ -23,10 +23,7 @@ class Particle:
 
         self._radius = cnf.SUBJECT_SIZE
         self.subject = None
-
-
-
-
+        self.quarantine_mode = MainConfiguration().QUARANTINE_MODE
 
     def get_radius(self):
         return self._radius

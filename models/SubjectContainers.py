@@ -55,10 +55,10 @@ class BoxOfSubjects(ContainerOfSubjects):
 
     def move_guys(self, timestamp):
         self._infection_handler.many_to_many(timestamp, [self.contents])
-        categorized_boys = self._infection_handler.counts
-        for set in self.categorized_boys:
-            for particle in set:
-                particle.get_particle_component().update_location()
+        #categorized_boys = self._infection_handler.counts
+        #for dict_ in categorized_boys:
+        for particle in self.contents:
+            particle.get_particle_component().update_location()
 
 
 

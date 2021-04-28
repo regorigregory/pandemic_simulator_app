@@ -8,7 +8,7 @@ from typing import List, Union
 class Subject:
 
     def __init__(self, config = MainConfiguration(), am_i_infected = False):
-
+        self.quarantine_mode = False
         self._infection_radius = Subject.set_random_attribute_safely(config.INFECTION_RADIUS)
 
         self._recovery_time = config.RECOVERY_TIME * config.FRAME_MULTIPLIER
@@ -42,19 +42,18 @@ class Subject:
         return self._got_infected_at
 
     def get_infection_status(self, timestamp: int) -> InfectionStatuses:
-        if self._last_checkup == timestamp:
-            return self._infection_status
-
-        if ((self._infection_status == InfectionStatuses.INFECTED
-            or self._infection_status == InfectionStatuses.ASYMPTOMATIC)
-            and self.get_infection_timestamp() + self._recovery_time + self._incubation_period< timestamp):
-            self._infection_status = InfectionStatuses.IMMUNE
-        elif self._infection_status == InfectionStatuses.ASYMPTOMATIC and \
-            self.get_infection_timestamp() + self._incubation_period < timestamp:
-            self._infection_status = InfectionStatuses.INFECTED
-
-        self._last_checkup = timestamp
-
+        if self._last_checkup != timestamp:
+            if ((self._infection_status == InfectionStatuses.INFECTED
+                or self._infection_status == InfectionStatuses.ASYMPTOMATIC)
+                and self.get_infection_timestamp()
+                    + self._recovery_time
+                    + self._incubation_period< timestamp):
+                self._infection_status = InfectionStatuses.IMMUNE
+            elif self._infection_status == InfectionStatuses.ASYMPTOMATIC and \
+                self.get_infection_timestamp() \
+                    + self._incubation_period < timestamp:
+                self._infection_status = InfectionStatuses.INFECTED
+            self._last_checkup = timestamp
         return self._infection_status
 
     def is_immune(self, timestamp) -> bool:
@@ -111,7 +110,10 @@ class Subject:
         return False
 
     def resolve_collision(self, other: Subject):
-       self.get_particle_component().resolve_collision(other.get_particle_component())
+        if not (self.quarantine_mode == True and (self._infection_status == InfectionStatuses.INFECTED
+        or other._infection_status == InfectionStatuses.INFECTED
+        )):
+            self.get_particle_component().resolve_collision(other.get_particle_component())
 
     @staticmethod
     def set_random_attribute_safely(const_or_arr) -> Union[int, List, float]:
