@@ -7,7 +7,6 @@ from models.ConfigureMe import MainConfiguration
 import tkinter as tk
 
 from views.PLT.Simulation import ConcreteSimulation
-from views.PLT.SimulationObervers import AreaChart
 from views.Tkinter.SimulationObservers import TKAreaChart, TKStats
 
 

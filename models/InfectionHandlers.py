@@ -1,15 +1,15 @@
+from __future__ import annotations
 from models.Subject import Subject
-from typing import List, Set
 from abc import ABC, abstractmethod
-import threading
-import math
-from models.ConfigureMe import MainConfiguration
+
+from models.ConfigureMe import MainConfiguration, InfectionStatuses
 import numpy as np
-import copy
+
 
 class InfectionHandlerInterface(ABC):
     def __init__(self):
-        self._n_threads = MainConfiguration().NUMBER_OF_THREADS
+        self.counts = dict()
+        self.quarantine_split_counts = dict()
         self.init_counts()
 
     def init_counts(self) -> None:
@@ -20,6 +20,8 @@ class InfectionHandlerInterface(ABC):
             INFECTED=set(),
             IMMUNE=set()
         )
+        self.quarantine_split_counts = dict(INFECTED = set(),
+                                            OTHERS = set())
 
     def print_counts(self) -> None:
         import sys
@@ -43,7 +45,7 @@ class InfectionHandlerInterface(ABC):
         pass
 
     @abstractmethod
-    def one_to_many(self, timestamp: int, a_subject: Subject, subjects: List[List[Subject]]):
+    def one_to_many(self, timestamp: int, a_subject: Subject, subjects: list[list[Subject]]) -> None:
         pass
 
 
@@ -51,9 +53,10 @@ class AxisBased(InfectionHandlerInterface):
 
     def __init__(self):
         super().__init__()
+        self.config = MainConfiguration()
         self.observers = []
 
-    def many_to_many(self, timestamp: int, subjects: List[Subject]):
+    def many_to_many(self, timestamp: int, subjects: List[Subject]) -> None:
         self.init_counts()
         subjects = subjects[0]
         #if len(self.counts["INFECTED"]) == 0 and len(self.counts["IMMUNE"]) != 0:
@@ -63,8 +66,12 @@ class AxisBased(InfectionHandlerInterface):
         for i, current in enumerate(x_sorted):
             self.one_to_many(timestamp, current, x_sorted, i)
             self.counts[current.get_infection_status(timestamp).name].add(current)
+            if current.get_infection_status(timestamp) == InfectionStatuses.INFECTED:
+                self.quarantine_split_counts["INFECTED"].add(current)
+            else:
+                self.quarantine_split_counts["OTHERS"].add(current)
 
-    def one_to_many(self, timestamp: int, one: Subject, x_sorted: List[Subject], i: int):
+    def one_to_many(self, timestamp: int, one: Subject, x_sorted: List[Subject], i: int) -> None:
         down = i - 1
         up = i + 1
 
@@ -76,11 +83,18 @@ class AxisBased(InfectionHandlerInterface):
         self.handle_subjects(one, x_sorted, up, 1, upward_comparator, timestamp)
 
     def handle_subjects(self, one, x_sorted, index, increment, comparator_function, timestamp):
-
+        if self.config.QUARANTINE_MODE.get() == True and one.get_infection_status(timestamp) == InfectionStatuses.INFECTED:
+            return
         infection_distance = MainConfiguration().SUBJECT_SIZE + MainConfiguration().INFECTION_RADIUS
 
         while comparator_function(index):
+
             another = x_sorted[index]
+            index += increment
+            if self.config.QUARANTINE_MODE.get() == True and another.get_infection_status(
+                timestamp) == InfectionStatuses.INFECTED:
+                continue
+
             max_distance = one.get_behavioural_distance() + another.get_behavioural_distance()
             my_x = one.get_particle_component().position_x + one.get_particle_component().velocity_x
             other_x = another.get_particle_component().position_x + another.get_particle_component().velocity_x
@@ -88,18 +102,18 @@ class AxisBased(InfectionHandlerInterface):
 
             if x_distance > max_distance:
                 break
-            distance_norm = self.calulate_future_distance(one, another)
+            distance_norm = AxisBased.calulate_future_distance(one, another)
 
             if distance_norm < max_distance:
                 one.resolve_collision(another)
             if distance_norm < infection_distance:
                 one.encounter_with(timestamp, another)
-            index += increment
 
     def count_them(self, timestamp, subjects) -> None:
         super().count_them(timestamp, subjects)
 
-    def calulate_future_distance(self, one: Subject, another: Subject):
+    @staticmethod
+    def calulate_future_distance(one: Subject, another: Subject):
         p1 = one.get_particle_component().position_vector + one.get_particle_component().velocity_vector
         p2 = another.get_particle_component().position_vector + another.get_particle_component().velocity_vector
         return np.sqrt(np.sum((p2 - p1) ** 2))

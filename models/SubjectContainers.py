@@ -1,11 +1,9 @@
+from __future__ import annotations
 from models.ConfigureMe import SubjectTypes, MainConfiguration
 from models.Particle import Particle
 from models.Subject import Subject
-from models.InfectionHandlers import InfectionHandlerInterface, AxisBased
-import math
-import numpy as np
-import threading
-from typing import List
+from models.InfectionHandlers import AxisBased
+from models.QuarantineDirector import QuarantineDirector
 import time
 from abc import ABC, abstractmethod
 
@@ -30,6 +28,9 @@ class BoxOfSubjects(ContainerOfSubjects):
         self._infection_handler = infection_handler
         self._infection_radius = config.INFECTION_RADIUS + config.SUBJECT_SIZE
         self.populate_subjects(config, number_of_subjects)
+        self.do_i_quarantine = MainConfiguration().QUARANTINE_MODE.get()
+        if self.do_i_quarantine:
+            self._quarantine_handler = QuarantineDirector()
 
     def reset(self):
         self = BoxOfSubjects()
@@ -57,8 +58,15 @@ class BoxOfSubjects(ContainerOfSubjects):
         self._infection_handler.many_to_many(timestamp, [self.contents])
         #categorized_boys = self._infection_handler.counts
         #for dict_ in categorized_boys:
-        for particle in self.contents:
-            particle.get_particle_component().update_location()
+        if not self.do_i_quarantine:
+            for subject in self.contents:
+                subject.get_particle_component().update_location()
+        else:
+            for subject in self._infection_handler.quarantine_split_counts["OTHERS"]:
+                subject.get_particle_component().update_location()
+            self._quarantine_handler.handle_infected_subjects(self._infection_handler.quarantine_split_counts["INFECTED"])
+
+
 
 
 

@@ -11,12 +11,9 @@ class Particle:
     def __init__(self, cnf = MainConfiguration()):
         bounding_box = cnf.get_particle_position_boundaries()
         self.position_vector = Particle.init_random_vector(bounding_box)
+        self.set_boundaries(bounding_box)
         self.velocity_vector = np.random.uniform(*cnf.SUBJECT_VELOCITY, [2,])
-        #self.min_x, self.max_x, self.min_y,  self.max_y =
-        self.min_x = bounding_box[0][0]
-        self.max_x = bounding_box[0][1]
-        self.min_y = bounding_box[1][0]
-        self.max_y = bounding_box[0][1]
+
         #self.max_x -= 10
         #self.max_y -= 10
         self.last_location_update = -1
@@ -24,6 +21,12 @@ class Particle:
         self._radius = cnf.SUBJECT_SIZE
         self.subject = None
         self.quarantine_mode = MainConfiguration().QUARANTINE_MODE
+
+    def set_boundaries(self, bounding_box: list[list[float]]):
+        self.min_x = bounding_box[0][0]
+        self.max_x = bounding_box[0][1]
+        self.min_y = bounding_box[1][0]
+        self.max_y = bounding_box[1][1]
 
     def get_radius(self):
         return self._radius
@@ -88,9 +91,14 @@ class Particle:
         self.position_vector = self.position_vector + self.velocity_vector * rate_of_change
         self.bounce_back_if_needed()
 
+    def update_location_controlled(self, rate_of_change = 1) -> None:
+        #self.velocity_vector = self.velocity_vector + self.acceleration_vector * rate_of_change
+
+        self.position_vector = self.position_vector + self.velocity_vector * rate_of_change
+
     def bounce_back_if_needed(self) -> None:
         if self.position_x < self.min_x:
-            self.position_x += np.abs(self.velocity_x) + 1
+            self.position_x = self.min_x + 1
             self.velocity_x = - self.velocity_x
 
         elif self.position_x > self.max_x:
@@ -98,17 +106,18 @@ class Particle:
             self.velocity_x = - self.velocity_x
 
         if self.position_y < self.min_y:
-            self.position_y = - self.position_y
+            self.position_y = self.min_y  + 1
             self.velocity_y = - self.velocity_y
+
         elif self.position_y > self.max_y:
             self.position_y = 2 * self.max_y - self.position_y
             self.velocity_y = - self.velocity_y
 
 
     @staticmethod
-    def init_random_vector(range: VectorRange) -> Vector:
-        x = np.random.uniform(*range[0])
-        y = np.random.uniform(*range[1])
+    def init_random_vector(range_: VectorRange) -> Vector:
+        x = np.random.uniform(*range_[0])
+        y = np.random.uniform(*range_[1])
         return np.array([x,y])
 
     def rotate_velocity(self, angle) -> Particle:

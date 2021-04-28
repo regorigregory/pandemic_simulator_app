@@ -5,6 +5,8 @@ from models.SubjectContainers import BoxOfSubjects
 from matplotlib import patches
 from models.ConfigureMe import MainConfiguration, Theme
 import numpy as np
+
+
 class AbstractSimulation(ABC):
     @abstractmethod
     def resume(self):

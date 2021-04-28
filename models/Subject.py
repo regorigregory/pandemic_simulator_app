@@ -8,6 +8,8 @@ from typing import List, Union
 class Subject:
 
     def __init__(self, config = MainConfiguration(), am_i_infected = False):
+        self.on_my_way_to_quarantine = False
+        self.already_in_quarantine = False
         self.quarantine_mode = False
         self._infection_radius = Subject.set_random_attribute_safely(config.INFECTION_RADIUS)
 

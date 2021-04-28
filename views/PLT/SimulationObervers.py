@@ -1,10 +1,6 @@
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation, Animation, TimedAnimation
-
-from models.SubjectContainers import BoxOfSubjects
-from matplotlib.widgets import Button
 from models.ConfigureMe import MainConfiguration, Theme
 import numpy as np
+
 
 class AreaChart:
     def __init__(self):

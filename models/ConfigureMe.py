@@ -148,7 +148,7 @@ class MainConfiguration(object):
             MainConfiguration.instance = self
             MainConfiguration.instance.__dict__ = MainConfiguration._shared_data
             self.NUMBER_OF_THREADS = 3
-            self.SUBJECT_NUMBER = 300
+            self.SUBJECT_NUMBER = 100
             self.FRAME_MULTIPLIER = 5
 
             self.SUBJECT_VELOCITY = 1
@@ -171,7 +171,7 @@ class MainConfiguration(object):
             self.LOCKDOWN_AFTER = 0
             self.CENTRAL_VISIT_CHANCE = 1
             self.CENTRAL_SUBJECT_NUMBER = 100
-
+            self.QUARANTINE_APPROACHING_SPEED = 20
             self.COMMUNITIES_VISIT_CHANCE = 1
             self.COMMUNITIES_SUBJECT_PER = 100
 
@@ -292,6 +292,10 @@ class MainConfiguration(object):
             q_dims = self.get_quarantine_dimensions()
             canvas_dims[0][0] = q_dims["x"] + q_dims["width"] + 1
         return canvas_dims
+
+    def get_particle_quarantine_position_boundaries(self):
+        q_dims = self.get_quarantine_dimensions()
+        return [[q_dims["x"], q_dims["x"] + q_dims["width"]], [q_dims["y"], q_dims["y"] + q_dims["height"]]]
 
     def get_dimensions(self, key):
         sett = self.FRAME_SETTINGS[key]
