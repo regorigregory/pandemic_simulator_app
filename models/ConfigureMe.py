@@ -9,7 +9,6 @@ class InfectionStatuses(Enum):
     IMMUNE = 3
 
 
-
 class SubjectTypes(Enum):
     PARTICLE = 0,
     SUBJECT = 1
@@ -45,9 +44,8 @@ class Theme(object):
             self.plot_bg = "#21213D"
             self.infected = "#CC1F7F"
             self.asymptomatic = "#E58342"
-            self.susceptible = "#E6C645"
-            self.immune = "#03A0D3"
-
+            self.susceptible = "#03A0D3" #"#E6C645"
+            self.immune = "#666666"
 
 
 class SimulationParametersUIConfig(object):
@@ -82,22 +80,22 @@ class SimulationParametersUIConfig(object):
                                                [1, 300]]
             self.general["SUBJECT_VELOCITY"] = ["Scale", "The maximum movement speed of a subject:", [1, 10]]
 
-            self.general["INITIAL_INFECTION_RATIO"] = ["Scale",
+            self.general["SUBJECT_INITIAL_INFECTION_RATIO"] = ["Scale",
                                                        "The ratio of the initially infected subjects:",
                                                        [0, 1]]
 
             self.general["SUBJECT_SIZE"] = ["Scale", "Subject size (radius) in pixels:", [1, 15]]
 
-            self.general["INFECTION_RADIUS"] = ["Scale", "Infection radius around a subject in pixels:", [1, 100]]
-            self.general["CHANCE_OF_INFECTION"] = ["Scale",
+            self.general["SUBJECT_INFECTION_RADIUS"] = ["Scale", "Infection radius around a subject in pixels:", [1, 100]]
+            self.general["SUBJECT_CHANCE_OF_INFECTION"] = ["Scale",
                                                    "Infection chance per each day:",
                                                    [0, 1]]
 
-            self.general["RECOVERY_TIME"] = ["Scale",
+            self.general["SUBJECT_RECOVERY_TIME"] = ["Scale",
                                              "Recovery time (days):",
                                              [0, 100]]
 
-            self.general["INCUBATION_PERIOD"] = ["Scale",
+            self.general["SUBJECT_INCUBATION_PERIOD"] = ["Scale",
                                                  "Incubation period (days):",
                                                  [0, 100]]
 
@@ -147,22 +145,27 @@ class MainConfiguration(object):
         if MainConfiguration.instance is None:
             MainConfiguration.instance = self
             MainConfiguration.instance.__dict__ = MainConfiguration._shared_data
+
+            # general settings
+
             self.NUMBER_OF_THREADS = 3
-            self.SUBJECT_NUMBER = 100
             self.FRAME_MULTIPLIER = 5
+            self.SOCIAL_DISTANCING_MODE = False
+            self.QUARANTINE_MODE = False
+            self.LOCKDOWN_MODE = False
+            self.COMMUNITY_MODE = False
+            # subject settings
 
-            self.SUBJECT_VELOCITY = 1
-
-            self.INITIAL_INFECTION_RATIO = 0.5
-            self.INFECTION_RADIUS = 15
-            self.CHANCE_OF_INFECTION = 0.8
-
+            self.SUBJECT_NUMBER = 100
             self.SUBJECT_SIZE = 4
-
-            self.RECOVERY_TIME = 30
-            self.INCUBATION_PERIOD = 15
-
+            self.SUBJECT_INITIAL_INFECTION_RATIO = 0.5
+            self.SUBJECT_INFECTION_RADIUS = 15
+            self.SUBJECT_CHANCE_OF_INFECTION = 0.8
+            self.SUBJECT_RECOVERY_TIME = 30
+            self.SUBJECT_INCUBATION_PERIOD = 15
             self.SUBJECT_COMPLIANCE = 1
+            self.SUBJECT_VELOCITY = 1
+            self.SUBJECT_TYPE = SubjectTypes.SUBJECT
 
             self.DAYS_PER_SECOND = 10
 
@@ -172,14 +175,14 @@ class MainConfiguration(object):
             self.CENTRAL_VISIT_CHANCE = 1
             self.CENTRAL_SUBJECT_NUMBER = 100
             self.QUARANTINE_APPROACHING_SPEED = 20
+
+            # Communities settings
+
+            self.COMMUNITIES_ROWS = 3
+            self.COMMUNITIES_COLUMNS = 3
+
             self.COMMUNITIES_VISIT_CHANCE = 1
             self.COMMUNITIES_SUBJECT_PER = 100
-
-            self.SOCIAL_DISTANCING_MODE = False
-            self.QUARANTINE_MODE = False
-            self.LOCKDOWN_MODE = False
-
-            self.SUBJECT_TYPE = SubjectTypes.SUBJECT
 
             # Layout configuration
 
@@ -211,6 +214,10 @@ class MainConfiguration(object):
                                     "LOCKDOWN_MODE": ["Checkbutton",
                                                       dict(text="Lockdown",
                                                            name = "LOCKDOWN_MODE".lower(),
+                                                           **Theme().checkbox_attributes)],
+                                    "COMMUNITY_MODE": ["Checkbutton",
+                                                      dict(text="Community mode",
+                                                           name="COMMUNITY_MODE".lower(),
                                                            **Theme().checkbox_attributes)]
                                     }
             self.FRAME_SETTINGS = dict()
@@ -255,7 +262,7 @@ class MainConfiguration(object):
         if key == "SUBJECT_VELOCITY":
             value = [-value, value]
 
-        elif ("MIN" in key or "MAX" in key):
+        elif "MIN" in key or "MAX" in key:
             index = 0 if "MIN" in key else 1
             key = key[0:-4]
             val = super().__getattribute__(key)

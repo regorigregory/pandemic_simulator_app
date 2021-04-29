@@ -7,23 +7,23 @@ from typing import List, Union
 
 class Subject:
 
-    def __init__(self, config = MainConfiguration(), am_i_infected = False):
+    def __init__(self, config = MainConfiguration(), boundaries = None):
         self.on_my_way_to_quarantine = False
         self.already_in_quarantine = False
         self.quarantine_mode = False
-        self._infection_radius = Subject.set_random_attribute_safely(config.INFECTION_RADIUS)
+        self._infection_radius = Subject.set_random_attribute_safely(config.SUBJECT_INFECTION_RADIUS)
 
-        self._recovery_time = config.RECOVERY_TIME * config.FRAME_MULTIPLIER
-        self._incubation_period = config.INCUBATION_PERIOD * config.FRAME_MULTIPLIER
+        self._recovery_time = config.SUBJECT_RECOVERY_TIME * config.FRAME_MULTIPLIER
+        self._incubation_period = config.SUBJECT_INCUBATION_PERIOD * config.FRAME_MULTIPLIER
 
-        self._infection_probability = Subject.set_random_attribute_safely(config.CHANCE_OF_INFECTION/config.FRAME_MULTIPLIER)
+        self._infection_probability = Subject.set_random_attribute_safely(config.SUBJECT_CHANCE_OF_INFECTION / config.FRAME_MULTIPLIER)
         self._do_i_socially_distance = MainConfiguration().SUBJECT_COMPLIANCE > np.random.uniform(0, 1) \
             if MainConfiguration().SOCIAL_DISTANCING_MODE.get() else False
 
-        self._particle = Particle(config)
-        self._infection_radius = self._particle.get_radius() + config.INFECTION_RADIUS
+        self._particle = Particle(config, boundaries = boundaries)
+        self._infection_radius = self._particle.get_radius() + config.SUBJECT_INFECTION_RADIUS
 
-        if np.random.uniform() <= config.INITIAL_INFECTION_RATIO:
+        if np.random.uniform() <= config.SUBJECT_INITIAL_INFECTION_RATIO:
             self._infection_status = InfectionStatuses.ASYMPTOMATIC
             self._got_infected_at = 0
         else:
@@ -96,7 +96,7 @@ class Subject:
 
     def get_behavioural_distance(self):
         if self.am_i_compliant():
-            return MainConfiguration().INFECTION_RADIUS - 1
+            return MainConfiguration().SUBJECT_INFECTION_RADIUS - 1
         return self.get_particle_component().get_radius()
 
     def are_we_too_close(self, other) -> bool:

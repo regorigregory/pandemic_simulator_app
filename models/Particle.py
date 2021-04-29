@@ -8,8 +8,9 @@ VectorRange = List[List[float]]
 
 
 class Particle:
-    def __init__(self, cnf = MainConfiguration()):
-        bounding_box = cnf.get_particle_position_boundaries()
+    def __init__(self, cnf = MainConfiguration(), boundaries = None):
+        bounding_box = cnf.get_particle_position_boundaries() if boundaries is None else boundaries
+
         self.position_vector = Particle.init_random_vector(bounding_box)
         self.set_boundaries(bounding_box)
         self.velocity_vector = np.random.uniform(*cnf.SUBJECT_VELOCITY, [2,])
@@ -106,7 +107,7 @@ class Particle:
             self.velocity_x = - self.velocity_x
 
         if self.position_y < self.min_y:
-            self.position_y = self.min_y  + 1
+            self.position_y = self.min_y + 1
             self.velocity_y = - self.velocity_y
 
         elif self.position_y > self.max_y:

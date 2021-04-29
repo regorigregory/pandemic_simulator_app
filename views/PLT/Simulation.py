@@ -1,7 +1,8 @@
+from __future__ import annotations
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation, Animation, TimedAnimation
 from abc import ABC, abstractmethod
-from models.SubjectContainers import BoxOfSubjects
+from models.SubjectContainers import DefaultContainer, CommunitiesContainer
 from matplotlib import patches
 from models.ConfigureMe import MainConfiguration, Theme
 import numpy as np
@@ -37,16 +38,18 @@ class ObserverClient(object):
 
 
 class ConcreteSimulation(ObserverClient, AbstractSimulation):
+
     def __init__(self, config=MainConfiguration(), container=None):
         super().__init__()
         self.config = config
         self.width, self.height = config.get_dimensions("SimulationFrame")
         self.DPI = config.DPI
         self._marker_radius = config.SUBJECT_SIZE
-        self._infection_zone_radius = config.INFECTION_RADIUS + config.SUBJECT_SIZE
+        self._infection_zone_radius = config.SUBJECT_INFECTION_RADIUS + config.SUBJECT_SIZE
 
         self._box_of_particles = container
         self._infection_handler = self._box_of_particles._infection_handler
+        self._communities_handler = None
 
         self.fig = plt.figure(figsize=(self.width / self.DPI, self.height / self.DPI), dpi=self.DPI)
         self.ax = self.fig.add_subplot()
@@ -77,11 +80,16 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         self._box_of_particles.move_guys(i)
 
     def get_init_func(self):
+
+        if self.config.QUARANTINE_MODE.get():
+            ConcreteSimulation.draw_quarantine_boundaries(self.ax)
+
+        if self.config.COMMUNITY_MODE.get():
+            ConcreteSimulation.draw_community_boundaries_on_ax(self.ax)
+
         self.ax.set_facecolor(Theme().plot_bg)
         self.ax.set_xlim(0, self.width)
         self.ax.set_ylim(0, self.height)
-
-        self._infection_handler.count_them(0, self._box_of_particles.contents)
 
         self.notify(self._infection_handler.counts)
 
@@ -124,13 +132,7 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
 
         # adding quarantine bounding box
 
-        if MainConfiguration().QUARANTINE_MODE.get():
-            q_dims = MainConfiguration().get_quarantine_dimensions()
-            self.ax.text(q_dims["x"],
-                         q_dims["height"] - q_dims["y"],
-                         "QUARANTINE", color = Theme().infected,
-                         fontsize = "large")
-            self.ax.add_patch(patches.Rectangle([q_dims["x"], q_dims["y"]], q_dims["width"], q_dims["height"], facecolor = "none", linewidth = 1, edgecolor = Theme().infected, linestyle = "--"))
+
 
         def func():
             return self.ax.lines
@@ -178,10 +180,10 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
 
     def reset(self):
         self._marker_radius = MainConfiguration().SUBJECT_SIZE
-        self._infection_zone_radius = MainConfiguration().INFECTION_RADIUS + MainConfiguration().SUBJECT_SIZE
+        self._infection_zone_radius = MainConfiguration().SUBJECT_INFECTION_RADIUS + MainConfiguration().SUBJECT_SIZE
         self.ani._stop()
         self.ani = None
-        self._box_of_particles = BoxOfSubjects()
+        self._box_of_particles = DefaultContainer() if self.config.COMMUNITY_MODE.get() != True else CommunitiesContainer()
         self._infection_handler = self._box_of_particles._infection_handler
         self.fig.axes[0].clear()
         self.start_animation()
@@ -195,12 +197,58 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
     def pause(self):
         self.ani.event_source.stop()
 
+    @staticmethod
+    def draw_community_boundaries_on_ax(ax) -> list[[float, float], [float, float]]:
+        config = MainConfiguration()
+        main_dimensions = config.get_particle_position_boundaries()
+        full_width = main_dimensions[0][1] - main_dimensions[0][0]
+        x_start = main_dimensions[0][0]
 
+        full_height = main_dimensions[1][1]
+        padding = config.INNER_PADDING
+        rows = config.COMMUNITIES_ROWS
+        columns = config.COMMUNITIES_COLUMNS
+        row_height = full_height / rows - padding
+        column_width = full_width / columns - padding
+        patch_dimensions = dict(width=column_width - padding, height=row_height - padding)
+
+        cells = []
+        for row in range(rows):
+            for column in range(columns):
+                x = x_start + padding + column * column_width
+                y = padding + row * row_height
+                width = patch_dimensions["width"]
+                height = patch_dimensions["height"]
+                ax.add_patch(patches.Rectangle([x, y],
+                             width,
+                             height,
+                             facecolor="none",
+                             linewidth=1,
+                             edgecolor=Theme().infected,
+                             linestyle="--"
+                             ))
+                cells.append([[x, x + width], [y, y + height]])
+        cells = cells
+        return cells
+
+    @staticmethod
+    def draw_quarantine_boundaries(ax):
+        if MainConfiguration().QUARANTINE_MODE.get():
+            q_dims = MainConfiguration().get_quarantine_dimensions()
+            ax.text(q_dims["x"],
+                         q_dims["height"] - q_dims["y"],
+                         "QUARANTINE", color = Theme().infected,
+                         fontsize = "large")
+            ax.add_patch(patches.Rectangle([q_dims["x"], q_dims["y"]], q_dims["width"], q_dims["height"],
+                                                facecolor = "none",
+                                                linewidth = 1,
+                                                edgecolor = Theme().infected,
+                                                linestyle = "--"))
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
     plt.ioff()
-    ViewBox = ConcreteSimulation(container=BoxOfSubjects())
+    ViewBox = ConcreteSimulation(container=DefaultContainer())
     a = ViewBox.start_animation()
     a.event_source.stop()
     plt.show()

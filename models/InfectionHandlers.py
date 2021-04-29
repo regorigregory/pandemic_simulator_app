@@ -8,20 +8,21 @@ import numpy as np
 
 class InfectionHandlerInterface(ABC):
     def __init__(self):
+        self.config = MainConfiguration()
+        self.observers = []
         self.counts = dict()
         self.quarantine_split_counts = dict()
+        self.count_keys = ["SUSCEPTIBLE", "ASYMPTOMATIC", "INFECTED", "IMMUNE"]
         self.init_counts()
+        self.last_timestamp = -1
 
-    def init_counts(self) -> None:
 
-        self.counts = dict(
-            SUSCEPTIBLE=set(),
-            ASYMPTOMATIC=set(),
-            INFECTED=set(),
-            IMMUNE=set()
-        )
-        self.quarantine_split_counts = dict(INFECTED = set(),
-                                            OTHERS = set())
+    def init_counts(self, exception = None) -> None:
+
+        for k in self.count_keys:
+            if exception is None or k not in exception:
+                self.counts[k] = set()
+
 
     def print_counts(self) -> None:
         import sys
@@ -53,23 +54,23 @@ class AxisBased(InfectionHandlerInterface):
 
     def __init__(self):
         super().__init__()
-        self.config = MainConfiguration()
-        self.observers = []
 
-    def many_to_many(self, timestamp: int, subjects: List[Subject]) -> None:
-        self.init_counts()
-        subjects = subjects[0]
-        #if len(self.counts["INFECTED"]) == 0 and len(self.counts["IMMUNE"]) != 0:
-        #    return
+    def many_to_many(self, timestamp: int) -> None:
+
+        if(self.config.QUARANTINE_MODE.get() == False):
+            subjects = self.counts["SUSCEPTIBLE"].union(self.counts["INFECTED"].union(self.counts["ASYMPTOMATIC"].union()))
+            self.init_counts(exception = ["IMMUNE"])
+        else:
+            subjects = self.counts["SUSCEPTIBLE"].union(
+                self.counts["ASYMPTOMATIC"].union())
+            self.init_counts(exception=["IMMUNE", "INFECTED"])
 
         x_sorted = sorted(subjects, key=lambda s: s.get_particle_component().position_x)
         for i, current in enumerate(x_sorted):
             self.one_to_many(timestamp, current, x_sorted, i)
             self.counts[current.get_infection_status(timestamp).name].add(current)
-            if current.get_infection_status(timestamp) == InfectionStatuses.INFECTED:
-                self.quarantine_split_counts["INFECTED"].add(current)
-            else:
-                self.quarantine_split_counts["OTHERS"].add(current)
+
+
 
     def one_to_many(self, timestamp: int, one: Subject, x_sorted: List[Subject], i: int) -> None:
         down = i - 1
@@ -85,7 +86,7 @@ class AxisBased(InfectionHandlerInterface):
     def handle_subjects(self, one, x_sorted, index, increment, comparator_function, timestamp):
         if self.config.QUARANTINE_MODE.get() == True and one.get_infection_status(timestamp) == InfectionStatuses.INFECTED:
             return
-        infection_distance = MainConfiguration().SUBJECT_SIZE + MainConfiguration().INFECTION_RADIUS
+        infection_distance = MainConfiguration().SUBJECT_SIZE + MainConfiguration().SUBJECT_INFECTION_RADIUS
 
         while comparator_function(index):
 
@@ -102,7 +103,7 @@ class AxisBased(InfectionHandlerInterface):
 
             if x_distance > max_distance:
                 break
-            distance_norm = AxisBased.calulate_future_distance(one, another)
+            distance_norm = AxisBased.calculate_future_distance(one, another)
 
             if distance_norm < max_distance:
                 one.resolve_collision(another)
@@ -113,7 +114,7 @@ class AxisBased(InfectionHandlerInterface):
         super().count_them(timestamp, subjects)
 
     @staticmethod
-    def calulate_future_distance(one: Subject, another: Subject):
+    def calculate_future_distance(one: Subject, another: Subject):
         p1 = one.get_particle_component().position_vector + one.get_particle_component().velocity_vector
         p2 = another.get_particle_component().position_vector + another.get_particle_component().velocity_vector
         return np.sqrt(np.sum((p2 - p1) ** 2))

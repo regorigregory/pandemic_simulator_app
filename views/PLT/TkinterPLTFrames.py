@@ -2,7 +2,7 @@ from tkinter import Frame, Button, Scrollbar
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from models.SubjectContainers import BoxOfSubjects
+from models.SubjectContainers import DefaultContainer
 from models.ConfigureMe import MainConfiguration
 import tkinter as tk
 
@@ -46,7 +46,7 @@ class SimulationFrame(AbstractFrame):
     def __init__(self, root):
         super().__init__(root)
 
-        self.ViewBox = ConcreteSimulation(container=BoxOfSubjects())
+        self.ViewBox = ConcreteSimulation(container=DefaultContainer())
         self.ViewBox.fig.subplots_adjust(left=0, bottom=0.1, right=0.95, top=1, wspace=0, hspace=0)
         self.canvas = FigureCanvasTkAgg(self.ViewBox.fig, self)
 
@@ -150,33 +150,31 @@ class ScenarioFrame(AbstractFrame):
         self.buttons = []
         self.checkboxes = []
 
-        for v in self.config.SCENARIO_CONFIG.values():
+        """for v in self.config.SCENARIO_CONFIG.values():
             constructor = getattr(tk, v[0])
             self.components.append(constructor(self, **v[1]))
 
-        first_row_counter = 0
         for i, c in enumerate(self.components):
-            first_row_counter = i
             c.grid(row=0, column=i, sticky = "we")
-
+        """
         for k, v in self.config.CHECKBOX_CONFIG.items():
             constructor = getattr(tk, v[0])
-            var = tk.BooleanVar(master = self, name = k, value = True)
+            var = tk.BooleanVar(master = self, name = k, value = getattr(self.config, k))
             cb = constructor(self, variable = var, **v[1])
             self.checkboxes.append(cb)
             self.components.append(cb)
             setattr(MainConfiguration(), k, var)
 
         for i, v in enumerate(self.checkboxes):
-            v.grid(row = 1, column = i)
+            v.grid(row = 0, column = i)
 
         for v in self.config.BUTTONS_CONFIG.values():
             b = Button(self, **v)
             self.components.append(b)
             self.buttons.append(b)
 
-        self.buttons[0].grid(row = 0, column = 3)
-        self.buttons[1].grid(row = 1, column = 3)
+        self.buttons[0].grid(row = 1, column = 0, columnspan = 2, sticky = "we")
+        self.buttons[1].grid(row = 1, column = 2, columnspan = 2, sticky = "we")
 
     def get_checkboxes(self):
         return self.checkboxes

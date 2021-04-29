@@ -2,7 +2,7 @@
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from models.ConfigureMe import MainConfiguration, Theme
-    from models.SubjectContainers import BoxOfSubjects
+    from models.SubjectContainers import DefaultContainer
     from views.PLT.Simulation import ConcreteSimulation
     import tkinter as tk
     from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg

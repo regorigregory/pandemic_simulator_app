@@ -4,7 +4,7 @@ from models.Subject import Subject
 import numpy as np
 
 
-class QuarantineDirector(object):
+class QuarantineHandler(object):
 
     def __init__(self):
         self.config = MainConfiguration()
@@ -22,16 +22,11 @@ class QuarantineDirector(object):
         direction_vector /=  np.sum(direction_vector ** 2) ** 0.5
         particle.velocity_vector = direction_vector * self.quarantine_approaching_speed
 
-    def is_subject_in_quarantine(self, to_be_quarantined: Subject) -> bool:
-        location = to_be_quarantined.get_particle_component().position_vector
-        if location[0] < self.q_dim["x"] or location[0] > self.q_dim["x"] + self.q_dim["width"] \
-            or location[1] < self.q_dim["y"] or location[1] > self.q_dim["y"] + self.q_dim["height"]:
-            return False
-        return True
 
-    def handle_infected_subjects(self, infected_subjects: list[Subject]) -> None:
-
+    def handle_infected_subjects(self, infected_subjects: list[Subject], timestamp) -> set[Subject]:
+        immune_and_infected = dict(INFECTED = set(), IMMUNE = set())
         for subject in infected_subjects:
+            immune_and_infected[subject.get_infection_status(timestamp).name].add(subject)
             if not subject.already_in_quarantine:
                 if not subject.on_my_way_to_quarantine:
                     self.head_to_quarantine(subject)
@@ -50,6 +45,15 @@ class QuarantineDirector(object):
 
             else:
                 subject.get_particle_component().update_location()
+        return immune_and_infected
+
+class CommunityCommuteHandler:
+    def __init__(self, community_boundaries):
+        self.config = MainConfiguration()
+        self.community_boundaries = community_boundaries
+        self.rows = self.config.COMMUNITIES_ROWS
+        self.columns = self.config.COMMUNITIES_COLUMNS
+        self.cell_number = self.rows * self.columns
 
 if __name__ == "__main__":
     x = 1
