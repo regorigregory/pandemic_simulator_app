@@ -46,7 +46,7 @@ class SimulationFrame(AbstractFrame):
     def __init__(self, root):
         super().__init__(root)
 
-        self.ViewBox = ConcreteSimulation(container=DefaultContainer())
+        self.ViewBox = ConcreteSimulation()
         self.ViewBox.fig.subplots_adjust(left=0, bottom=0.1, right=0.95, top=1, wspace=0, hspace=0)
         self.canvas = FigureCanvasTkAgg(self.ViewBox.fig, self)
 

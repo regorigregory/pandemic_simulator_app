@@ -121,13 +121,11 @@ class SimulationParametersUIConfig(object):
                                                       "The number of subjects:",
                                                       [0, 500]]
 
-            self.communities["COMMUNITIES_VISIT_CHANCE"] = ["Scale",
+            self.general["COMMUNITIES_VISIT_CHANCE"] = ["Scale",
                                                             "Travelling chance between communities:",
                                                             [0, 1]]
 
-            self.communities["COMMUNITIES_SUBJECT_PER"] = ["Scale",
-                                                           "Travelling chance between communities:",
-                                                           [0, 100]]
+
 
 
 class MainConfiguration(object):
@@ -181,12 +179,12 @@ class MainConfiguration(object):
             self.COMMUNITIES_ROWS = 3
             self.COMMUNITIES_COLUMNS = 3
 
-            self.COMMUNITIES_VISIT_CHANCE = 0.5
+            self.COMMUNITIES_VISIT_CHANCE = 0.001
 
             # Layout configuration
 
             self.MAIN_CANVAS_SIZE = [1024, 1024]
-            self.INNER_PADDING = 10
+            self.INNER_PADDING = 60
             self.QUARANTINE_WIDTH = 0.1
             self.DPI = 96
             self.DEFAULT_BG = Theme().default_bg

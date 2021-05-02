@@ -39,7 +39,7 @@ class ObserverClient(object):
 
 class ConcreteSimulation(ObserverClient, AbstractSimulation):
 
-    def __init__(self, config=MainConfiguration(), container=None):
+    def __init__(self, config=MainConfiguration()):
         super().__init__()
         self.config = config
         self.width, self.height = config.get_dimensions("SimulationFrame")

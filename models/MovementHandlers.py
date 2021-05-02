@@ -95,7 +95,8 @@ class CommunityHandler(AbstractMovementHandler):
         for subject in designated_subjects:
             #immune_and_infected[subject.get_infection_status(timestamp).name].add(subject)
             if not subject.travelling:
-                if np.random.uniform(0, 1) < 1000 * self.config.COMMUNITIES_VISIT_CHANCE:
+                chance = np.random.uniform(0, 1)
+                if chance < self.config.COMMUNITIES_VISIT_CHANCE:
                     subject.travelling = True
                     temp =  np.random.randint(0, self.cell_number)
 

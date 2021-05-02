@@ -73,15 +73,15 @@ class AxisBased(InfectionHandlerInterface):
 
 
     def one_to_many(self, timestamp: int, one: Subject, x_sorted: List[Subject], i: int) -> None:
-        down = i - 1
-        up = i + 1
+        if one.travelling is False and one.on_my_way_to_quarantine is False:
+            down = i - 1
+            up = i + 1
 
-        downward_comparator = lambda index: index >= 0
-        self.handle_subjects(one, x_sorted, down, -1, downward_comparator, timestamp)
+            downward_comparator = lambda index: index >= 0
+            self.handle_subjects(one, x_sorted, down, -1, downward_comparator, timestamp)
 
-        upward_comparator = lambda index: index < len(x_sorted)
-
-        self.handle_subjects(one, x_sorted, up, 1, upward_comparator, timestamp)
+            upward_comparator = lambda index: index < len(x_sorted)
+            self.handle_subjects(one, x_sorted, up, 1, upward_comparator, timestamp)
 
     def handle_subjects(self, one, x_sorted, index, increment, comparator_function, timestamp):
         if self.config.QUARANTINE_MODE.get() == True and one.get_infection_status(timestamp) == InfectionStatuses.INFECTED:

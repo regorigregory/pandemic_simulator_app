@@ -12,7 +12,7 @@ class ContainerOfSubjects(ABC):
     def __init__(self):
         self.config = MainConfiguration()
         self._infection_handler = AxisBased()
-        self.contents = list()
+        self.contents = set()
         self._particle_radius = self.config.SUBJECT_SIZE
         self._infection_radius = self.config.SUBJECT_INFECTION_RADIUS + self.config.SUBJECT_SIZE
 
@@ -150,7 +150,7 @@ class CommunitiesContainer(ContainerOfSubjects):
                     j += 1
 
             current_cell.add(s)
-            self.contents.append(s)
+            self.contents.add(s)
 
     def move_guys(self, timestamp):
         self._infection_handler.many_to_many(timestamp)
