@@ -1,22 +1,22 @@
 from __future__ import annotations
-import math
-from typing import NewType, List
 from models.ConfigureMe import MainConfiguration
 import numpy as np
-Vector = List[float]
-VectorRange = List[List[float]]
+
 
 
 class Particle:
-    def __init__(self, cnf = MainConfiguration(), boundaries = None):
+    def __init__(self, cnf=MainConfiguration(), boundaries=None):
         bounding_box = cnf.get_particle_position_boundaries() if boundaries is None else boundaries
 
         self.position_vector = Particle.init_random_vector(bounding_box)
+        self.min_x = 0
+        self.max_x = 0
+        self.min_y = 0
+        self.max_y = 0
+
         self.set_boundaries(bounding_box)
         self.velocity_vector = np.random.uniform(*cnf.SUBJECT_VELOCITY, [2,])
 
-        #self.max_x -= 10
-        #self.max_y -= 10
         self.last_location_update = -1
 
         self._radius = cnf.SUBJECT_SIZE
@@ -34,8 +34,6 @@ class Particle:
 
     def get_particle_component(self):
         return self
-
-
 
     @property
     def position_vector(self):
@@ -87,12 +85,11 @@ class Particle:
 
 
     def update_location(self, rate_of_change = 1) -> None:
-        #self.velocity_vector = self.velocity_vector + self.acceleration_vector * rate_of_change
 
         self.position_vector = self.position_vector + self.velocity_vector * rate_of_change
         self.bounce_back_if_needed()
 
-    def update_location_controlled(self, rate_of_change = 1) -> None:
+    def update_location_guided(self, rate_of_change = 1) -> None:
         #self.velocity_vector = self.velocity_vector + self.acceleration_vector * rate_of_change
 
         self.position_vector = self.position_vector + self.velocity_vector * rate_of_change
@@ -114,9 +111,8 @@ class Particle:
             self.position_y = 2 * self.max_y - self.position_y
             self.velocity_y = - self.velocity_y
 
-
     @staticmethod
-    def init_random_vector(range_: VectorRange) -> Vector:
+    def init_random_vector(range_: list[list[float]]) -> list[float]:
         x = np.random.uniform(*range_[0])
         y = np.random.uniform(*range_[1])
         return np.array([x,y])
@@ -150,6 +146,8 @@ class Particle:
             otherParticle.velocity_vector = [u1[0], u2[1]]
             particle.rotate_velocity(-angle)
             otherParticle.rotate_velocity(-angle)
+
+
 if __name__ == "__main__":
 
     from models.ConfigureMe import MainConfiguration

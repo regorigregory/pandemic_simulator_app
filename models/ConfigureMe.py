@@ -153,10 +153,10 @@ class MainConfiguration(object):
             self.SOCIAL_DISTANCING_MODE = False
             self.QUARANTINE_MODE = False
             self.LOCKDOWN_MODE = False
-            self.COMMUNITY_MODE = False
+            self.COMMUNITY_MODE = True
             # subject settings
 
-            self.SUBJECT_NUMBER = 100
+            self.SUBJECT_NUMBER = 1
             self.SUBJECT_SIZE = 4
             self.SUBJECT_INITIAL_INFECTION_RATIO = 0.5
             self.SUBJECT_INFECTION_RADIUS = 15
@@ -174,15 +174,14 @@ class MainConfiguration(object):
             self.LOCKDOWN_AFTER = 0
             self.CENTRAL_VISIT_CHANCE = 1
             self.CENTRAL_SUBJECT_NUMBER = 100
-            self.QUARANTINE_APPROACHING_SPEED = 20
+            self.QUARANTINE_APPROACHING_SPEED = 5
 
             # Communities settings
 
             self.COMMUNITIES_ROWS = 3
             self.COMMUNITIES_COLUMNS = 3
 
-            self.COMMUNITIES_VISIT_CHANCE = 1
-            self.COMMUNITIES_SUBJECT_PER = 100
+            self.COMMUNITIES_VISIT_CHANCE = 0.5
 
             # Layout configuration
 

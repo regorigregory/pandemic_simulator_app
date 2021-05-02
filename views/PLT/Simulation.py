@@ -6,7 +6,7 @@ from models.SubjectContainers import DefaultContainer, CommunitiesContainer
 from matplotlib import patches
 from models.ConfigureMe import MainConfiguration, Theme
 import numpy as np
-
+debug = True
 
 class AbstractSimulation(ABC):
     @abstractmethod
@@ -47,7 +47,7 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         self._marker_radius = config.SUBJECT_SIZE
         self._infection_zone_radius = config.SUBJECT_INFECTION_RADIUS + config.SUBJECT_SIZE
 
-        self._box_of_particles = container
+        self._box_of_particles = CommunitiesContainer() if self.config.COMMUNITY_MODE.get() else ContainerOfSubjects()
         self._infection_handler = self._box_of_particles._infection_handler
         self._communities_handler = None
 
@@ -86,6 +86,9 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
 
         if self.config.COMMUNITY_MODE.get():
             ConcreteSimulation.draw_community_boundaries_on_ax(self.ax)
+            if debug:
+                for center in self._box_of_particles._community_handler.cell_centres:
+                    self.ax.text(center[0], center[1],"x", c="green")
 
         self.ax.set_facecolor(Theme().plot_bg)
         self.ax.set_xlim(0, self.width)
@@ -142,7 +145,6 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
     def get_animation_function(self):
         def func(i):
             self.move_guys(i)
-            #self._infection_handler.count_them(i, self._box_of_particles.contents)
 
             self.notify(self._infection_handler.counts)
 
@@ -227,8 +229,10 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
                              edgecolor=Theme().infected,
                              linestyle="--"
                              ))
+                if debug:
+                    ax.text(x, y, "P({:.0f}, {:.0f})".format(x, y), c = "green")
+
                 cells.append([[x, x + width], [y, y + height]])
-        cells = cells
         return cells
 
     @staticmethod

@@ -1,4 +1,5 @@
-
+import sys
+sys.path.append('/home/gergo/.local/lib/pypy3.6/site-packages')
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from models.ConfigureMe import MainConfiguration, Theme

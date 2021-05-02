@@ -11,6 +11,9 @@ class Subject:
         self.on_my_way_to_quarantine = False
         self.already_in_quarantine = False
         self.quarantine_mode = False
+        self.travelling = False
+        self.cell_id = -1
+        self.id = np.random.randint(1, 1000000)
         self._infection_radius = Subject.set_random_attribute_safely(config.SUBJECT_INFECTION_RADIUS)
 
         self._recovery_time = config.SUBJECT_RECOVERY_TIME * config.FRAME_MULTIPLIER
@@ -122,6 +125,17 @@ class Subject:
         if isinstance(const_or_arr, list):
             return np.random.uniform(*const_or_arr)
         return const_or_arr
+
+    def __key(self):
+        return self.id
+
+    def __hash__(self):
+        return hash(self.__key())
+
+    def __eq__(self, other):
+        if isinstance(other, Subject):
+            return self.__key() == other.__key()
+        return NotImplemented
 
 
 if __name__ == "__main__":
