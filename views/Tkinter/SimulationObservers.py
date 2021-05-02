@@ -32,7 +32,7 @@ class TKStats(Observer):
         self.init_log()
         self.fig = tk.Frame(root, bg=self.theme.default_bg)
         self.second_row = tk.Frame(self.fig, bg=self.theme.default_bg)
-        self.second_row.grid(row=2, column=0, sticky="we", columnspan=3)
+        self.second_row.grid(row=3, column=0, sticky="we", columnspan=3)
 
         self.data_label = dict(DAY = tk.Label(self.fig, text ="Day",**self.theme.label_data),
                                R_RATE=tk.Label(self.fig, text="R-rate", **self.theme.label_data),
@@ -59,7 +59,7 @@ class TKStats(Observer):
             self.data_value[k].grid(row=1, column=column, sticky="we")
             column += 1
 
-        self.fig.grid(row=0, column=0, sticky="nswe")
+        self.fig.grid(row=1, column=0, sticky="nswe")
 
 
     def update_stats(self, data):
@@ -81,12 +81,12 @@ class TKAreaChart(Observer):
     def __init__(self, root=None):
         super().__init__()
         self.width, self.height = self.config.get_dimensions("GraphFrame")
-        self.width = self.width
+        self.width = self.width - 3 * self.config.INNER_PADDING
         self.DPI = self.config.DPI
         self.frames = 0
         self.init_log()
 
-        self.fig = tk.Canvas(root, width=self.width, height = self.height, bg = self.theme.plot_bg)
+        self.fig = tk.Canvas(root, width=self.width, height = self.height, bg = self.theme.susceptible)
 
     @property
     def width(self):

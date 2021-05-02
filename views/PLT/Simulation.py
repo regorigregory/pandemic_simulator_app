@@ -6,7 +6,7 @@ from models.SubjectContainers import DefaultContainer, CommunitiesContainer
 from matplotlib import patches
 from models.ConfigureMe import MainConfiguration, Theme
 import numpy as np
-debug = True
+debug = False
 
 class AbstractSimulation(ABC):
     @abstractmethod

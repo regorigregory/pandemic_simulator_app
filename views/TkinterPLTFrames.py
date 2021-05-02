@@ -3,7 +3,7 @@ from tkinter import Frame, Button, Scrollbar
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from models.SubjectContainers import DefaultContainer
-from models.ConfigureMe import MainConfiguration
+from models.ConfigureMe import MainConfiguration, Theme
 import tkinter as tk
 
 from views.PLT.Simulation import ConcreteSimulation
@@ -62,7 +62,7 @@ class GraphFrame(AbstractFrame):
         super().__init__(root)
         self.ViewBox = TKAreaChart(root = self)
         self.canvas = self.ViewBox.fig
-        self.canvas.grid()
+        self.canvas.grid(row = 1, column = 0, sticky="w")
 
 
 class IdentifiableScale(tk.Scale):
@@ -75,7 +75,8 @@ class ParametersFrame(AbstractFrame):
     def __init__(self, root):
         super().__init__(root)
 
-        canvas = tk.Canvas(self, **self.dim_dict)
+        header = tk.Label(self, text="Simulation settings", bg = Theme().default_bg, font=("Courier", 16))
+        canvas = tk.Canvas(self, **self.dim_dict,  bg = Theme().default_bg)
 
         scrollbar = Scrollbar(self, orient = "vertical", command=canvas.yview)
 
@@ -132,14 +133,19 @@ class ParametersFrame(AbstractFrame):
             control_element.grid(row = i , column = col, sticky = "we")
             self.sliders.append(control_element)
             i += 1
-        canvas.grid(row=0, column=1, sticky = "nwse")
-        scrollbar.grid(row=0, column=0, sticky="ns")
+        header.grid(row=0, column=0, columnspan=2)
+        canvas.grid(row=1, column=1, sticky = "nwse")
+        scrollbar.grid(row=1, column=0, sticky="ns")
 
 
 class StatsFrame(AbstractFrame):
     def __init__(self, root):
         super().__init__(root)
+        self.header = tk.Label(self, text="Simulation statistics", font=("Courier", 14), bg = Theme().default_bg)
+        self.header.grid(row=0, column=0, columnspan=3)
+
         self.ViewBox =TKStats(self)
+
 
 
 class ScenarioFrame(AbstractFrame):
