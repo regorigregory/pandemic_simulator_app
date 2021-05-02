@@ -7,7 +7,7 @@ if __name__ == "__main__":
     from views.PLT.Simulation import ConcreteSimulation
     import tkinter as tk
     from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-    from views.PLT.TkinterPLTFrames import *
+    from views.TkinterPLTFrames import *
     import controllers.TkinterPLTControllers as Controllers
 
     plt.ioff()

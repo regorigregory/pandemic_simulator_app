@@ -67,21 +67,21 @@ class AxisBased(InfectionHandlerInterface):
 
         x_sorted = sorted(subjects, key=lambda s: s.get_particle_component().position_x)
         for i, current in enumerate(x_sorted):
-            self.one_to_many(timestamp, current, x_sorted, i)
+            if current.travelling is False and current.on_my_way_to_quarantine is False:
+                self.one_to_many(timestamp, current, x_sorted, i)
             self.counts[current.get_infection_status(timestamp).name].add(current)
 
 
 
     def one_to_many(self, timestamp: int, one: Subject, x_sorted: List[Subject], i: int) -> None:
-        if one.travelling is False and one.on_my_way_to_quarantine is False:
-            down = i - 1
-            up = i + 1
+        down = i - 1
+        up = i + 1
 
-            downward_comparator = lambda index: index >= 0
-            self.handle_subjects(one, x_sorted, down, -1, downward_comparator, timestamp)
+        downward_comparator = lambda index: index >= 0
+        self.handle_subjects(one, x_sorted, down, -1, downward_comparator, timestamp)
 
-            upward_comparator = lambda index: index < len(x_sorted)
-            self.handle_subjects(one, x_sorted, up, 1, upward_comparator, timestamp)
+        upward_comparator = lambda index: index < len(x_sorted)
+        self.handle_subjects(one, x_sorted, up, 1, upward_comparator, timestamp)
 
     def handle_subjects(self, one, x_sorted, index, increment, comparator_function, timestamp):
         if self.config.QUARANTINE_MODE.get() == True and one.get_infection_status(timestamp) == InfectionStatuses.INFECTED:

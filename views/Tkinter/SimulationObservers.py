@@ -25,30 +25,52 @@ class Observer(ABC):
         for k, v in newdata.items():
                 self.log[k] = np.concatenate((self.log[k], [[self.frames, len(v)]]), axis=0)
 
+
 class TKStats(Observer):
     def __init__(self, root):
         super().__init__()
         self.init_log()
-        self.fig = tk.Frame(root, bg = self.theme.default_bg)
-        self.ui_elements = dict()
-        self.ui_elements["Asymptomatic"] = tk.Label(self.fig, text = "Asymptomatic: 0", bg = self.theme.default_bg)
-        self.ui_elements["Infected"] = tk.Label(self.fig, text = "Infected: 0", bg = self.theme.default_bg)
-        self.ui_elements["Susceptible"] = tk.Label(self.fig, text = "Susceptible: 0", bg = self.theme.default_bg)
-        self.ui_elements["Immune"] = tk.Label(self.fig, text = "Immune: 0", bg = self.theme.default_bg)
+        self.fig = tk.Frame(root, bg=self.theme.default_bg)
+        self.second_row = tk.Frame(self.fig, bg=self.theme.default_bg)
+        self.second_row.grid(row=2, column=0, sticky="we", columnspan=3)
 
-        for i, v in enumerate(self.ui_elements.values()):
-            v.grid(row = 0, column = i)
+        self.data_label = dict(DAY = tk.Label(self.fig, text ="Day",**self.theme.label_data),
+                               R_RATE=tk.Label(self.fig, text="R-rate", **self.theme.label_data),
+                               R_GROWTH=tk.Label(self.fig, text="R-growth-rate", **self.theme.label_data),
+                               ASYMPTOMATIC=tk.Label(self.second_row, text = "Asymptomatic", **self.theme.label_data),
+                               INFECTED=tk.Label(self.second_row, text = "Infected", **self.theme.label_data),
+                               SUSCEPTIBLE=tk.Label(self.second_row, text = "Susceptible", **self.theme.label_data),
+                               IMMUNE= tk.Label(self.second_row, text = "Immune", **self.theme.label_data)
+                               )
+        self.data_value = dict(DAY=tk.Label(self.fig, text="-", **self.theme.label_value),
+                               R_RATE=tk.Label(self.fig, text="-", **self.theme.label_value),
+                               R_GROWTH=tk.Label(self.fig, text="-", **self.theme.label_value),
+                               ASYMPTOMATIC=tk.Label(self.second_row, text="-", fg=self.theme.asymptomatic,  **self.theme.label_value),
+                               INFECTED=tk.Label(self.second_row, text="-", fg=self.theme.infected, **self.theme.label_value),
+                               SUSCEPTIBLE=tk.Label(self.second_row, text="-", fg=self.theme.susceptible, **self.theme.label_value),
+                               IMMUNE=tk.Label(self.second_row, text="-",fg=self.theme.immune, **self.theme.label_value)
+                               )
 
-        self.fig.grid()
+        column = 0
+        for i, k, v in zip(range(len(self.data_value)), self.data_label.keys(), self.data_label.values()):
+            if i == 3:
+                column = 0
+            v.grid(row=0, column=column, sticky="we")
+            self.data_value[k].grid(row=1, column=column, sticky="we")
+            column += 1
+
+        self.fig.grid(row=0, column=0, sticky="nswe")
+
 
     def update_stats(self, data):
-        for k,v in self.ui_elements.items():
-            if data:
-                self.subject_number = MainConfiguration().SUBJECT_NUMBER
-                v.configure({"text": "{}: {}".format(k, len(data[k.upper()]))})
-            else:
-                self.subject_number = self.subject_number
-                v.configure({"text": "{}: {}".format(k, 0)})
+        self.subject_number = MainConfiguration().SUBJECT_NUMBER
+
+        if data:
+            for k, v in data.items():
+                    self.data_value[k].configure({"text":len(v)})
+        else:
+            for v in self.data_value.values():
+                v.configure({"text": "-"})
 
 
     def update(self, data):

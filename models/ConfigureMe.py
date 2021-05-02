@@ -38,8 +38,10 @@ class Theme(object):
             self.button_attributes = {"bg": self.two, "fg": self.three, "width": 30, "pady": 5, "padx": 5}
             self.scenario_attributes = {"bg": self.one, "fg": self.three, "width": 15, "pady": 5, "padx": 5}
             self.checkbox_attributes = {"bg": self.five, "fg": self.three, "width": 15, "pady": 5, "padx": 5}
-
             self.default_bg = "white"
+            self.label_data = dict(bg = self.default_bg, fg="#666", width=20, pady=5, padx=5)
+            self.label_value = dict(bg = self.default_bg, font=("Courier", 33), width=4, pady=5, padx=5)
+
 
             self.plot_bg = "#21213D"
             self.infected = "#CC1F7F"
@@ -64,29 +66,22 @@ class SimulationParametersUIConfig(object):
 
         if SimulationParametersUIConfig.instance is None:
             self.general = dict()
-            self.simple = dict()
-            self.quarantine = dict()
-            self.lockdown = dict()
-            self.central = dict()
-            self.communities = dict()
-
-            self.mode = ["general"]
 
             self.general["SUBJECT_NUMBER"] = ["Scale",
                                               "The number of subjects:",
                                               [1, 300]]
             self.general["DAYS_PER_SECOND"] = ["Scale",
-                                               "Days per second:",
-                                               [1, 300]]
+                                               "Days per minute:",
+                                               [1, 60]]
             self.general["SUBJECT_VELOCITY"] = ["Scale", "The maximum movement speed of a subject:", [1, 10]]
 
             self.general["SUBJECT_INITIAL_INFECTION_RATIO"] = ["Scale",
                                                        "The ratio of the initially infected subjects:",
                                                        [0, 1]]
 
-            self.general["SUBJECT_SIZE"] = ["Scale", "Subject size (radius) in pixels:", [1, 15]]
+            self.general["SUBJECT_SIZE"] = ["Scale", "Subject size (radius) in pixels:", [1, 5]]
 
-            self.general["SUBJECT_INFECTION_RADIUS"] = ["Scale", "Infection radius around a subject in pixels:", [1, 100]]
+            self.general["SUBJECT_INFECTION_RADIUS"] = ["Scale", "Infection radius around a subject in pixels:", [1, 10]]
             self.general["SUBJECT_CHANCE_OF_INFECTION"] = ["Scale",
                                                    "Infection chance per each day:",
                                                    [0, 1]]
@@ -109,17 +104,6 @@ class SimulationParametersUIConfig(object):
             self.general["ASYMPTOMATIC_RATIO"] = ["Scale",
                                                   "Asymptomatic patients (won't be moved to quarantine):",
                                                   [0, 1]]
-            self.quarantine["QUARANTINE_AFTER"] = ["Scale",
-                                                   "Subject moves into quarantine after this amount of days after the infection:",
-                                                   [1, 30]]
-
-            self.central["CENTRAL_VISIT_CHANCE"] = ["Scale",
-                                                    "Travelling chance to central location:",
-                                                    [0, 1]]
-
-            self.central["CENTRAL_SUBJECT_NUMBER"] = ["Scale",
-                                                      "The number of subjects:",
-                                                      [0, 500]]
 
             self.general["COMMUNITIES_VISIT_CHANCE"] = ["Scale",
                                                             "Travelling chance between communities:",
@@ -184,13 +168,44 @@ class MainConfiguration(object):
             # Layout configuration
 
             self.MAIN_CANVAS_SIZE = [1024, 1024]
-            self.INNER_PADDING = 60
+            self.INNER_PADDING = 15
             self.QUARANTINE_WIDTH = 0.1
             self.DPI = 96
             self.DEFAULT_BG = Theme().default_bg
             self.FRAME_PADDING = dict(padx=10, pady=10)
 
-            self.COLUMNS_RATIO = [0.35, 0.6]
+            self.COLUMNS_RATIO = [0.4, 0.55]
+
+            self.FRAME_SETTINGS = dict()
+            self.FRAME_SETTINGS["MasterHeaderFrame"] = dict(height=0.1, column=0,
+                                                            grid_kwargs=dict(row=0, column=0, columnspan=2,
+                                                                             sticky="we"))
+
+            self.FRAME_SETTINGS["MasterLeftFrame"] = dict(height=0.9, column=0,
+                                                          grid_kwargs=dict(row=0, column=0, sticky="nwes"))
+
+            self.FRAME_SETTINGS["MasterRightFrame"] = dict(height=0.9, column=1,
+                                                           grid_kwargs=dict(row=0, column=1, sticky="nwes"))
+
+            self.FRAME_SETTINGS["GraphFrame"] = dict(height=0.3, column=0,
+                                                     grid_kwargs=dict(row=3, column=0))
+
+            self.FRAME_SETTINGS["StatsFrame"] = dict(height=0.3, column=1,
+                                                     grid_kwargs=dict(row=0, column=0))
+
+            self.FRAME_SETTINGS["SimulationFrame"] = dict(height=0.6, column=1,
+                                                          grid_kwargs=dict(row=1, column=0))
+
+            self.FRAME_SETTINGS["ButtonsFrame"] = dict(height=0.05, column=1,
+                                                       grid_kwargs=dict(row=2, column=0))
+
+            self.FRAME_SETTINGS["ScenarioFrame"] = dict(height=0.1, column=0,
+                                                        grid_kwargs=dict(row=0, column=0))
+
+            self.FRAME_SETTINGS["ParametersFrame"] = dict(height=0.4, column=0,
+                                                          grid_kwargs=dict(row=1, column=0))
+
+            self.PARAMETERS_UI_SETTINGS = SimulationParametersUIConfig()
 
             # scenario and buttons config
 
@@ -208,46 +223,14 @@ class MainConfiguration(object):
                                     "QUARANTINE_MODE": ["Checkbutton", dict(text="Quarantine",
                                                                             name = "QUARANTINE_MODE".lower(),
                                                                             **Theme().checkbox_attributes)],
-                                    "LOCKDOWN_MODE": ["Checkbutton",
-                                                      dict(text="Lockdown",
-                                                           name = "LOCKDOWN_MODE".lower(),
-                                                           **Theme().checkbox_attributes)],
                                     "COMMUNITY_MODE": ["Checkbutton",
                                                       dict(text="Community mode",
                                                            name="COMMUNITY_MODE".lower(),
                                                            **Theme().checkbox_attributes)]
                                     }
-            self.FRAME_SETTINGS = dict()
-            self.FRAME_SETTINGS["MasterHeaderFrame"] = dict(height=0.1, column=0,
-                                                            grid_kwargs=dict(row=0, column=0, columnspan=2,
-                                                                             sticky="we"))
 
-            self.FRAME_SETTINGS["MasterLeftFrame"] = dict(height=0.9, column=0,
-                                                          grid_kwargs=dict(row=0, column=0, sticky="nwes"))
-
-            self.FRAME_SETTINGS["MasterRightFrame"] = dict(height=0.9, column=1,
-                                                           grid_kwargs=dict(row=0, column=1, sticky="nwes"))
-
-            self.FRAME_SETTINGS["GraphFrame"] = dict(height=0.3, column=0,
-                                                     grid_kwargs=dict(row=3, column=0))
-
-            self.FRAME_SETTINGS["StatsFrame"] = dict(height=0.05, column=0,
-                                                     grid_kwargs=dict(row=2, column=0))
-
-            self.FRAME_SETTINGS["SimulationFrame"] = dict(height= 1, column=1,
-                                                          grid_kwargs=dict(row=0, column=0))
-
-            self.FRAME_SETTINGS["ButtonsFrame"] = dict(height=0.05, column=1,
-                                                       grid_kwargs=dict(row=2, column=0))
-
-            self.FRAME_SETTINGS["ScenarioFrame"] = dict(height=0.1, column=0,
-                                                        grid_kwargs=dict(row=0, column=0))
-
-            self.FRAME_SETTINGS["ParametersFrame"] = dict(height=0.5, column=0,
-                                                          grid_kwargs=dict(row=1, column=0))
-
-            self.PARAMETERS_UI_SETTINGS = SimulationParametersUIConfig()
-
+            self.STATS_CONFIG = dict(LABEL_KWDS=dict(bg=Theme().default_bg),
+                                     VALUE_KWDS=dict(bg=Theme().default_bg))
     def __getattr__(self, item):
         temp = super().__getattribute__(item)
         if isinstance(temp, tk.BooleanVar):

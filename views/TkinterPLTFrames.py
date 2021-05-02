@@ -166,15 +166,17 @@ class ScenarioFrame(AbstractFrame):
             setattr(MainConfiguration(), k, var)
 
         for i, v in enumerate(self.checkboxes):
-            v.grid(row = 0, column = i)
+            v.grid(row = 0, column = i, sticky = "we")
+
+        self.buttons_container = Frame(self)
 
         for v in self.config.BUTTONS_CONFIG.values():
-            b = Button(self, **v)
+            b = Button(self.buttons_container, **v)
             self.components.append(b)
             self.buttons.append(b)
-
-        self.buttons[0].grid(row = 1, column = 0, columnspan = 2, sticky = "we")
-        self.buttons[1].grid(row = 1, column = 2, columnspan = 2, sticky = "we")
+        self.buttons[0].grid(row = 0, column = 0, sticky = "we")
+        self.buttons[1].grid(row = 0, column = 1, sticky = "we")
+        self.buttons_container.grid(row=1, column=0, columnspan=3)
 
     def get_checkboxes(self):
         return self.checkboxes

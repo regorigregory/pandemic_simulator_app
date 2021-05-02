@@ -57,7 +57,7 @@ class DefaultContainer(ContainerOfSubjects):
                     j = 0
                 else:
                     j += 1
-            self.contents.append(s)
+            self.contents.add(s)
             #self.add_particle_to_grids(p)
 
     def move_guys(self, timestamp):

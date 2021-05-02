@@ -239,11 +239,13 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
     def draw_quarantine_boundaries(ax):
         if MainConfiguration().QUARANTINE_MODE.get():
             q_dims = MainConfiguration().get_quarantine_dimensions()
-            ax.text(q_dims["x"],
-                         q_dims["height"] - q_dims["y"],
+            inner_padding = MainConfiguration().INNER_PADDING
+            ax.text(q_dims["x"] + inner_padding,
+                         q_dims["y"] + inner_padding,
                          "QUARANTINE", color = Theme().infected,
-                         fontsize = "large")
-            ax.add_patch(patches.Rectangle([q_dims["x"], q_dims["y"]], q_dims["width"], q_dims["height"],
+                         fontsize = "large",
+                    rotation = 90)
+            ax.add_patch(patches.Rectangle([q_dims["x"], q_dims["y"]], q_dims["width"], q_dims["height"] - 2 * inner_padding,
                                                 facecolor = "none",
                                                 linewidth = 1,
                                                 edgecolor = Theme().infected,
