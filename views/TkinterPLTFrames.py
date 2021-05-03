@@ -13,8 +13,8 @@ from views.Tkinter.SimulationObservers import TKAreaChart, TKStats
 class AbstractFrame(Frame):
     def __init__(self, root, config = MainConfiguration()):
         self.config = config
-        self.dim_dict = {"width": (self.config.get_dimensions(self.__class__.__name__))[0],
-                         "height": (self.config.get_dimensions(self.__class__.__name__))[1]}
+        self.dim_dict = {"width": (self.config.get_frame_dimensions_of(self.__class__.__name__))[0],
+                         "height": (self.config.get_frame_dimensions_of(self.__class__.__name__))[1]}
         self.frame_settings = self.config.FRAME_SETTINGS[self.__class__.__name__]
         super().__init__(root, bg = config.DEFAULT_BG, **self.dim_dict,
                          **config.FRAME_PADDING)

@@ -6,7 +6,7 @@ import numpy as np
 
 class Particle:
     def __init__(self, cnf=MainConfiguration(), boundaries=None):
-        bounding_box = cnf.get_particle_position_boundaries() if boundaries is None else boundaries
+        bounding_box = cnf.get_main_simulation_canvas_movement_bounds_for_particles() if boundaries is None else boundaries
 
         self.position_vector = Particle.init_random_vector(bounding_box)
         self.min_x = 0

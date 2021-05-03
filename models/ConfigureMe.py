@@ -1,6 +1,6 @@
 from enum import Enum
 import tkinter as tk
-
+import numpy as np
 
 class InfectionStatuses(Enum):
     SUSCEPTIBLE = 0
@@ -253,8 +253,18 @@ class MainConfiguration(object):
 
         super().__setattr__(key, value)
 
+    def get_frame_dimensions_of(self, key):
+        sett = self.FRAME_SETTINGS[key]
+        row_ratio = sett["height"]
+        column_ratio = self.COLUMNS_RATIO[sett["column"]]
+
+        col_width = column_ratio * self.MAIN_CANVAS_SIZE[0]
+
+        row_height = row_ratio * self.MAIN_CANVAS_SIZE[1]
+        return [int(col_width), int(row_height)]
+
     def get_quarantine_dimensions(self):
-        plot_dimensions = self.get_dimensions("SimulationFrame")
+        plot_dimensions = self.get_frame_dimensions_of("SimulationFrame")
         dimensions = dict()
         dimensions["x"] = self.INNER_PADDING
         dimensions["y"] = self.INNER_PADDING
@@ -266,30 +276,55 @@ class MainConfiguration(object):
     def get_main_canvas_size_tkinter(self):
         return "{}x{}".format(self.MAIN_CANVAS_SIZE[0], self.MAIN_CANVAS_SIZE[1])
 
-    def get_header_frame_dimensions(self):
-        return [self.MAIN_CANVAS_SIZE[0], self.HEADER_FRAME_HEIGHT]
-
-    def get_main_subjects_box_dimensions(self):
-        max_x, max_y = self.get_dimensions("SimulationFrame")
+    def get_simulation_canvas_total_bounds(self):
+        max_x, max_y = self.get_frame_dimensions_of("SimulationFrame")
         return [[0, max_x], [0, max_y]]
 
-    def get_particle_position_boundaries(self):
-        canvas_dims = self.get_main_subjects_box_dimensions()
+    def get_simulation_canvas_available_bounds(self):
+        canvas_dims = self.get_simulation_canvas_total_bounds()
         if self.QUARANTINE_MODE.get():
             q_dims = self.get_quarantine_dimensions()
-            canvas_dims[0][0] = q_dims["x"] + q_dims["width"] + 1
+            canvas_dims[0][0] = q_dims["x"] + q_dims["width"]
+        return np.array(canvas_dims)
+
+    def get_simulation_canvas_border_bounds(self):
+        canvas_dims = self.get_simulation_canvas_available_bounds()
+        canvas_dims[:, 0] += self.INNER_PADDING
+        canvas_dims[:, 1] -= self.INNER_PADDING
+        return canvas_dims
+
+    def get_main_simulation_canvas_movement_bounds_for_particles(self):
+        canvas_dims = self.get_simulation_canvas_border_bounds()
+        canvas_dims[:, 0] += self.SUBJECT_SIZE
+        canvas_dims[:, 1] -= self.SUBJECT_SIZE
         return canvas_dims
 
     def get_particle_quarantine_position_boundaries(self):
         q_dims = self.get_quarantine_dimensions()
-        return [[q_dims["x"], q_dims["x"] + q_dims["width"]], [q_dims["y"], q_dims["y"] + q_dims["height"]]]
+        subject_radius = self.SUBJECT_SIZE
+        return [[q_dims["x"] + subject_radius, q_dims["x"] + q_dims["width"] - subject_radius] , [q_dims["y"] + subject_radius, q_dims["y"] + q_dims["height"] - subject_radius]]
 
-    def get_dimensions(self, key):
-        sett = self.FRAME_SETTINGS[key]
-        row_ratio = sett["height"]
-        column_ratio = self.COLUMNS_RATIO[sett["column"]]
 
-        col_width = column_ratio * self.MAIN_CANVAS_SIZE[0]
+    def get_community_cells_border_bounds(self):
+        config = self
+        main_dimensions = config.get_simulation_canvas_border_bounds()
+        full_width = main_dimensions[0][1] - main_dimensions[0][0]
+        x_start = main_dimensions[0][0]
 
-        row_height = row_ratio * self.MAIN_CANVAS_SIZE[1]
-        return [int(col_width), int(row_height)]
+        full_height = main_dimensions[1][1]
+        padding = config.INNER_PADDING
+        rows = config.COMMUNITIES_ROWS
+        columns = config.COMMUNITIES_COLUMNS
+        row_height = full_height / rows
+        column_width = full_width / columns
+        patch_dimensions = dict(width=column_width - padding, height=row_height - padding)
+
+        cells = []
+        for row in range(rows):
+            for column in range(columns):
+                x = x_start + padding + column * column_width
+                y = padding + row * row_height
+                width = patch_dimensions["width"]
+                height = patch_dimensions["height"]
+                cells.append([[x, x + width], [y, y + height]])
+        return cells

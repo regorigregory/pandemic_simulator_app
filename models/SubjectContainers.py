@@ -6,7 +6,7 @@ from models.InfectionHandlers import AxisBased
 from models.MovementHandlers import QuarantineHandler, CommunityHandler
 import time
 from abc import ABC, abstractmethod
-
+import numpy as np
 
 class ContainerOfSubjects(ABC):
     def __init__(self):
@@ -86,40 +86,16 @@ class CommunitiesContainer(ContainerOfSubjects):
     def __init__(self):
         super().__init__()
         self.cell_count = self.config.COMMUNITIES_COLUMNS * self.config.COMMUNITIES_ROWS
-        self.cell_coordinates = []
+        self.cell_coordinates = self.config.get_community_cells_border_bounds()
         self.subject_cells = [set() for i in range(self.cell_count)]
-
-        self.init_cell_dimensions()
-
         self.populate_subjects()
         self._infection_handler.count_them(0, self.contents)
-        self._community_handler = CommunityHandler(self.cell_coordinates)
+        self._community_handler = CommunityHandler()
 
         self.do_i_quarantine = self.config.QUARANTINE_MODE.get()
         if self.do_i_quarantine:
             self._quarantine_handler = QuarantineHandler()
 
-    def init_cell_dimensions(self):
-        main_dimensions = self.config.get_particle_position_boundaries()
-        full_width = main_dimensions[0][1] - main_dimensions[0][0]
-        x_start = main_dimensions[0][0]
-
-        full_height = main_dimensions[1][1]
-        padding = self.config.INNER_PADDING
-        rows = self.config.COMMUNITIES_ROWS
-        columns = self.config.COMMUNITIES_COLUMNS
-        row_height = full_height / rows - padding
-        column_width = full_width / columns - padding
-        patch_dimensions = dict(width=column_width - padding, height=row_height - padding)
-
-        self.cell_coordinates = []
-        for row in range(rows):
-            for column in range(columns):
-                x = x_start + padding + column * column_width
-                y = padding + row * row_height
-                width = patch_dimensions["width"]
-                height = patch_dimensions["height"]
-                self.cell_coordinates.append([[x, x + width], [y, y + height]])
 
     def reset(self):
         self = CommunitiesContainer()
@@ -139,12 +115,15 @@ class CommunitiesContainer(ContainerOfSubjects):
         for i in range(limit):
             j = 0
             current_cell = self.subject_cells[c]
-            s = constructor(self.config, boundaries=self.cell_coordinates[c])
+            movement_boundaries = np.array(self.cell_coordinates[c])
+            movement_boundaries[:, 0] += self.config.SUBJECT_SIZE
+            movement_boundaries[:, 1] -= self.config.SUBJECT_SIZE
+            s = constructor(self.config, boundaries=movement_boundaries)
 
             while j < len(current_cell):
                 already_there = list(current_cell)[j]
                 if s.are_we_too_close(already_there):
-                    s = constructor(self.config, boundaries=self.cell_coordinates[c])
+                    s = constructor(self.config, boundaries=movement_boundaries)
                     j = 0
                 else:
                     j += 1

@@ -10,6 +10,7 @@ class Observer(ABC):
         self.theme = Theme()
         self.subject_number = MainConfiguration().SUBJECT_NUMBER
         self.log = dict()
+        self.default_keys = ["INFECTED", "SUSCEPTIBLE", "IMMUNE", "ASYMPTOMATIC"]
 
     @abstractmethod
     def update(self, new_data):
@@ -23,6 +24,7 @@ class Observer(ABC):
 
     def update_logs(self, newdata):
         for k, v in newdata.items():
+            if k in self.default_keys:
                 self.log[k] = np.concatenate((self.log[k], [[self.frames, len(v)]]), axis=0)
 
 
@@ -67,7 +69,11 @@ class TKStats(Observer):
 
         if data:
             for k, v in data.items():
-                    self.data_value[k].configure({"text":len(v)})
+                try:
+                    data = len(v)
+                except TypeError:
+                    data = v
+                self.data_value[k].configure({"text": data})
         else:
             for v in self.data_value.values():
                 v.configure({"text": "-"})
@@ -80,7 +86,7 @@ class TKStats(Observer):
 class TKAreaChart(Observer):
     def __init__(self, root=None):
         super().__init__()
-        self.width, self.height = self.config.get_dimensions("GraphFrame")
+        self.width, self.height = self.config.get_frame_dimensions_of("GraphFrame")
         self.width = self.width - 3 * self.config.INNER_PADDING
         self.DPI = self.config.DPI
         self.frames = 0

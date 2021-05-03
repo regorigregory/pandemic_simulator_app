@@ -43,7 +43,6 @@ class QuarantineHandler(AbstractMovementHandler):
     def __init__(self):
         super().__init__()
         self.q_dim = self.config.get_quarantine_dimensions()
-
         self.quarantine_centre = self._get_box_centre(self.q_dim)
 
         self.to_be_quarantined = set()
@@ -79,9 +78,9 @@ class QuarantineHandler(AbstractMovementHandler):
 
 class CommunityHandler(AbstractMovementHandler):
 
-    def __init__(self, community_coordinates):
+    def __init__(self):
         super().__init__()
-        self.community_boundaries = community_coordinates
+        self.community_boundaries = self.config.get_community_cells_border_bounds()
 
         self.community_travel_chance = self.config.COMMUNITIES_VISIT_CHANCE
         self.rows = self.config.COMMUNITIES_ROWS

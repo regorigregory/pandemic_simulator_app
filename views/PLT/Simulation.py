@@ -42,7 +42,7 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
     def __init__(self, config=MainConfiguration()):
         super().__init__()
         self.config = config
-        self.width, self.height = config.get_dimensions("SimulationFrame")
+        self.width, self.height = config.get_frame_dimensions_of("SimulationFrame")
         self.DPI = config.DPI
         self._marker_radius = config.SUBJECT_SIZE
         self._infection_zone_radius = config.SUBJECT_INFECTION_RADIUS + config.SUBJECT_SIZE
@@ -53,7 +53,9 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
 
         self.fig = plt.figure(figsize=(self.width / self.DPI, self.height / self.DPI), dpi=self.DPI)
         self.ax = self.fig.add_subplot()
+        self.previous_infected = 0
 
+        self.previous_r = 0
 
     @property
     def width(self):
@@ -89,12 +91,17 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
             if debug:
                 for center in self._box_of_particles._community_handler.cell_centres:
                     self.ax.text(center[0], center[1],"x", c="green")
+        else:
+            ConcreteSimulation.draw_main_simulation_canvas_movement_bounds(self.ax)
 
         self.ax.set_facecolor(Theme().plot_bg)
         self.ax.set_xlim(0, self.width)
         self.ax.set_ylim(0, self.height)
+        self.previous_infected = len(self._infection_handler.counts["INFECTED"]) + len(self._infection_handler.counts["ASYMPTOMATIC"])
+        self.previous_r = MainConfiguration().SUBJECT_INITIAL_INFECTION_RATIO
 
         self.notify(self._infection_handler.counts)
+        self.notify({"DAY": 0, "R_RATE": self.previous_r, "R_GROWTH": self.previous_r})
 
         self.ax.set_xticks([])
         self.ax.set_yticks([])
@@ -133,10 +140,6 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         self.ax.plot(*INFECTED_COORDS, marker=".", fillstyle="none", color=Theme().infected, linestyle="",
                      markersize=self._infection_zone_radius * 2)
 
-        # adding quarantine bounding box
-
-
-
         def func():
             return self.ax.lines
 
@@ -145,6 +148,21 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
     def get_animation_function(self):
         def func(i):
             self.move_guys(i)
+            if i % 20 == 0:
+                ALL_INFECTED = len(self._infection_handler.counts["ASYMPTOMATIC"]) + len(self._infection_handler.counts["INFECTED"])
+                try:
+                    R_RATE = self.previous_infected / ALL_INFECTED
+                    R_GROWTH = 1 - self.previous_r / R_RATE
+
+
+                except ZeroDivisionError:
+                    R_RATE = 0.0
+                    R_GROWTH = 0.0
+
+                self.previous_r = R_RATE
+                self.previous_infected = ALL_INFECTED
+
+                self.notify({"DAY": int(i), "R_RATE": "{0:.2f}".format(ALL_INFECTED), "R_GROWTH": "{0:.2f}%".format(R_GROWTH)})
 
             self.notify(self._infection_handler.counts)
 
@@ -201,26 +219,12 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
 
     @staticmethod
     def draw_community_boundaries_on_ax(ax) -> list[[float, float], [float, float]]:
-        config = MainConfiguration()
-        main_dimensions = config.get_particle_position_boundaries()
-        full_width = main_dimensions[0][1] - main_dimensions[0][0]
-        x_start = main_dimensions[0][0]
-
-        full_height = main_dimensions[1][1]
-        padding = config.INNER_PADDING
-        rows = config.COMMUNITIES_ROWS
-        columns = config.COMMUNITIES_COLUMNS
-        row_height = full_height / rows - padding
-        column_width = full_width / columns - padding
-        patch_dimensions = dict(width=column_width - padding, height=row_height - padding)
-
-        cells = []
-        for row in range(rows):
-            for column in range(columns):
-                x = x_start + padding + column * column_width
-                y = padding + row * row_height
-                width = patch_dimensions["width"]
-                height = patch_dimensions["height"]
+        cells = MainConfiguration().get_community_cells_border_bounds()
+        for cell in cells:
+                x = cell[0][0]
+                y = cell[1][0]
+                width = cell[0][1] - x
+                height = cell[1][1] - y
                 ax.add_patch(patches.Rectangle([x, y],
                              width,
                              height,
@@ -232,9 +236,6 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
                 if debug:
                     ax.text(x, y, "P({:.0f}, {:.0f})".format(x, y), c = "green")
 
-                cells.append([[x, x + width], [y, y + height]])
-        return cells
-
     @staticmethod
     def draw_quarantine_boundaries(ax):
         if MainConfiguration().QUARANTINE_MODE.get():
@@ -245,11 +246,23 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
                          "QUARANTINE", color = Theme().infected,
                          fontsize = "large",
                     rotation = 90)
-            ax.add_patch(patches.Rectangle([q_dims["x"], q_dims["y"]], q_dims["width"], q_dims["height"] - 2 * inner_padding,
+            ax.add_patch(patches.Rectangle([q_dims["x"], q_dims["y"]], q_dims["width"], q_dims["height"],
                                                 facecolor = "none",
                                                 linewidth = 1,
                                                 edgecolor = Theme().infected,
                                                 linestyle = "--"))
+    @staticmethod
+    def draw_main_simulation_canvas_movement_bounds(ax):
+        q_dims = MainConfiguration().get_simulation_canvas_border_bounds()
+        ax.add_patch(
+            patches.Rectangle([q_dims[0,0], q_dims[1,0]],
+                              q_dims[0,1] - q_dims[0,0],
+                              q_dims[1,1] - q_dims[1,0],
+                              facecolor="none",
+                              linewidth=1,
+                              edgecolor=Theme().infected,
+                              linestyle="--"))
+
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
