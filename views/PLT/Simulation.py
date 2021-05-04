@@ -164,8 +164,8 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
                 all_infected = len(self._box_of_particles.counts["ASYMPTOMATIC"]) + len(
                     self._box_of_particles.counts["INFECTED"])
                 try:
-                    r_rate = self.previous_infected / all_infected
-                    r_growth = 1 - self.previous_r / r_rate
+                    r_rate = (all_infected - self.previous_infected)/self.previous_infected
+                    r_growth = (r_rate - self.previous_r)/self.previous_r
 
                 except ZeroDivisionError:
                     r_rate = 0.0
@@ -173,9 +173,10 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
 
                 self.previous_r = r_rate
                 self.previous_infected = all_infected
-
+                r_rate = "{0:.2f}".format(r_rate)
+                r_growth = "{0:.2f}%".format(r_growth*100)
                 self.notify(
-                    {"DAY": int(day), "R_RATE": "{0:.2f}".format(all_infected), "R_GROWTH": "{0:.2f}%".format(r_growth)})
+                    {"DAY": int(day), "R_RATE": r_rate, "R_GROWTH": r_growth})
 
             self.notify(self._box_of_particles.counts)
 

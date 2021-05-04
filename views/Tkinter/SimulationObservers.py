@@ -75,10 +75,8 @@ class TKStats(Observer):
 
         if data:
             for k, v in data.items():
-                try:
-                    data = len(v)
-                except TypeError:
-                    data = v
+                data = len(v) if isinstance(v, set) or isinstance(v, list) else v
+
                 self.data_value[k].configure({"text": data})
         else:
             for v in self.data_value.values():
