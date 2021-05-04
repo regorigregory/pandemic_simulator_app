@@ -82,14 +82,14 @@ class DefaultContainer(AbstractContainerOfSubjects):
 
 
     def add_subject_to_cell(self, s: Subject, cells: list[set[Subject]] = None):
-
-        left = int((s.get_particle_component().position_vector[0] - self.config.SUBJECT_SIZE)
+        subject_radius = self.config.SUBJECT_SIZE + self.config.SUBJECT_INFECTION_RADIUS
+        left = int((s.get_particle_component().position_vector[0] - subject_radius)
                    / (self.config.MAIN_CANVAS_SIZE[0] / self.columns))
-        right = int((s.get_particle_component().position_vector[0] + self.config.SUBJECT_SIZE)
+        right = int((s.get_particle_component().position_vector[0] + subject_radius)
                     / (self.config.MAIN_CANVAS_SIZE[0] / self.columns))
-        bottom = int((s.get_particle_component().position_vector[1] - self.config.SUBJECT_SIZE)
+        bottom = int((s.get_particle_component().position_vector[1] - subject_radius)
                      / (self.config.MAIN_CANVAS_SIZE[1] / self.rows))
-        top = int((s.get_particle_component().position_vector[1] + self.config.SUBJECT_SIZE) / (
+        top = int((s.get_particle_component().position_vector[1] + subject_radius) / (
                 self.config.MAIN_CANVAS_SIZE[1] / self.rows))
 
         cells[left][top].add(s)
