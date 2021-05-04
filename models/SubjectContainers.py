@@ -38,6 +38,31 @@ class AbstractContainerOfSubjects(ABC):
             if exception is None or k not in exception:
                 self.counts[k] = set()
 
+    @staticmethod
+    def get_evenly_spaced_specs(bounds: list[list[float, float]], n: int = MainConfiguration().SUBJECT_NUMBER) \
+            -> dict[str, float]:
+        # thanks to mvw @
+        # https://math.stackexchange.com/questions/1039482/how-to-evenly-space-a-number-of-points-in-a-rectangle
+
+        w = bounds[0, 1] - bounds[0, 0]
+        h = bounds[1, 1] - bounds[1, 0]
+        n_x = ((w / h) * n + (w - h) ** 2 / (4 * (h ** 2))) ** 0.5 - (w - h) / (2 * h)
+        n_y = n / n_x
+        spacing = h / (n_y - 1)
+        return dict(n_per_column=abs(n_x), n_per_row=abs(n_y), spacing=abs(spacing), w_h_ratio = w/h)
+
+    @staticmethod
+    def get_evenly_spaced_coordinates(i: int,
+                                      bounds: list[list[float, float]],
+                                      n_of_subjects: int = MainConfiguration().SUBJECT_NUMBER) \
+            -> list[float, float]:
+
+        dims = AbstractContainerOfSubjects.get_evenly_spaced_specs(bounds, n=n_of_subjects)
+        row = int(i / dims["n_per_row"])
+        column = i - (row * dims["n_per_row"])
+
+        return [abs(column * dims["spacing"] * dims["w_h_ratio"]) + bounds[0,0], abs(row * dims["spacing"]) + bounds[1,0]]
+
 
 class DefaultContainer(AbstractContainerOfSubjects):
     def __init__(self):
@@ -68,14 +93,9 @@ class DefaultContainer(AbstractContainerOfSubjects):
         limit = self.config.SUBJECT_NUMBER
         for i in range(0, limit):
             j = 0
-            s = constructor()
-            while j < len(self.contents):
-                already_there = list(self.contents)[j]
-                if s.are_we_too_close(already_there):
-                    s = constructor()
-                    j = 0
-                else:
-                    j += 1
+            position = AbstractContainerOfSubjects.get_evenly_spaced_coordinates(i, n_of_subjects=limit, bounds = self.config.get_particle_movement_bounds())
+            s = constructor(position = position)
+
             self.contents.add(s)
 
             self.add_subject_to_cell(s, self.subjects_in_cells)
@@ -91,11 +111,13 @@ class DefaultContainer(AbstractContainerOfSubjects):
                      / (self.config.MAIN_CANVAS_SIZE[1] / self.rows))
         top = int((s.get_particle_component().position_vector[1] + subject_radius) / (
                 self.config.MAIN_CANVAS_SIZE[1] / self.rows))
-
-        cells[left][top].add(s)
-        cells[right][top].add(s)
-        cells[left][top].add(s)
-        cells[right][bottom].add(s)
+        try:
+            cells[left][top].add(s)
+            cells[right][top].add(s)
+            cells[left][top].add(s)
+            cells[right][bottom].add(s)
+        except:
+            print("Oooops")
 
 
     def move_guys(self, timestamp):
@@ -150,19 +172,16 @@ class CommunitiesContainer(AbstractContainerOfSubjects):
     def populate_cell(self, c, limit):
         constructor = Subject
         for i in range(limit):
-            j = 0
             current_cell = self.subjects_in_cells[c]
             movement_boundaries = np.array(self.cell_coordinates[c])
             movement_boundaries[:, 0] += self.config.SUBJECT_SIZE
             movement_boundaries[:, 1] -= self.config.SUBJECT_SIZE
-            s = constructor(boundaries=movement_boundaries)
-            while j < len(current_cell):
-                already_there = list(current_cell)[j]
-                if s.are_we_too_close(already_there):
-                    s = constructor(boundaries=movement_boundaries)
-                    j = 0
-                else:
-                    j += 1
+            position = AbstractContainerOfSubjects\
+                .get_evenly_spaced_coordinates(i,
+                                               n_of_subjects=limit,
+                                               bounds=movement_boundaries)
+
+            s = constructor(boundaries=movement_boundaries, position = position)
             s.cell_id = c
             current_cell.add(s)
             self.contents.add(s)
