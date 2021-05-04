@@ -124,8 +124,6 @@ class Subject:
         return False
 
     def resolve_collision(self, other: Subject):
-        if not (self.quarantine_mode is True and (self._infection_status == InfectionStatuses.INFECTED
-                                                  or other._infection_status == InfectionStatuses.INFECTED)):
             self.get_particle_component().resolve_collision(other.get_particle_component())
 
     @staticmethod

@@ -133,18 +133,18 @@ class Particle:
 
     def resolve_collision(self, otherParticle: Particle):
         particle = self
-        # x_velocity_diff = particle.velocity_x - otherParticle.velocity_x
-        # y_velocity_diff = particle.velocity_y - otherParticle.velocity_y
+        x_velocity_diff = particle.velocity_x - otherParticle.velocity_x
+        y_velocity_diff = particle.velocity_y - otherParticle.velocity_y
 
-        # x_dist = otherParticle.position_x - particle.position_x
-        # y_dist = otherParticle.position_y - particle.position_y
+        x_dist = otherParticle.position_x - particle.position_x
+        y_dist = otherParticle.position_y - particle.position_y
 
-        if True:  # x_velocity_diff * x_dist + y_velocity_diff * y_dist >= 0:
+        if x_velocity_diff * x_dist + y_velocity_diff * y_dist >= 0:
 
             angle = np.arctan2(otherParticle.position_y - particle.position_y,
                                otherParticle.position_x - particle.position_x)
-            u1 = particle.rotate_velocity(angle)
-            u2 = otherParticle.rotate_velocity(angle)
+            u1 = particle.rotate_velocity(angle) * self.config.FRAMES_PER_SECOND
+            u2 = otherParticle.rotate_velocity(angle) * self.config.FRAMES_PER_SECOND
 
             # one dimensional Newtonian
             # since each particle's mass == 1, the equation has been simplified
