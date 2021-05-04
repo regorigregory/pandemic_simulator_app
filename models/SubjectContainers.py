@@ -132,7 +132,7 @@ class CommunitiesContainer(ContainerOfSubjects):
     def move_guys(self, timestamp):
 
         self.init_counts()
-        cells_copy = [set().union(old_set) for old_set in self.subjects_in_cells]
+        new_cells = [set() for i in range(self.cell_count)]
 
         for cell in self.subjects_in_cells:
             x_sorted = sorted(cell, key=lambda s: s.get_particle_component().position_x)
@@ -147,13 +147,8 @@ class CommunitiesContainer(ContainerOfSubjects):
                     if not subject.travelling:
                         chance = np.random.uniform(0, 1)
                         if chance < self.config.COMMUNITIES_VISIT_CHANCE:
-                            try:
-                                cells_copy[subject.cell_id].remove(subject)
-                                self._community_handler.set_subject_course_to_new_community(subject)
-                                subject.get_particle_component().update_location_guided()
-                                cells_copy[subject.cell_id].add(subject)
-                            except:
-                                print("This should really not have happened...")
+                            self._community_handler.set_subject_course_to_new_community(subject)
+                            subject.get_particle_component().update_location_guided()
                         else:
                             self._infection_handler.one_to_many(subject, x_sorted, i, timestamp)
                             subject.get_particle_component().update_location()
@@ -161,7 +156,8 @@ class CommunitiesContainer(ContainerOfSubjects):
                         self._community_handler.handle_travelling_subject_journey(subject)
 
                 self.counts[subject.get_infection_status(timestamp).name].add(subject)
-        self.cells = cells_copy
+                new_cells[subject.cell_id].add(subject)
+        self.subjects_in_cells = new_cells
 
     def _move_guys(self, timestamp):
         for subjects_in_cell in self.subjects_in_cells:

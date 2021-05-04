@@ -6,14 +6,15 @@ from models.ConfigureMe import MainConfiguration
 from typing import List, Union
 
 class Subject:
-
+    _subject_counter = 0
     def __init__(self, config = MainConfiguration(), boundaries = None):
         self.on_my_way_to_quarantine = False
         self.already_in_quarantine = False
         self.quarantine_mode = False
         self.travelling = False
         self.cell_id = -1
-        self.id = np.random.randint(1, 1000000)
+        Subject._subject_counter += 1
+        self.id = Subject._subject_counter
         self._infection_radius = Subject.set_random_attribute_safely(config.SUBJECT_INFECTION_RADIUS)
 
         self._recovery_time = config.SUBJECT_RECOVERY_TIME * config.FRAME_MULTIPLIER

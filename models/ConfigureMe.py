@@ -136,10 +136,10 @@ class MainConfiguration(object):
             self.SOCIAL_DISTANCING_MODE = False
             self.QUARANTINE_MODE = False
             self.LOCKDOWN_MODE = False
-            self.COMMUNITY_MODE = False
+            self.COMMUNITY_MODE = True
             # subject settings
 
-            self.SUBJECT_NUMBER = 50
+            self.SUBJECT_NUMBER = 200
             self.SUBJECT_SIZE = 4
             self.SUBJECT_INITIAL_INFECTION_RATIO = 0.5
             self.SUBJECT_INFECTION_RADIUS = 5

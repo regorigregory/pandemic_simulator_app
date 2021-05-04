@@ -10,6 +10,7 @@ class CollisionHandlerInterface(ABC):
     def __init__(self):
         self.config = MainConfiguration()
         self.do_i_quarantine = self.config.QUARANTINE_MODE.get()
+        self.do_i_socially_distance = self.config.SOCIAL_DISTANCING_MODE.get()
         self.observers = []
         self.quarantine_split_counts = dict()
 
@@ -93,7 +94,7 @@ class AxisBased(CollisionHandlerInterface):
             if x_distance > max_distance:
                 break
 
-            if distance_norm < max_distance:
+            if self.do_i_socially_distance and distance_norm < max_distance:
                 one.resolve_collision(another)
             if distance_norm < self.infection_distance:
                 one.encounter_with(timestamp, another)
