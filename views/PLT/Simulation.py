@@ -47,8 +47,7 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         self._marker_radius = config.SUBJECT_SIZE
         self._infection_zone_radius = config.SUBJECT_INFECTION_RADIUS + config.SUBJECT_SIZE
 
-        self._box_of_particles = CommunitiesContainer() if self.config.COMMUNITY_MODE.get() else ContainerOfSubjects()
-        self._infection_handler = self._box_of_particles._infection_handler
+        self._box_of_particles = CommunitiesContainer() if self.config.COMMUNITY_MODE.get() else DefaultContainer()
         self._communities_handler = None
 
         self.fig = plt.figure(figsize=(self.width / self.DPI, self.height / self.DPI), dpi=self.DPI)
@@ -97,17 +96,17 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         self.ax.set_facecolor(Theme().plot_bg)
         self.ax.set_xlim(0, self.width)
         self.ax.set_ylim(0, self.height)
-        self.previous_infected = len(self._infection_handler.counts["INFECTED"]) + len(self._infection_handler.counts["ASYMPTOMATIC"])
+        self.previous_infected = len(self._box_of_particles.counts["INFECTED"]) + len(self._box_of_particles.counts["ASYMPTOMATIC"])
         self.previous_r = MainConfiguration().SUBJECT_INITIAL_INFECTION_RATIO
 
-        self.notify(self._infection_handler.counts)
+        self.notify(self._box_of_particles.counts)
         self.notify({"DAY": 0, "R_RATE": self.previous_r, "R_GROWTH": self.previous_r})
 
         self.ax.set_xticks([])
         self.ax.set_yticks([])
 
         # immune
-        IMMUNE_COORDS = self.get_current_coordinates(self._infection_handler.counts["IMMUNE"])
+        IMMUNE_COORDS = self.get_current_coordinates(self._box_of_particles.counts["IMMUNE"])
 
         self.ax.plot(*IMMUNE_COORDS,  marker=".",
                      fillstyle="full", linestyle="", color=Theme().immune, markersize=self._marker_radius * 2)
@@ -117,7 +116,7 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
                      markersize= self._infection_zone_radius * 2)
 
         # susceptible
-        SUSCEPTIBLE_COORDS = self.get_current_coordinates(self._infection_handler.counts["SUSCEPTIBLE"])
+        SUSCEPTIBLE_COORDS = self.get_current_coordinates(self._box_of_particles.counts["SUSCEPTIBLE"])
         self.ax.plot(*SUSCEPTIBLE_COORDS, marker=".",
                      fillstyle="full", linestyle="", color=Theme().susceptible, markersize=self._marker_radius * 2)
 
@@ -125,14 +124,14 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
                      markersize= self._infection_zone_radius * 2)
 
         # asymptomatic
-        ASYMPTOMATIC_COORDS = self.get_current_coordinates(self._infection_handler.counts["ASYMPTOMATIC"])
+        ASYMPTOMATIC_COORDS = self.get_current_coordinates(self._box_of_particles.counts["ASYMPTOMATIC"])
         self.ax.plot(*ASYMPTOMATIC_COORDS, marker=".",
                      fillstyle="full", linestyle="", color=Theme().asymptomatic, markersize=self._marker_radius * 2)
 
         self.ax.plot(*ASYMPTOMATIC_COORDS, marker=".", fillstyle="none", color=Theme().asymptomatic, linestyle="",
                      markersize=self._infection_zone_radius * 2)
         # infected
-        INFECTED_COORDS = self.get_current_coordinates(self._infection_handler.counts["INFECTED"])
+        INFECTED_COORDS = self.get_current_coordinates(self._box_of_particles.counts["INFECTED"])
 
         self.ax.plot(*INFECTED_COORDS, marker=".",
                      fillstyle="full", linestyle="", color=Theme().infected, markersize=self._marker_radius * 2)
@@ -149,7 +148,7 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         def func(i):
             self.move_guys(i)
             if i % 20 == 0:
-                ALL_INFECTED = len(self._infection_handler.counts["ASYMPTOMATIC"]) + len(self._infection_handler.counts["INFECTED"])
+                ALL_INFECTED = len(self._box_of_particles.counts["ASYMPTOMATIC"]) + len(self._box_of_particles.counts["INFECTED"])
                 try:
                     R_RATE = self.previous_infected / ALL_INFECTED
                     R_GROWTH = 1 - self.previous_r / R_RATE
@@ -164,12 +163,12 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
 
                 self.notify({"DAY": int(i), "R_RATE": "{0:.2f}".format(ALL_INFECTED), "R_GROWTH": "{0:.2f}%".format(R_GROWTH)})
 
-            self.notify(self._infection_handler.counts)
+            self.notify(self._box_of_particles.counts)
 
-            INFECTED_COORDS = self.get_current_coordinates(self._infection_handler.counts["INFECTED"])
-            IMMUNE_COORDS = self.get_current_coordinates(self._infection_handler.counts["IMMUNE"])
-            SUSCEPTIBLE_COORDS = self.get_current_coordinates(self._infection_handler.counts["SUSCEPTIBLE"])
-            ASYMPTOMATIC_COORDS = self.get_current_coordinates(self._infection_handler.counts["ASYMPTOMATIC"])
+            INFECTED_COORDS = self.get_current_coordinates(self._box_of_particles.counts["INFECTED"])
+            IMMUNE_COORDS = self.get_current_coordinates(self._box_of_particles.counts["IMMUNE"])
+            SUSCEPTIBLE_COORDS = self.get_current_coordinates(self._box_of_particles.counts["SUSCEPTIBLE"])
+            ASYMPTOMATIC_COORDS = self.get_current_coordinates(self._box_of_particles.counts["ASYMPTOMATIC"])
 
             self.ax.lines[0].set_data(*IMMUNE_COORDS)
             self.ax.lines[1].set_data(*IMMUNE_COORDS)
@@ -183,7 +182,7 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
             self.ax.lines[6].set_data(*INFECTED_COORDS)
             self.ax.lines[7].set_data(*INFECTED_COORDS)
 
-            # self._infection_handler.print_counts()
+            # self._box_of_particles.print_counts()
             return self.ax.lines
 
         return func
@@ -204,7 +203,6 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         self.ani._stop()
         self.ani = None
         self._box_of_particles = DefaultContainer() if self.config.COMMUNITY_MODE.get() != True else CommunitiesContainer()
-        self._infection_handler = self._box_of_particles._infection_handler
         self.fig.axes[0].clear()
         self.start_animation()
         self.notify(None)

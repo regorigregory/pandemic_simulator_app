@@ -1,12 +1,13 @@
 from __future__ import annotations
-from models.ConfigureMe import SubjectTypes, MainConfiguration
-from models.Particle import Particle
+from models.ConfigureMe import InfectionStatuses, MainConfiguration
 from models.Subject import Subject
-from models.InfectionHandlers import AxisBased
+from models.CollisionHandlers import AxisBased
 from models.MovementHandlers import QuarantineHandler, CommunityHandler
 import time
 from abc import ABC, abstractmethod
 import numpy as np
+import copy
+
 
 class ContainerOfSubjects(ABC):
     def __init__(self):
@@ -15,6 +16,9 @@ class ContainerOfSubjects(ABC):
         self.contents = set()
         self._particle_radius = self.config.SUBJECT_SIZE
         self._infection_radius = self.config.SUBJECT_INFECTION_RADIUS + self.config.SUBJECT_SIZE
+        self.counts = dict()
+        self.count_keys = ["SUSCEPTIBLE", "ASYMPTOMATIC", "INFECTED", "IMMUNE"]
+        self.init_counts()
 
     @abstractmethod
     def reset(self) -> None:
@@ -28,13 +32,16 @@ class ContainerOfSubjects(ABC):
     def move_guys(self, timestamp: int) -> None:
         pass
 
+    def init_counts(self, exception = None) -> None:
+        for k in self.count_keys:
+            if exception is None or k not in exception:
+                self.counts[k] = set()
 
 class DefaultContainer(ContainerOfSubjects):
     def __init__(self):
         super().__init__()
 
         self.populate_subjects()
-        self._infection_handler.count_them(0, self.contents)
 
         self.do_i_quarantine = self.config.QUARANTINE_MODE.get()
         if self.do_i_quarantine:
@@ -58,29 +65,21 @@ class DefaultContainer(ContainerOfSubjects):
                 else:
                     j += 1
             self.contents.add(s)
-            #self.add_particle_to_grids(p)
 
     def move_guys(self, timestamp):
-        self._infection_handler.many_to_many(timestamp)
 
-        if not self.do_i_quarantine:
-
-            for subject in self.contents:
+        self.init_counts()
+        x_sorted = sorted(self.contents, key=lambda s: s.get_particle_component().position_x)
+        for i, subject in enumerate(x_sorted):
+            if subject.already_in_quarantine:
                 subject.get_particle_component().update_location()
-        else:
-            previous_immune_and_infected = self._infection_handler.counts["INFECTED"].union(self._infection_handler.counts["IMMUNE"])
-            immune_and_infected = self._quarantine_handler.handle_designated_subjects(previous_immune_and_infected, timestamp)
-
-            self._infection_handler.counts["INFECTED"] = immune_and_infected["INFECTED"]
-            self._infection_handler.counts["IMMUNE"] = immune_and_infected["IMMUNE"]
-
-
-            difference = self.contents - immune_and_infected["INFECTED"]
-            difference = difference - immune_and_infected["IMMUNE"]
-
-            for subject in difference:
+            elif self.do_i_quarantine and (subject.get_infection_status(timestamp) == InfectionStatuses.INFECTED or subject.on_my_way_to_quarantine):
+                self._quarantine_handler.handle_one_subject(subject)
+                subject.get_particle_component().update_location_guided()
+            else:
+                self._infection_handler.one_to_many(subject, x_sorted, i, timestamp)
                 subject.get_particle_component().update_location()
-
+            self.counts[subject.get_infection_status(timestamp).name].add(subject)
 
 class CommunitiesContainer(ContainerOfSubjects):
     def __init__(self):
@@ -89,7 +88,6 @@ class CommunitiesContainer(ContainerOfSubjects):
         self.cell_coordinates = self.config.get_community_cells_border_bounds()
         self.subjects_in_cells = [set() for i in range(self.cell_count)]
         self.populate_subjects()
-        self._infection_handler.count_them(0, self.contents)
         self._community_handler = CommunityHandler()
 
         self.do_i_quarantine = self.config.QUARANTINE_MODE.get()
@@ -126,38 +124,46 @@ class CommunitiesContainer(ContainerOfSubjects):
                     j = 0
                 else:
                     j += 1
-
+            s.cell_id = c
             current_cell.add(s)
             self.contents.add(s)
 
-    def move_guys2(self, timestamp):
-        for i, guy in enumerate(self.contents):
-            if self.do_i_quarantine and guy.infected:
-                pass
-                # quarantine_handler should direct the guy
-            else:
-                pass
-                # if infected, susceptible or asymptomatic
-                # infection_handler -> check if we socially distance
-                # if so, bounce back
-                # infect each other if we are still too close!
-
-    def move_guys2_socially(self, timestamp):
-        for cell in self.subjects_in_cells:
-            for i, guy in enumerate(cell):
-                if self.do_i_quarantine and guy.infected:
-                    pass
-                    # quarantine_handler should direct the guy
-                else:
-                    pass
-                    # if commuting ensues
-                        # pass it on to the community handler!
-                    # if infected, susceptible or asymptomatic
-                        # infection_handler -> check if we socially distance
-                        # if so, bounce back
-                        # infect each other if we are still too close!
 
     def move_guys(self, timestamp):
+
+        self.init_counts()
+        cells_copy = [set().union(old_set) for old_set in self.subjects_in_cells]
+
+        for cell in self.subjects_in_cells:
+            x_sorted = sorted(cell, key=lambda s: s.get_particle_component().position_x)
+
+            for i, subject in enumerate(x_sorted):
+                if subject.already_in_quarantine:
+                    subject.get_particle_component().update_location()
+                elif self.do_i_quarantine and (subject.get_infection_status(timestamp) == InfectionStatuses.INFECTED or subject.on_my_way_to_quarantine):
+                    self._quarantine_handler.handle_one_subject(subject)
+                    subject.get_particle_component().update_location_guided()
+                else:
+                    if not subject.travelling:
+                        chance = np.random.uniform(0, 1)
+                        if chance < self.config.COMMUNITIES_VISIT_CHANCE:
+                            try:
+                                cells_copy[subject.cell_id].remove(subject)
+                                self._community_handler.set_subject_course_to_new_community(subject)
+                                subject.get_particle_component().update_location_guided()
+                                cells_copy[subject.cell_id].add(subject)
+                            except:
+                                print("This should really not have happened...")
+                        else:
+                            self._infection_handler.one_to_many(subject, x_sorted, i, timestamp)
+                            subject.get_particle_component().update_location()
+                    else:
+                        self._community_handler.handle_travelling_subject_journey(subject)
+
+                self.counts[subject.get_infection_status(timestamp).name].add(subject)
+        self.cells = cells_copy
+
+    def _move_guys(self, timestamp):
         for subjects_in_cell in self.subjects_in_cells:
             self._infection_handler.many_to_many(timestamp, subjects = subjects_in_cell)
 

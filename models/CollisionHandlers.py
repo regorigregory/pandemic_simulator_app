@@ -6,23 +6,15 @@ from models.ConfigureMe import MainConfiguration, InfectionStatuses
 import numpy as np
 
 
-class InfectionHandlerInterface(ABC):
+class CollisionHandlerInterface(ABC):
     def __init__(self):
         self.config = MainConfiguration()
+        self.do_i_quarantine = self.config.QUARANTINE_MODE.get()
         self.observers = []
-        self.counts = dict()
         self.quarantine_split_counts = dict()
-        self.count_keys = ["SUSCEPTIBLE", "ASYMPTOMATIC", "INFECTED", "IMMUNE"]
-        self.init_counts()
+
         self.last_timestamp = -1
-
-
-    def init_counts(self, exception = None) -> None:
-
-        for k in self.count_keys:
-            if exception is None or k not in exception:
-                self.counts[k] = set()
-
+        self.infection_distance = MainConfiguration().SUBJECT_SIZE + MainConfiguration().SUBJECT_INFECTION_RADIUS
 
     def print_counts(self) -> None:
         import sys
@@ -50,7 +42,7 @@ class InfectionHandlerInterface(ABC):
         pass
 
 
-class AxisBased(InfectionHandlerInterface):
+class AxisBased(CollisionHandlerInterface):
 
     def __init__(self):
         super().__init__()
@@ -73,7 +65,7 @@ class AxisBased(InfectionHandlerInterface):
 
 
 
-    def one_to_many(self, timestamp: int, one: Subject, x_sorted: List[Subject], i: int) -> None:
+    def one_to_many(self, one: Subject, x_sorted: List[Subject], i: int, timestamp: int,) -> None:
         down = i - 1
         up = i + 1
 
@@ -84,40 +76,36 @@ class AxisBased(InfectionHandlerInterface):
         self.handle_subjects(one, x_sorted, up, 1, upward_comparator, timestamp)
 
     def handle_subjects(self, one, x_sorted, index, increment, comparator_function, timestamp):
-        if self.config.QUARANTINE_MODE.get() == True and one.get_infection_status(timestamp) == InfectionStatuses.INFECTED:
-            return
-        infection_distance = MainConfiguration().SUBJECT_SIZE + MainConfiguration().SUBJECT_INFECTION_RADIUS
 
         while comparator_function(index):
 
             another = x_sorted[index]
             index += increment
-            if another.travelling or another.on_my_way_to_quarantine or another.get_infection_status(
-                timestamp) == InfectionStatuses.INFECTED:
+            if (self.do_i_quarantine == True and another.get_infection_status(
+                timestamp) == InfectionStatuses.INFECTED) or another.travelling:
                 continue
 
             max_distance = one.get_behavioural_distance() + another.get_behavioural_distance()
-            my_x = one.get_particle_component().position_x + one.get_particle_component().velocity_x
-            other_x = another.get_particle_component().position_x + another.get_particle_component().velocity_x
-            x_distance = abs(my_x - other_x)
-
+            distance_norm, future_one, future_another = AxisBased.calculate_future_distance_between(one, another)
+            one_x = future_one[0]
+            another_x = future_another[0]
+            x_distance = abs(one_x - another_x)
             if x_distance > max_distance:
                 break
-            distance_norm = AxisBased.calculate_future_distance(one, another)
 
             if distance_norm < max_distance:
                 one.resolve_collision(another)
-            if distance_norm < infection_distance:
+            if distance_norm < self.infection_distance:
                 one.encounter_with(timestamp, another)
 
     def count_them(self, timestamp, subjects) -> None:
         super().count_them(timestamp, subjects)
 
     @staticmethod
-    def calculate_future_distance(one: Subject, another: Subject):
+    def calculate_future_distance_between(one: Subject, another: Subject):
         p1 = one.get_particle_component().position_vector + one.get_particle_component().velocity_vector
         p2 = another.get_particle_component().position_vector + another.get_particle_component().velocity_vector
-        return np.sqrt(np.sum((p2 - p1) ** 2))
+        return np.sqrt(np.sum((p2 - p1) ** 2)), p1, p2
 
 if __name__ == "__main__":
     testObject = AxisBased()

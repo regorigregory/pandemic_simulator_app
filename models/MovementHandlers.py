@@ -32,11 +32,6 @@ class AbstractMovementHandler(ABC):
             return np.array([box_bounds[0][0] + width/2,
                              box_bounds[1][0] + height/2])
 
-    @abstractmethod
-    def handle_designated_subjects(self, designated_subjects: list[Subject], timestamp) -> set[Subject]:
-        pass
-
-
 
 class QuarantineHandler(AbstractMovementHandler):
 
@@ -54,25 +49,8 @@ class QuarantineHandler(AbstractMovementHandler):
     def handle_designated_subjects(self, designated_subjects: list[Subject], timestamp) -> set[Subject]:
         immune_and_infected = dict(INFECTED = set(), IMMUNE = set())
         for subject in designated_subjects:
+            self.handle_one_subject(subject)
             immune_and_infected[subject.get_infection_status(timestamp).name].add(subject)
-            if not subject.already_in_quarantine:
-                if not subject.on_my_way_to_quarantine:
-                    self.set_direction_to_destination(subject)
-                    subject.on_my_way_to_quarantine = True
-
-                future_location = subject.get_particle_component().position_vector + subject.get_particle_component().velocity_vector
-
-                if (future_location[0] < self.quarantine_centre[0]):
-                    subject.get_particle_component().position_vector = self.quarantine_centre
-                    subject.already_in_quarantine = True
-                    subject.get_particle_component().velocity_vector = np.random.uniform(*self.config.SUBJECT_VELOCITY, [2,])
-                    subject.get_particle_component().set_boundaries(self.config.get_particle_quarantine_position_boundaries())
-
-                else:
-                    subject.get_particle_component().update_location_guided()
-
-            else:
-                subject.get_particle_component().update_location()
         return immune_and_infected
 
     def handle_one_subject(self, subject):
@@ -92,11 +70,6 @@ class QuarantineHandler(AbstractMovementHandler):
                 subject.get_particle_component().set_boundaries(
                     self.config.get_particle_quarantine_position_boundaries())
 
-            else:
-                subject.get_particle_component().update_location_guided()
-
-        else:
-            subject.get_particle_component().update_location()
 
 
 class CommunityHandler(AbstractMovementHandler):
@@ -111,55 +84,33 @@ class CommunityHandler(AbstractMovementHandler):
         self.cell_number = self.rows * self.columns
         self.cell_centres = [self._get_box_centre(arr) for arr in self.community_boundaries]
 
-    def get_generator_for_loop(self, subject_in_some_dimensional_array, cell_based = True):
-        def cell_based_gen():
-            for cell in subject_in_some_dimensional_array:
-                for subject in cell:
-                    yield subject
 
-        def non_cell_based_gen():
-            for subject in subject_in_some_dimensional_array:
-                yield subject
 
-        return cell_based_gen if cell_based else non_cell_based_gen
+    def set_subject_course_to_new_community(self, subject):
+        subject.travelling = True
+        temp = np.random.randint(0, self.cell_number)
 
-    def handle_designated_subjects(self, designated_subjects: set[Subject], timestamp) -> set[Subject]:
+        while temp == subject.cell_id:
+            temp = np.random.randint(0, self.cell_number)
+        subject.cell_id = temp
+        self.set_direction_to_destination(subject, self.cell_centres[subject.cell_id])
 
-        for subject in designated_subjects:
-            #immune_and_infected[subject.get_infection_status(timestamp).name].add(subject)
-            if not subject.travelling and not subject.on_my_way_to_quarantine:
-                chance = np.random.uniform(0, 1)
-                if chance < self.config.COMMUNITIES_VISIT_CHANCE:
-                    subject.travelling = True
-                    temp =  np.random.randint(0, self.cell_number)
+    def handle_travelling_subject_journey(self, subject):
+        destination = self.cell_centres[subject.cell_id]
+        future_location = subject.get_particle_component().position_vector + \
+                          subject.get_particle_component().velocity_vector
+        comparison = \
+            CommunityHandler.calculate_distance(destination, future_location) > \
+            CommunityHandler.calculate_distance(destination, subject.get_particle_component().position_vector)
 
-                    while temp == subject.cell_id:
-                        temp = np.random.randint(0, self.cell_number)
-                    subject.cell_id = temp
-
-                    self.set_direction_to_destination(subject, self.cell_centres[subject.cell_id])
-                else:
-                    subject.get_particle_component().update_location()
-
-            if subject.travelling:
-                destination = self.cell_centres[subject.cell_id]
-                future_location = subject.get_particle_component().position_vector +\
-                                  subject.get_particle_component().velocity_vector
-                comparison = \
-                    CommunityHandler.calculate_distance(destination, future_location) >\
-                    CommunityHandler.calculate_distance(destination, subject.get_particle_component().position_vector)
-
-                if comparison:
-                    subject.get_particle_component().position_vector = destination
-                    subject.get_particle_component().velocity_vector = np.random.uniform(*self.config.SUBJECT_VELOCITY,
-                                                                                         [2, ])
-                    subject.get_particle_component().set_boundaries(self.community_boundaries[subject.cell_id])
-                    subject.travelling = False
-                else:
-                    subject.get_particle_component().update_location_guided()
-
-        return dict()
-
+        if comparison:
+            subject.get_particle_component().position_vector = destination
+            subject.get_particle_component().velocity_vector = np.random.uniform(*self.config.SUBJECT_VELOCITY,
+                                                                                 [2, ])
+            subject.get_particle_component().set_boundaries(self.community_boundaries[subject.cell_id])
+            subject.travelling = False
+        else:
+            subject.get_particle_component().update_location_guided()
 
 if __name__ == "__main__":
     x = 1
