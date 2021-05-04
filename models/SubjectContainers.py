@@ -68,11 +68,11 @@ class DefaultContainer(AbstractContainerOfSubjects):
         limit = self.config.SUBJECT_NUMBER
         for i in range(0, limit):
             j = 0
-            s = constructor(self.config)
+            s = constructor()
             while j < len(self.contents):
                 already_there = list(self.contents)[j]
                 if s.are_we_too_close(already_there):
-                    s = constructor(self.config)
+                    s = constructor()
                     j = 0
                 else:
                     j += 1
@@ -155,11 +155,11 @@ class CommunitiesContainer(AbstractContainerOfSubjects):
             movement_boundaries = np.array(self.cell_coordinates[c])
             movement_boundaries[:, 0] += self.config.SUBJECT_SIZE
             movement_boundaries[:, 1] -= self.config.SUBJECT_SIZE
-            s = constructor(self.config, boundaries=movement_boundaries)
+            s = constructor(boundaries=movement_boundaries)
             while j < len(current_cell):
                 already_there = list(current_cell)[j]
                 if s.are_we_too_close(already_there):
-                    s = constructor(self.config, boundaries=movement_boundaries)
+                    s = constructor(boundaries=movement_boundaries)
                     j = 0
                 else:
                     j += 1

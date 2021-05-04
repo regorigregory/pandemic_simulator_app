@@ -72,10 +72,10 @@ class SimulationParametersUIConfig(object):
             self.general["SUBJECT_NUMBER"] = ["Scale",
                                               "The number of subjects:",
                                               [1, 200]]
-            self.general["DAYS_PER_SECOND"] = ["Scale",
+            self.general["DAYS_PER_MINUTE"] = ["Scale",
                                                "Days per minute:",
                                                [1, 60]]
-            self.general["SUBJECT_VELOCITY"] = ["Scale", "The maximum movement speed of a subject:", [1, 10]]
+            self.general["SUBJECT_VELOCITY"] = ["Scale", "The maximum movement speed of a subject per second:", [10, 500]]
 
             self.general["SUBJECT_INITIAL_INFECTION_RATIO"] = ["Scale",
                                                                "The ratio of the initially infected subjects:",
@@ -137,6 +137,15 @@ class MainConfiguration(object):
             self.QUARANTINE_MODE = False
             self.LOCKDOWN_MODE = False
             self.COMMUNITY_MODE = False
+            self.DAYS_PER_MINUTE = 60
+            self.FRAMES_PER_SECOND = 60
+            self.QUARANTINE_AFTER = 0
+            self.ASYMPTOMATIC_RATIO = 1
+            self.LOCKDOWN_AFTER = 0
+            self.CENTRAL_VISIT_CHANCE = 1
+            self.CENTRAL_SUBJECT_NUMBER = 100
+            self.QUARANTINE_APPROACHING_SPEED = 500
+
             # subject settings
 
             self.SUBJECT_NUMBER = 200
@@ -147,17 +156,10 @@ class MainConfiguration(object):
             self.SUBJECT_RECOVERY_TIME = 30
             self.SUBJECT_INCUBATION_PERIOD = 15
             self.SUBJECT_COMPLIANCE = 1
-            self.SUBJECT_VELOCITY = 1
+            self.SUBJECT_VELOCITY = 100
             self.SUBJECT_TYPE = SubjectTypes.SUBJECT
 
-            self.DAYS_PER_SECOND = 10
 
-            self.QUARANTINE_AFTER = 0
-            self.ASYMPTOMATIC_RATIO = 1
-            self.LOCKDOWN_AFTER = 0
-            self.CENTRAL_VISIT_CHANCE = 1
-            self.CENTRAL_SUBJECT_NUMBER = 100
-            self.QUARANTINE_APPROACHING_SPEED = 5
 
             # Communities settings
 
@@ -245,14 +247,14 @@ class MainConfiguration(object):
         if key == "SUBJECT_VELOCITY":
             value = [-value, value]
 
-        elif "MIN" in key or "MAX" in key:
+        """elif "MIN" in key or "MAX" in key:
             index = 0 if "MIN" in key else 1
             key = key[0:-4]
             val = super().__getattribute__(key)
             val[index] = value
             if val[0] > val[1] or val[1] < val[0]:
                 val[1 - index] = val[index]
-            value = val
+            value = val"""
 
         super().__setattr__(key, value)
 
@@ -283,21 +285,21 @@ class MainConfiguration(object):
         max_x, max_y = self.get_frame_dimensions_of("SimulationFrame")
         return [[0, max_x], [0, max_y]]
 
-    def get_simulation_canvas_available_bounds(self):
+    def get_particle_movement_canvas_bounds(self):
         canvas_dims = self.get_simulation_canvas_total_bounds()
         if self.QUARANTINE_MODE.get():
             q_dims = self.get_quarantine_dimensions()
             canvas_dims[0][0] = q_dims["x"] + q_dims["width"]
         return np.array(canvas_dims)
 
-    def get_simulation_canvas_border_bounds(self):
-        canvas_dims = self.get_simulation_canvas_available_bounds()
+    def get_particle_movement_border_bounds(self):
+        canvas_dims = self.get_particle_movement_canvas_bounds()
         canvas_dims[:, 0] += self.INNER_PADDING
         canvas_dims[:, 1] -= self.INNER_PADDING
         return canvas_dims
 
-    def get_main_simulation_canvas_movement_bounds_for_particles(self):
-        canvas_dims = self.get_simulation_canvas_border_bounds()
+    def get_particle_movement_bounds(self):
+        canvas_dims = self.get_particle_movement_border_bounds()
         canvas_dims[:, 0] += self.SUBJECT_SIZE
         canvas_dims[:, 1] -= self.SUBJECT_SIZE
         return canvas_dims
@@ -310,7 +312,7 @@ class MainConfiguration(object):
 
     def get_community_cells_border_bounds(self):
         config = self
-        main_dimensions = config.get_simulation_canvas_border_bounds()
+        main_dimensions = config.get_particle_movement_border_bounds()
         full_width = main_dimensions[0][1] - main_dimensions[0][0]
         x_start = main_dimensions[0][0]
 
@@ -331,3 +333,6 @@ class MainConfiguration(object):
                 height = patch_dimensions["height"]
                 cells.append([[x, x + width], [y, y + height]])
         return cells
+
+    def get_frames_per_day(self):
+        return (60 / self.DAYS_PER_MINUTE) * self.FRAMES_PER_SECOND

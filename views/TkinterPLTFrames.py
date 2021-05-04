@@ -101,12 +101,8 @@ class ParametersFrame(AbstractFrame):
 
             label.grid(row=i, column=col, sticky="we")
             resolution = 1 / 100 if v[2][1] == 1 else 1
-            if "RANGE" not in k:
-                min_, max_ = v[2]
-            elif "MIN" in k:
-                min_, max_ = v[2][0], v[2][0] + v[2][1] / 2
-            else:
-                min_, max_ = v[2][0] + v[2][1] / 2, v[2][1]
+            min_, max_ = v[2]
+
 
             control_element = _constructor(scrollable_frame,
                                            k,
@@ -117,11 +113,7 @@ class ParametersFrame(AbstractFrame):
                                            orient=tk.HORIZONTAL,
                                            bg=self.config.DEFAULT_BG)
 
-            if "RANGE" in k:
-                config_key = k[0:-4]
-                index = 0 if "MIN" not in k else 1
-                config_value = getattr(MainConfiguration(), config_key)[index]
-            elif "SUBJECT_VELOCITY" == k:
+            if "SUBJECT_VELOCITY" == k:
                 config_value = getattr(MainConfiguration(), k)[1]
             else:
                 config_value = getattr(MainConfiguration(), k)

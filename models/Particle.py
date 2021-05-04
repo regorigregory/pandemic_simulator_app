@@ -7,21 +7,25 @@ from models.ConfigureMe import MainConfiguration
 
 
 class Particle:
-    def __init__(self, cnf=MainConfiguration(), boundaries=None):
-        bounding_box = cnf.get_main_simulation_canvas_movement_bounds_for_particles() if boundaries is None else boundaries
+    def __init__(self, boundaries=None, position = None):
+        self.config = MainConfiguration()
+        bounding_box = self.config.get_particle_movement_bounds() if boundaries is None else boundaries
+        if position is None:
+            self.position_vector = Particle.init_random_vector(bounding_box)
+        else:
+            self.position_vector = position
 
-        self.position_vector = Particle.init_random_vector(bounding_box)
         self.min_x = 0
         self.max_x = 0
         self.min_y = 0
         self.max_y = 0
 
         self.set_boundaries(bounding_box)
-        self.velocity_vector = np.random.uniform(*cnf.SUBJECT_VELOCITY, [2, ])
+        self.velocity_vector = np.random.uniform(*self.config.SUBJECT_VELOCITY, [2, ])
 
         self.last_location_update = -1
 
-        self._radius = cnf.SUBJECT_SIZE
+        self._radius = self.config.SUBJECT_SIZE
         self.subject = None
         self.quarantine_mode = MainConfiguration().QUARANTINE_MODE
 
@@ -67,7 +71,7 @@ class Particle:
 
     @velocity_vector.setter
     def velocity_vector(self, values):
-        self._velocity_vector = np.array(values)
+        self._velocity_vector = np.array(values) / self.config.FRAMES_PER_SECOND
 
     @property
     def velocity_x(self):

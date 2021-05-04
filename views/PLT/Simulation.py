@@ -155,9 +155,12 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         return func
 
     def get_animation_function(self):
+        frames_per_day = self.config.get_frames_per_day()
+
         def func(i):
             self.move_guys(i)
-            if i % 20 == 0:
+            if i % frames_per_day == 0:
+                day = i / frames_per_day
                 all_infected = len(self._box_of_particles.counts["ASYMPTOMATIC"]) + len(
                     self._box_of_particles.counts["INFECTED"])
                 try:
@@ -172,7 +175,7 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
                 self.previous_infected = all_infected
 
                 self.notify(
-                    {"DAY": int(i), "R_RATE": "{0:.2f}".format(all_infected), "R_GROWTH": "{0:.2f}%".format(r_growth)})
+                    {"DAY": int(day), "R_RATE": "{0:.2f}".format(all_infected), "R_GROWTH": "{0:.2f}%".format(r_growth)})
 
             self.notify(self._box_of_particles.counts)
 
@@ -204,8 +207,7 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         self.ani = FuncAnimation(self.fig,
                                  animation_function,
                                  init_func=init_func,
-                                 interval=1000 / (
-                                         MainConfiguration().DAYS_PER_SECOND * MainConfiguration().FRAME_MULTIPLIER),
+                                 interval=1000 / self.config.FRAMES_PER_SECOND,
                                  blit=True)
         return self.ani
 
@@ -213,7 +215,9 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
         self._marker_radius = MainConfiguration().SUBJECT_SIZE
         self._infection_zone_radius = MainConfiguration().SUBJECT_INFECTION_RADIUS + MainConfiguration().SUBJECT_SIZE
         self.ani._stop()
-        self.ani = None
+        del self.ani
+        del self._box_of_particles
+        #self.ani = None
         self._box_of_particles = DefaultContainer() if self.config.COMMUNITY_MODE.get() is not True\
             else CommunitiesContainer()
         self.fig.axes[0].clear()
@@ -264,7 +268,7 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
 
     @staticmethod
     def draw_main_simulation_canvas_movement_bounds(ax):
-        q_dims = MainConfiguration().get_simulation_canvas_border_bounds()
+        q_dims = MainConfiguration().get_particle_movement_border_bounds()
         ax.add_patch(
             patches.Rectangle((q_dims[0, 0], q_dims[1, 0]),
                               q_dims[0, 1] - q_dims[0, 0],
