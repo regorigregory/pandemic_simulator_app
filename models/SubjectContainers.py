@@ -87,7 +87,7 @@ class CommunitiesContainer(ContainerOfSubjects):
         super().__init__()
         self.cell_count = self.config.COMMUNITIES_COLUMNS * self.config.COMMUNITIES_ROWS
         self.cell_coordinates = self.config.get_community_cells_border_bounds()
-        self.subject_cells = [set() for i in range(self.cell_count)]
+        self.subjects_in_cells = [set() for i in range(self.cell_count)]
         self.populate_subjects()
         self._infection_handler.count_them(0, self.contents)
         self._community_handler = CommunityHandler()
@@ -114,12 +114,11 @@ class CommunitiesContainer(ContainerOfSubjects):
         constructor = Subject
         for i in range(limit):
             j = 0
-            current_cell = self.subject_cells[c]
+            current_cell = self.subjects_in_cells[c]
             movement_boundaries = np.array(self.cell_coordinates[c])
             movement_boundaries[:, 0] += self.config.SUBJECT_SIZE
             movement_boundaries[:, 1] -= self.config.SUBJECT_SIZE
             s = constructor(self.config, boundaries=movement_boundaries)
-
             while j < len(current_cell):
                 already_there = list(current_cell)[j]
                 if s.are_we_too_close(already_there):
@@ -131,8 +130,36 @@ class CommunitiesContainer(ContainerOfSubjects):
             current_cell.add(s)
             self.contents.add(s)
 
+    def move_guys2(self, timestamp):
+        for i, guy in enumerate(self.contents):
+            if self.do_i_quarantine and guy.infected:
+                pass
+                # quarantine_handler should direct the guy
+            else:
+                pass
+                # if infected, susceptible or asymptomatic
+                # infection_handler -> check if we socially distance
+                # if so, bounce back
+                # infect each other if we are still too close!
+
+    def move_guys2_socially(self, timestamp):
+        for cell in self.subjects_in_cells:
+            for i, guy in enumerate(cell):
+                if self.do_i_quarantine and guy.infected:
+                    pass
+                    # quarantine_handler should direct the guy
+                else:
+                    pass
+                    # if commuting ensues
+                        # pass it on to the community handler!
+                    # if infected, susceptible or asymptomatic
+                        # infection_handler -> check if we socially distance
+                        # if so, bounce back
+                        # infect each other if we are still too close!
+
     def move_guys(self, timestamp):
-        self._infection_handler.many_to_many(timestamp)
+        for subjects_in_cell in self.subjects_in_cells:
+            self._infection_handler.many_to_many(timestamp, subjects = subjects_in_cell)
 
         if not self.do_i_quarantine:
             self._community_handler.handle_designated_subjects(self.contents, timestamp)
@@ -144,6 +171,7 @@ class CommunitiesContainer(ContainerOfSubjects):
 
             self._infection_handler.counts["INFECTED"] = immune_and_infected["INFECTED"]
             self._infection_handler.counts["IMMUNE"] = immune_and_infected["IMMUNE"]
+
             difference = self.contents - immune_and_infected["INFECTED"]
             difference = difference - immune_and_infected["IMMUNE"]
 

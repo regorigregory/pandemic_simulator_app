@@ -55,15 +55,15 @@ class AxisBased(InfectionHandlerInterface):
     def __init__(self):
         super().__init__()
 
-    def many_to_many(self, timestamp: int) -> None:
-
-        if(self.config.QUARANTINE_MODE.get() == False):
-            subjects = self.counts["SUSCEPTIBLE"].union(self.counts["INFECTED"].union(self.counts["ASYMPTOMATIC"].union()))
-            self.init_counts(exception = ["IMMUNE"])
-        else:
-            subjects = self.counts["SUSCEPTIBLE"].union(
-                self.counts["ASYMPTOMATIC"].union())
-            self.init_counts(exception=["IMMUNE", "INFECTED"])
+    def many_to_many(self, timestamp: int, subjects = None) -> None:
+        if subjects is None:
+            if(self.config.QUARANTINE_MODE.get() == False):
+                subjects = self.counts["SUSCEPTIBLE"].union(self.counts["INFECTED"].union(self.counts["ASYMPTOMATIC"].union()))
+                self.init_counts(exception = ["IMMUNE"])
+            else:
+                subjects = self.counts["SUSCEPTIBLE"].union(
+                    self.counts["ASYMPTOMATIC"].union())
+                self.init_counts(exception=["IMMUNE", "INFECTED"])
 
         x_sorted = sorted(subjects, key=lambda s: s.get_particle_component().position_x)
         for i, current in enumerate(x_sorted):
@@ -92,7 +92,7 @@ class AxisBased(InfectionHandlerInterface):
 
             another = x_sorted[index]
             index += increment
-            if self.config.QUARANTINE_MODE.get() == True and another.get_infection_status(
+            if another.travelling or another.on_my_way_to_quarantine or another.get_infection_status(
                 timestamp) == InfectionStatuses.INFECTED:
                 continue
 

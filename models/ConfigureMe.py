@@ -2,6 +2,7 @@ from enum import Enum
 import tkinter as tk
 import numpy as np
 
+
 class InfectionStatuses(Enum):
     SUSCEPTIBLE = 0
     ASYMPTOMATIC = 1
@@ -69,7 +70,7 @@ class SimulationParametersUIConfig(object):
 
             self.general["SUBJECT_NUMBER"] = ["Scale",
                                               "The number of subjects:",
-                                              [1, 300]]
+                                              [1, 200]]
             self.general["DAYS_PER_SECOND"] = ["Scale",
                                                "Days per minute:",
                                                [1, 60]]
@@ -303,7 +304,6 @@ class MainConfiguration(object):
         q_dims = self.get_quarantine_dimensions()
         subject_radius = self.SUBJECT_SIZE
         return [[q_dims["x"] + subject_radius, q_dims["x"] + q_dims["width"] - subject_radius] , [q_dims["y"] + subject_radius, q_dims["y"] + q_dims["height"] - subject_radius]]
-
 
     def get_community_cells_border_bounds(self):
         config = self

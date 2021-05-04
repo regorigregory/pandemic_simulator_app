@@ -99,7 +99,7 @@ class Subject:
 
     def get_behavioural_distance(self):
         if self.am_i_compliant():
-            return MainConfiguration().SUBJECT_INFECTION_RADIUS - 1
+            return MainConfiguration().SUBJECT_INFECTION_RADIUS + self.get_particle_component().get_radius() / 2
         return self.get_particle_component().get_radius()
 
     def are_we_too_close(self, other) -> bool:
