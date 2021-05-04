@@ -10,7 +10,7 @@ from models.MovementHandlers import QuarantineHandler, CommunityHandler
 from models.Subject import Subject
 
 
-class ContainerOfSubjects(ABC):
+class AbstractContainerOfSubjects(ABC):
     def __init__(self):
         self.config = MainConfiguration()
         self._infection_handler = AxisBased()
@@ -39,15 +39,26 @@ class ContainerOfSubjects(ABC):
                 self.counts[k] = set()
 
 
-class DefaultContainer(ContainerOfSubjects):
+class DefaultContainer(AbstractContainerOfSubjects):
     def __init__(self):
         super().__init__()
+        self.subjects_in_cells = []
+        self.rows = 3
+        self.columns = 3
+        self.cell_count = self.rows * self.columns
+        self.init_cells()
 
         self.populate_subjects()
-
         self.do_i_quarantine = self.config.QUARANTINE_MODE.get()
         if self.do_i_quarantine:
             self._quarantine_handler = QuarantineHandler()
+
+    def init_cells(self):
+        self.subjects_in_cells = []
+        for i in range(self.rows):
+            self.subjects_in_cells.append([])
+            for j in range(self.columns):
+                self.subjects_in_cells[i].append(set())
 
     def reset(self):
         self = DefaultContainer()
@@ -67,24 +78,52 @@ class DefaultContainer(ContainerOfSubjects):
                     j += 1
             self.contents.add(s)
 
+            self.add_subject_to_cell(s, self.subjects_in_cells)
+
+
+    def add_subject_to_cell(self, s: Subject, cells: list[set[Subject]] = None):
+
+        left = int((s.get_particle_component().position_vector[0] - self.config.SUBJECT_SIZE)
+                   / (self.config.MAIN_CANVAS_SIZE[0] / self.columns))
+        right = int((s.get_particle_component().position_vector[0] + self.config.SUBJECT_SIZE)
+                    / (self.config.MAIN_CANVAS_SIZE[0] / self.columns))
+        bottom = int((s.get_particle_component().position_vector[1] - self.config.SUBJECT_SIZE)
+                     / (self.config.MAIN_CANVAS_SIZE[1] / self.rows))
+        top = int((s.get_particle_component().position_vector[1] + self.config.SUBJECT_SIZE) / (
+                self.config.MAIN_CANVAS_SIZE[1] / self.rows))
+
+        cells[left][top].add(s)
+        cells[right][top].add(s)
+        cells[left][top].add(s)
+        cells[right][bottom].add(s)
+
+
     def move_guys(self, timestamp):
 
         self.init_counts()
-        x_sorted = sorted(self.contents, key=lambda s: s.get_particle_component().position_x)
-        for i, subject in enumerate(x_sorted):
-            if subject.already_in_quarantine:
-                subject.get_particle_component().update_location()
-            elif self.do_i_quarantine and (subject.get_infection_status(
-                    timestamp) == InfectionStatuses.INFECTED or subject.on_my_way_to_quarantine):
-                self._quarantine_handler.guide_subject_journey(subject)
-                subject.get_particle_component().update_location_guided()
-            else:
-                self._infection_handler.one_to_many(subject, x_sorted, i, timestamp)
-                subject.get_particle_component().update_location()
-            self.counts[subject.get_infection_status(timestamp).name].add(subject)
+        new_cells = [[set(), set()], [set(), set()]]
+        for row in self.subjects_in_cells:
+            for column in row:
+                x_sorted = sorted(column, key=lambda s: s.get_particle_component().position_x)
+                for i, subject in enumerate(x_sorted):
+                    if subject.already_in_quarantine:
+                        subject.get_particle_component().update_location(timestamp)
+                    elif self.do_i_quarantine and (subject.get_infection_status(
+                            timestamp) == InfectionStatuses.INFECTED or subject.on_my_way_to_quarantine):
+                        self._quarantine_handler.guide_subject_journey(subject)
+                        subject.get_particle_component().update_location_guided(timestamp)
+                    else:
+                        self._infection_handler.one_to_many(subject, x_sorted, i, timestamp)
+                        subject.get_particle_component().update_location(timestamp)
+
+                    self.add_subject_to_cell(subject, new_cells)
+
+                    self.counts[subject.get_infection_status(timestamp).name].add(subject)
+
+        self.subjects_in_cells = new_cells
 
 
-class CommunitiesContainer(ContainerOfSubjects):
+class CommunitiesContainer(AbstractContainerOfSubjects):
     def __init__(self):
         super().__init__()
         self.cell_count = self.config.COMMUNITIES_COLUMNS * self.config.COMMUNITIES_ROWS
@@ -138,22 +177,22 @@ class CommunitiesContainer(ContainerOfSubjects):
 
             for i, subject in enumerate(x_sorted):
                 if subject.already_in_quarantine:
-                    subject.get_particle_component().update_location()
+                    subject.get_particle_component().update_location(timestamp)
                 elif self.do_i_quarantine and (subject.get_infection_status(
                         timestamp) == InfectionStatuses.INFECTED or subject.on_my_way_to_quarantine):
                     self._quarantine_handler.guide_subject_journey(subject)
-                    subject.get_particle_component().update_location_guided()
+                    subject.get_particle_component().update_location_guided(timestamp)
                 else:
                     if not subject.travelling:
                         chance = np.random.uniform(0, 1)
                         if chance < self.config.COMMUNITIES_VISIT_CHANCE:
                             self._community_handler.set_direction_to_destination(subject)
-                            subject.get_particle_component().update_location_guided()
+                            subject.get_particle_component().update_location_guided(timestamp)
                         else:
                             self._infection_handler.one_to_many(subject, x_sorted, i, timestamp)
-                            subject.get_particle_component().update_location()
+                            subject.get_particle_component().update_location(timestamp)
                     else:
-                        self._community_handler.guide_subject_journey(subject)
+                        self._community_handler.guide_subject_journey(subject, timestamp)
 
                 self.counts[subject.get_infection_status(timestamp).name].add(subject)
                 new_cells[subject.cell_id].add(subject)

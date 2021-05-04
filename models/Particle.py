@@ -85,13 +85,17 @@ class Particle:
     def velocity_y(self, value):
         self._velocity_vector[1] = value
 
-    def update_location(self, rate_of_change=1) -> None:
-
+    def update_location(self, timestamp, rate_of_change=1) -> None:
+        if self.last_location_update == timestamp:
+            return
+        self.last_location_update = timestamp
         self.position_vector = self.position_vector + self.velocity_vector * rate_of_change
         self.bounce_back_if_needed()
 
-    def update_location_guided(self, rate_of_change=1) -> None:
-
+    def update_location_guided(self, timestamp, rate_of_change=1) -> None:
+        if self.last_location_update == timestamp:
+            return
+        self.last_location_update = timestamp
         self.position_vector = self.position_vector + self.velocity_vector * rate_of_change
 
     def bounce_back_if_needed(self) -> None:

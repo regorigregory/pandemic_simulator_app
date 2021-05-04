@@ -1,16 +1,12 @@
 if __name__ == "__main__":
-    import matplotlib.pyplot as plt
     from models.ConfigureMe import MainConfiguration, Theme
-    from models.SubjectContainers import DefaultContainer
-    from views.PLT.Simulation import ConcreteSimulation
-    import tkinter as tk
-    from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-    from views.TkinterPLTFrames import *
+    from tkinter import Tk
+    from views.TkinterPLTFrames import TkinterPLTBuilder
     import controllers.TkinterPLTControllers as Controllers
 
-    plt.ioff()
+    #plt.ioff()
 
-    window = tk.Tk()
+    window = Tk()
     window.title("Pandemic Simulator")
     window.configure({"bg": Theme().default_bg})
 

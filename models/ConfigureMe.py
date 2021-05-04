@@ -136,7 +136,7 @@ class MainConfiguration(object):
             self.SOCIAL_DISTANCING_MODE = False
             self.QUARANTINE_MODE = False
             self.LOCKDOWN_MODE = False
-            self.COMMUNITY_MODE = True
+            self.COMMUNITY_MODE = False
             # subject settings
 
             self.SUBJECT_NUMBER = 200

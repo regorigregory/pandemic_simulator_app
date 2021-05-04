@@ -92,7 +92,7 @@ class CommunityHandler(AbstractMovementHandler):
         subject.cell_id = temp
         super().set_direction_to_destination(subject, self.cell_centres[subject.cell_id])
 
-    def guide_subject_journey(self, to_be_guided: Subject) -> None:
+    def guide_subject_journey(self, to_be_guided: Subject, timestamp) -> None:
         destination = self.cell_centres[to_be_guided.cell_id]
         future_location = to_be_guided.get_particle_component().position_vector + \
                           to_be_guided.get_particle_component().velocity_vector
@@ -107,7 +107,7 @@ class CommunityHandler(AbstractMovementHandler):
             to_be_guided.get_particle_component().set_boundaries(self.community_boundaries[to_be_guided.cell_id])
             to_be_guided.travelling = False
         else:
-            to_be_guided.get_particle_component().update_location_guided()
+            to_be_guided.get_particle_component().update_location_guided(timestamp)
 
 if __name__ == "__main__":
     x = 1
