@@ -101,13 +101,14 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
                     self.ax.text(center[0], center[1], "x", c="green")
         else:
             ConcreteSimulation.draw_main_simulation_canvas_movement_bounds(self.ax)
-
         self.ax.set_facecolor(Theme().plot_bg)
         self.ax.set_xlim(0, self.width)
         self.ax.set_ylim(0, self.height)
+
+        self._box_of_particles.count_them()
         self.previous_infected = len(self._box_of_particles.counts["INFECTED"]) + len(
             self._box_of_particles.counts["ASYMPTOMATIC"])
-        self.previous_r = MainConfiguration().SUBJECT_INITIAL_INFECTION_RATIO
+        self.previous_r = self.config.SUBJECT_INITIAL_INFECTION_RATIO
 
         self.notify(self._box_of_particles.counts)
         self.notify({"DAY": 0, "R_RATE": self.previous_r, "R_GROWTH": self.previous_r})
@@ -164,7 +165,7 @@ class ConcreteSimulation(ObserverClient, AbstractSimulation):
                 all_infected = len(self._box_of_particles.counts["ASYMPTOMATIC"]) + len(
                     self._box_of_particles.counts["INFECTED"])
                 try:
-                    r_rate = (all_infected - self.previous_infected)/self.previous_infected
+                    r_rate = all_infected/self.previous_infected
                     r_growth = (r_rate - self.previous_r)/self.previous_r
 
                 except ZeroDivisionError:

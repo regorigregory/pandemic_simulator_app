@@ -38,6 +38,10 @@ class AbstractContainerOfSubjects(ABC):
             if exception is None or k not in exception:
                 self.counts[k] = set()
 
+    def count_them(self, timestamp=0):
+        for s in self.contents:
+            self.counts[s.get_infection_status(timestamp).name].add(s)
+
     @staticmethod
     def get_evenly_spaced_specs(bounds: list[list[float, float]], n: int = MainConfiguration().SUBJECT_NUMBER) \
             -> dict[str, float]:
@@ -68,8 +72,8 @@ class DefaultContainer(AbstractContainerOfSubjects):
     def __init__(self):
         super().__init__()
         self.subjects_in_cells = []
-        self.rows = 3
-        self.columns = 3
+        self.rows = 2
+        self.columns = 2
         self.cell_count = self.rows * self.columns
         self.init_cells()
 

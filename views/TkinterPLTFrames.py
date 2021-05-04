@@ -74,7 +74,7 @@ class ParametersFrame(AbstractFrame):
     def __init__(self, root):
         super().__init__(root)
 
-        header = tk.Label(self, text="Simulation settings", bg=Theme().default_bg, font=("Courier", 16))
+        header = tk.Label(self, text="Simulation settings", bg=Theme().default_bg, font=("Courier", 14))
         canvas = tk.Canvas(self, **self.dim_dict, bg=Theme().default_bg)
 
         scrollbar = Scrollbar(self, orient="vertical", command=canvas.yview)

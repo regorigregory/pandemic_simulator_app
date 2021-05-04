@@ -71,7 +71,7 @@ class SimulationParametersUIConfig(object):
 
             self.general["SUBJECT_NUMBER"] = ["Scale",
                                               "The number of subjects:",
-                                              [1, 200]]
+                                              [1, 300]]
             self.general["DAYS_PER_MINUTE"] = ["Scale",
                                                "Days per minute:",
                                                [1, 60]]
@@ -104,9 +104,7 @@ class SimulationParametersUIConfig(object):
             self.general["LOCKDOWN_AFTER"] = ["Scale",
                                               "Start of the lockdown after the first infection (days):",
                                               [0, 100]]
-            self.general["ASYMPTOMATIC_RATIO"] = ["Scale",
-                                                  "Asymptomatic patients (won't be moved to quarantine):",
-                                                  [0, 1]]
+
 
             self.general["COMMUNITIES_VISIT_CHANCE"] = ["Scale",
                                                         "Travelling chance between communities:",
@@ -138,7 +136,7 @@ class MainConfiguration(object):
             self.LOCKDOWN_MODE = False
             self.COMMUNITY_MODE = False
             self.DAYS_PER_MINUTE = 60
-            self.FRAMES_PER_SECOND = 60
+            self.FRAMES_PER_SECOND = 30
             self.QUARANTINE_AFTER = 0
             self.ASYMPTOMATIC_RATIO = 1
             self.LOCKDOWN_AFTER = 0
