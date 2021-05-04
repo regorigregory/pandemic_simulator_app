@@ -1,5 +1,6 @@
-from enum import Enum
 import tkinter as tk
+from enum import Enum
+
 import numpy as np
 
 
@@ -38,16 +39,16 @@ class Theme(object):
 
             self.button_attributes = {"bg": self.two, "fg": self.three, "width": 30, "pady": 5, "padx": 5}
             self.scenario_attributes = {"bg": self.one, "fg": self.three, "width": 15, "pady": 5, "padx": 5}
-            self.checkbox_attributes = {"bg": self.five, "fg": self.three, "width": 15, "pady": 5, "padx": 5, "selectcolor": self.two}
+            self.checkbox_attributes = {"bg": self.five, "fg": self.three, "width": 15, "pady": 5, "padx": 5,
+                                        "selectcolor": self.two}
             self.default_bg = "white"
-            self.label_data = dict(bg = self.default_bg, fg="#666", width=20, pady=3, padx=3)
-            self.label_value = dict(bg = self.default_bg, font=("Courier", 22), width=4, pady=3, padx=3)
-
+            self.label_data = dict(bg=self.default_bg, fg="#666", width=20, pady=3, padx=3)
+            self.label_value = dict(bg=self.default_bg, font=("Courier", 22), width=4, pady=3, padx=3)
 
             self.plot_bg = "#21213D"
             self.infected = "#CC1F7F"
             self.asymptomatic = "#E58342"
-            self.susceptible = "#03A0D3" #"#E6C645"
+            self.susceptible = "#03A0D3"  # "#E6C645"
             self.immune = "#666666"
 
 
@@ -77,23 +78,24 @@ class SimulationParametersUIConfig(object):
             self.general["SUBJECT_VELOCITY"] = ["Scale", "The maximum movement speed of a subject:", [1, 10]]
 
             self.general["SUBJECT_INITIAL_INFECTION_RATIO"] = ["Scale",
-                                                       "The ratio of the initially infected subjects:",
-                                                       [0, 1]]
+                                                               "The ratio of the initially infected subjects:",
+                                                               [0, 1]]
 
             self.general["SUBJECT_SIZE"] = ["Scale", "Subject size (radius) in pixels:", [1, 5]]
 
-            self.general["SUBJECT_INFECTION_RADIUS"] = ["Scale", "Infection radius around a subject in pixels:", [1, 10]]
+            self.general["SUBJECT_INFECTION_RADIUS"] = ["Scale", "Infection radius around a subject in pixels:",
+                                                        [1, 10]]
             self.general["SUBJECT_CHANCE_OF_INFECTION"] = ["Scale",
-                                                   "Infection chance per each day:",
-                                                   [0, 1]]
+                                                           "Infection chance per each day:",
+                                                           [0, 1]]
 
             self.general["SUBJECT_RECOVERY_TIME"] = ["Scale",
-                                             "Recovery time (days):",
-                                             [0, 100]]
+                                                     "Recovery time (days):",
+                                                     [0, 100]]
 
             self.general["SUBJECT_INCUBATION_PERIOD"] = ["Scale",
-                                                 "Incubation period (days):",
-                                                 [0, 100]]
+                                                         "Incubation period (days):",
+                                                         [0, 100]]
 
             self.general["SUBJECT_COMPLIANCE"] = ["Scale",
                                                   "What ratio of subjects comply with restrictions:",
@@ -107,10 +109,8 @@ class SimulationParametersUIConfig(object):
                                                   [0, 1]]
 
             self.general["COMMUNITIES_VISIT_CHANCE"] = ["Scale",
-                                                            "Travelling chance between communities:",
-                                                            [0, 1]]
-
-
+                                                        "Travelling chance between communities:",
+                                                        [0, 1]]
 
 
 class MainConfiguration(object):
@@ -217,21 +217,23 @@ class MainConfiguration(object):
                                     "CENTRAL": ["Button", dict(text="Central Location", **Theme().scenario_attributes)],
                                     "COMMUNITIES": ["Button", dict(text="Communities", **Theme().scenario_attributes)]}
 
-            self.CHECKBOX_CONFIG = {"SOCIAL_DISTANCING_MODE": ["Checkbutton", dict(text="Social distancing",
-                                                                                   name="SOCIAL_DISTANCING_MODE".lower(),
-                                                                                   **Theme().checkbox_attributes)],
+            self.CHECKBOX_CONFIG = {"SOCIAL_DISTANCING_MODE":
+                                        ["Checkbutton", dict(text="Social distancing",
+                                                             name="SOCIAL_DISTANCING_MODE".lower(),
+                                                             **Theme().checkbox_attributes)],
 
                                     "QUARANTINE_MODE": ["Checkbutton", dict(text="Quarantine",
-                                                                            name = "QUARANTINE_MODE".lower(),
+                                                                            name="QUARANTINE_MODE".lower(),
                                                                             **Theme().checkbox_attributes)],
                                     "COMMUNITY_MODE": ["Checkbutton",
-                                                      dict(text="Community mode",
-                                                           name="COMMUNITY_MODE".lower(),
-                                                           **Theme().checkbox_attributes)]
+                                                       dict(text="Community mode",
+                                                            name="COMMUNITY_MODE".lower(),
+                                                            **Theme().checkbox_attributes)]
                                     }
 
             self.STATS_CONFIG = dict(LABEL_KWDS=dict(bg=Theme().default_bg),
                                      VALUE_KWDS=dict(bg=Theme().default_bg))
+
     def __getattr__(self, item):
         temp = super().__getattribute__(item)
         if isinstance(temp, tk.BooleanVar):
@@ -303,7 +305,8 @@ class MainConfiguration(object):
     def get_particle_quarantine_position_boundaries(self):
         q_dims = self.get_quarantine_dimensions()
         subject_radius = self.SUBJECT_SIZE
-        return [[q_dims["x"] + subject_radius, q_dims["x"] + q_dims["width"] - subject_radius] , [q_dims["y"] + subject_radius, q_dims["y"] + q_dims["height"] - subject_radius]]
+        return [[q_dims["x"] + subject_radius, q_dims["x"] + q_dims["width"] - subject_radius],
+                [q_dims["y"] + subject_radius, q_dims["y"] + q_dims["height"] - subject_radius]]
 
     def get_community_cells_border_bounds(self):
         config = self

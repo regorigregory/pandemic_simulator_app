@@ -1,28 +1,26 @@
+import tkinter as tk
 from tkinter import Frame, Button, Scrollbar
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-from models.SubjectContainers import DefaultContainer
 from models.ConfigureMe import MainConfiguration, Theme
-import tkinter as tk
-
 from views.PLT.Simulation import ConcreteSimulation
 from views.Tkinter.SimulationObservers import TKAreaChart, TKStats
 
 
 class AbstractFrame(Frame):
-    def __init__(self, root, config = MainConfiguration()):
+    def __init__(self, root, config=MainConfiguration()):
         self.config = config
         self.dim_dict = {"width": (self.config.get_frame_dimensions_of(self.__class__.__name__))[0],
                          "height": (self.config.get_frame_dimensions_of(self.__class__.__name__))[1]}
         self.frame_settings = self.config.FRAME_SETTINGS[self.__class__.__name__]
-        super().__init__(root, bg = config.DEFAULT_BG, **self.dim_dict,
+        super().__init__(root, bg=config.DEFAULT_BG, **self.dim_dict,
                          **config.FRAME_PADDING)
         self.components = []
         self.grid_kwargs = self.frame_settings["grid_kwargs"]
 
     def grid(self, **kwargs):
-        if(len(kwargs) == 0):
+        if len(kwargs) == 0:
             super().grid(**self.grid_kwargs)
         else:
             super().grid(kwargs)
@@ -37,6 +35,7 @@ class MasterLeftFrame(AbstractFrame):
     def __init__(self, root):
         super().__init__(root)
 
+
 class MasterRightFrame(AbstractFrame):
     def __init__(self, root):
         super().__init__(root)
@@ -50,7 +49,7 @@ class SimulationFrame(AbstractFrame):
         self.ViewBox.fig.subplots_adjust(left=0, bottom=0.1, right=0.95, top=1, wspace=0, hspace=0)
         self.canvas = FigureCanvasTkAgg(self.ViewBox.fig, self)
 
-        self.canvas.get_tk_widget().grid(row = 0, column = 0, sticky = "n", ipady = 0, pady = 0)
+        self.canvas.get_tk_widget().grid(row=0, column=0, sticky="n", ipady=0, pady=0)
         self.ViewBox.start_animation()
 
     def get_animated_object(self):
@@ -60,13 +59,13 @@ class SimulationFrame(AbstractFrame):
 class GraphFrame(AbstractFrame):
     def __init__(self, root):
         super().__init__(root)
-        self.ViewBox = TKAreaChart(root = self)
+        self.ViewBox = TKAreaChart(root=self)
         self.canvas = self.ViewBox.fig
-        self.canvas.grid(row = 1, column = 0, sticky="w")
+        self.canvas.grid(row=1, column=0, sticky="w")
 
 
 class IdentifiableScale(tk.Scale):
-    def __init__(self, root, my_name , **kwargs):
+    def __init__(self, root, my_name, **kwargs):
         super().__init__(root, kwargs)
         self.my_name_is = my_name
 
@@ -75,12 +74,12 @@ class ParametersFrame(AbstractFrame):
     def __init__(self, root):
         super().__init__(root)
 
-        header = tk.Label(self, text="Simulation settings", bg = Theme().default_bg, font=("Courier", 16))
-        canvas = tk.Canvas(self, **self.dim_dict,  bg = Theme().default_bg)
+        header = tk.Label(self, text="Simulation settings", bg=Theme().default_bg, font=("Courier", 16))
+        canvas = tk.Canvas(self, **self.dim_dict, bg=Theme().default_bg)
 
-        scrollbar = Scrollbar(self, orient = "vertical", command=canvas.yview)
+        scrollbar = Scrollbar(self, orient="vertical", command=canvas.yview)
 
-        scrollable_frame = Frame(canvas, bg = self.config.DEFAULT_BG, width = self.dim_dict["width"])
+        scrollable_frame = Frame(canvas, bg=self.config.DEFAULT_BG, width=self.dim_dict["width"])
 
         scrollable_frame.bind(
             "<Configure>",
@@ -89,34 +88,34 @@ class ParametersFrame(AbstractFrame):
             )
         )
 
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw", width = self.dim_dict["width"])
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw", width=self.dim_dict["width"])
 
         canvas.configure(yscrollcommand=scrollbar.set)
         self.sliders = []
         i = j = 0
         for k, v in self.config.PARAMETERS_UI_SETTINGS.general.items():
             _constructor = IdentifiableScale
-            label = tk.Label(scrollable_frame, text = v[1], bg = self.config.DEFAULT_BG)
+            label = tk.Label(scrollable_frame, text=v[1], bg=self.config.DEFAULT_BG)
             col = j % 2
             j += 1
 
-            label.grid(row = i, column = col, sticky = "we")
-            resolution = 1/100 if v[2][1] == 1 else 1
+            label.grid(row=i, column=col, sticky="we")
+            resolution = 1 / 100 if v[2][1] == 1 else 1
             if "RANGE" not in k:
-                min, max = v[2]
+                min_, max_ = v[2]
             elif "MIN" in k:
-                min, max = v[2][0], v[2][0] + v[2][1] /2
+                min_, max_ = v[2][0], v[2][0] + v[2][1] / 2
             else:
-                min, max = v[2][0] + v[2][1] /2, v[2][1]
+                min_, max_ = v[2][0] + v[2][1] / 2, v[2][1]
 
             control_element = _constructor(scrollable_frame,
                                            k,
-                                           from_ = min,
-                                           to = max,
+                                           from_=min_,
+                                           to=max_,
                                            length=self.dim_dict["width"] / 2,
-                                           resolution = resolution,
-                                           orient = tk.HORIZONTAL,
-                                           bg = self.config.DEFAULT_BG)
+                                           resolution=resolution,
+                                           orient=tk.HORIZONTAL,
+                                           bg=self.config.DEFAULT_BG)
 
             if "RANGE" in k:
                 config_key = k[0:-4]
@@ -130,22 +129,21 @@ class ParametersFrame(AbstractFrame):
 
             col = j % 2
             j += 1
-            control_element.grid(row = i , column = col, sticky = "we")
+            control_element.grid(row=i, column=col, sticky="we")
             self.sliders.append(control_element)
             i += 1
         header.grid(row=0, column=0, columnspan=2)
-        canvas.grid(row=1, column=1, sticky = "nwse")
+        canvas.grid(row=1, column=1, sticky="nwse")
         scrollbar.grid(row=1, column=0, sticky="ns")
 
 
 class StatsFrame(AbstractFrame):
     def __init__(self, root):
         super().__init__(root)
-        self.header = tk.Label(self, text="Simulation statistics", font=("Courier", 14), bg = Theme().default_bg)
+        self.header = tk.Label(self, text="Simulation statistics", font=("Courier", 14), bg=Theme().default_bg)
         self.header.grid(row=0, column=0, columnspan=3)
 
-        self.ViewBox =TKStats(self)
-
+        self.ViewBox = TKStats(self)
 
 
 class ScenarioFrame(AbstractFrame):
@@ -156,23 +154,16 @@ class ScenarioFrame(AbstractFrame):
         self.buttons = []
         self.checkboxes = []
 
-        """for v in self.config.SCENARIO_CONFIG.values():
-            constructor = getattr(tk, v[0])
-            self.components.append(constructor(self, **v[1]))
-
-        for i, c in enumerate(self.components):
-            c.grid(row=0, column=i, sticky = "we")
-        """
         for k, v in self.config.CHECKBOX_CONFIG.items():
             constructor = getattr(tk, v[0])
-            var = tk.BooleanVar(master = self, name = k, value = getattr(self.config, k))
-            cb = constructor(self, variable = var, **v[1])
+            var = tk.BooleanVar(master=self, name=k, value=getattr(self.config, k))
+            cb = constructor(self, variable=var, **v[1])
             self.checkboxes.append(cb)
             self.components.append(cb)
             setattr(MainConfiguration(), k, var)
 
         for i, v in enumerate(self.checkboxes):
-            v.grid(row = 0, column = i, sticky = "we")
+            v.grid(row=0, column=i, sticky="we")
 
         self.buttons_container = Frame(self)
 
@@ -180,8 +171,8 @@ class ScenarioFrame(AbstractFrame):
             b = Button(self.buttons_container, **v)
             self.components.append(b)
             self.buttons.append(b)
-        self.buttons[0].grid(row = 0, column = 0, sticky = "we")
-        self.buttons[1].grid(row = 0, column = 1, sticky = "we")
+        self.buttons[0].grid(row=0, column=0, sticky="we")
+        self.buttons[1].grid(row=0, column=1, sticky="we")
         self.buttons_container.grid(row=1, column=0, columnspan=3)
 
     def get_checkboxes(self):
@@ -198,24 +189,24 @@ class ButtonsFrame(AbstractFrame):
         for v in self.config.BUTTONS_CONFIG.values():
             self.components.append(Button(self, **v))
 
-        for i,c in enumerate(self.components):
-            c.grid(row = 1, column  = i)
+        for i, c in enumerate(self.components):
+            c.grid(row=1, column=i)
 
 
-class TkinterPLTBuilder():
-    def __init__(self, config = MainConfiguration(), window = None):
+class TkinterPLTBuilder:
+    def __init__(self, config=MainConfiguration(), window=None):
         self.window = tk.TK() if not window else window
         self.config = config
         self.components = {}
 
         self.columns = [MasterLeftFrame(self.window),
-                         MasterRightFrame(self.window)]
+                        MasterRightFrame(self.window)]
 
     def build(self):
         # master grid components
-        #self.components["MasterHeaderFrame"] = MasterHeaderFrame(self.window)
+        # self.components["MasterHeaderFrame"] = MasterHeaderFrame(self.window)
         frames = [ScenarioFrame, ParametersFrame, GraphFrame, StatsFrame, SimulationFrame]
-        #ButtonsFrame has been removed
+        # ButtonsFrame has been removed
         # child components
         for f in frames:
             name = f.__name__
@@ -236,7 +227,3 @@ class TkinterPLTBuilder():
             return self.components[key]
         else:
             raise KeyError("The provided key {} does not exist.")
-
-
-
-

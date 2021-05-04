@@ -1,8 +1,11 @@
 from __future__ import annotations
+
+from abc import ABC, abstractmethod
+
+import numpy as np
+
 from models.ConfigureMe import MainConfiguration
 from models.Subject import Subject
-import numpy as np
-from abc import ABC, abstractmethod
 
 
 class AbstractMovementHandler(ABC):
@@ -17,10 +20,6 @@ class AbstractMovementHandler(ABC):
         direction_vector /= np.sum(direction_vector ** 2) ** 0.5
         particle.velocity_vector = direction_vector * self.travelling_speed
 
-    @staticmethod
-    def calculate_distance(point_from, point_to):
-        return np.sum((point_to - point_from) ** 2) ** 0.5
-
     def _get_box_centre(self, box_bounds: dict[str, float]) -> np.array[float, float]:
         if isinstance(box_bounds, dict):
             return np.array([box_bounds["x"] + box_bounds["width"] / 2,
@@ -31,6 +30,14 @@ class AbstractMovementHandler(ABC):
 
             return np.array([box_bounds[0][0] + width/2,
                              box_bounds[1][0] + height/2])
+
+    @staticmethod
+    def calculate_distance(point_from, point_to) -> float:
+        return np.sum((point_to - point_from) ** 2) ** 0.5
+
+    @abstractmethod
+    def guide_subject_journey(self, to_be_guided: Subject) -> None:
+        pass
 
 
 class QuarantineHandler(AbstractMovementHandler):
@@ -46,30 +53,22 @@ class QuarantineHandler(AbstractMovementHandler):
     def set_direction_to_destination(self, to_be_guided: Subject) -> None:
         super().set_direction_to_destination(to_be_guided, self.quarantine_centre)
 
-    def handle_designated_subjects(self, designated_subjects: list[Subject], timestamp) -> set[Subject]:
-        immune_and_infected = dict(INFECTED = set(), IMMUNE = set())
-        for subject in designated_subjects:
-            self.handle_one_subject(subject)
-            immune_and_infected[subject.get_infection_status(timestamp).name].add(subject)
-        return immune_and_infected
+    def guide_subject_journey(self, to_be_guided: Subject) -> None:
 
-    def handle_one_subject(self, subject):
+        if not to_be_guided.already_in_quarantine:
+            if not to_be_guided.on_my_way_to_quarantine:
+                self.set_direction_to_destination(to_be_guided)
+                to_be_guided.on_my_way_to_quarantine = True
 
-        if not subject.already_in_quarantine:
-            if not subject.on_my_way_to_quarantine:
-                self.set_direction_to_destination(subject)
-                subject.on_my_way_to_quarantine = True
-
-            future_location = subject.get_particle_component().position_vector + subject.get_particle_component().velocity_vector
+            future_location = to_be_guided.get_particle_component().position_vector + to_be_guided.get_particle_component().velocity_vector
 
             if (future_location[0] < self.quarantine_centre[0]):
-                subject.get_particle_component().position_vector = self.quarantine_centre
-                subject.already_in_quarantine = True
-                subject.get_particle_component().velocity_vector = np.random.uniform(*self.config.SUBJECT_VELOCITY,
-                                                                                     [2, ])
-                subject.get_particle_component().set_boundaries(
+                to_be_guided.get_particle_component().position_vector = self.quarantine_centre
+                to_be_guided.already_in_quarantine = True
+                to_be_guided.get_particle_component().velocity_vector = np.random.uniform(*self.config.SUBJECT_VELOCITY,
+                                                                                          [2, ])
+                to_be_guided.get_particle_component().set_boundaries(
                     self.config.get_particle_quarantine_position_boundaries())
-
 
 
 class CommunityHandler(AbstractMovementHandler):
@@ -84,40 +83,31 @@ class CommunityHandler(AbstractMovementHandler):
         self.cell_number = self.rows * self.columns
         self.cell_centres = [self._get_box_centre(arr) for arr in self.community_boundaries]
 
-
-
-    def set_subject_course_to_new_community(self, subject):
+    def set_direction_to_destination(self, subject: Subject) -> None:
         subject.travelling = True
         temp = np.random.randint(0, self.cell_number)
 
         while temp == subject.cell_id:
             temp = np.random.randint(0, self.cell_number)
         subject.cell_id = temp
-        self.set_direction_to_destination(subject, self.cell_centres[subject.cell_id])
+        super().set_direction_to_destination(subject, self.cell_centres[subject.cell_id])
 
-    def handle_travelling_subject_journey(self, subject):
-        destination = self.cell_centres[subject.cell_id]
-        future_location = subject.get_particle_component().position_vector + \
-                          subject.get_particle_component().velocity_vector
+    def guide_subject_journey(self, to_be_guided: Subject) -> None:
+        destination = self.cell_centres[to_be_guided.cell_id]
+        future_location = to_be_guided.get_particle_component().position_vector + \
+                          to_be_guided.get_particle_component().velocity_vector
         comparison = \
             CommunityHandler.calculate_distance(destination, future_location) > \
-            CommunityHandler.calculate_distance(destination, subject.get_particle_component().position_vector)
+            CommunityHandler.calculate_distance(destination, to_be_guided.get_particle_component().position_vector)
 
         if comparison:
-            subject.get_particle_component().position_vector = destination
-            subject.get_particle_component().velocity_vector = np.random.uniform(*self.config.SUBJECT_VELOCITY,
-                                                                                 [2, ])
-            subject.get_particle_component().set_boundaries(self.community_boundaries[subject.cell_id])
-            subject.travelling = False
+            to_be_guided.get_particle_component().position_vector = destination
+            to_be_guided.get_particle_component().velocity_vector = np.random.uniform(*self.config.SUBJECT_VELOCITY,
+                                                                                      [2, ])
+            to_be_guided.get_particle_component().set_boundaries(self.community_boundaries[to_be_guided.cell_id])
+            to_be_guided.travelling = False
         else:
-            subject.get_particle_component().update_location_guided()
+            to_be_guided.get_particle_component().update_location_guided()
 
 if __name__ == "__main__":
     x = 1
-
-
-
-
-
-
-

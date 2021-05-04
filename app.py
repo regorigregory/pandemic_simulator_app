@@ -1,5 +1,3 @@
-import sys
-sys.path.append('/home/gergo/.local/lib/pypy3.6/site-packages')
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from models.ConfigureMe import MainConfiguration, Theme
@@ -15,18 +13,18 @@ if __name__ == "__main__":
     window = tk.Tk()
     window.title("Pandemic Simulator")
     window.configure({"bg": Theme().default_bg})
+
     MainConfiguration().MAIN_CANVAS_SIZE = [window.winfo_screenwidth(), window.winfo_screenheight()]
+
     window.geometry(MainConfiguration().get_main_canvas_size_tkinter())
 
+    view_builder = TkinterPLTBuilder(window=window)
+    view_builder.build()
 
-    my_builder = TkinterPLTBuilder(window = window)
-    my_builder.build()
-
-
-    ButtonsController = Controllers.TkinterButtons(my_builder.get_component("SimulationFrame").get_animated_object())
+    ButtonsController = Controllers.TkinterButtons(view_builder.get_component("SimulationFrame").get_animated_object())
     SlidersController = Controllers.TkinterSimulationSettings()
 
-    ButtonsController.bind_functions(my_builder.components["ScenarioFrame"].buttons)
-    SlidersController.bind_functions(my_builder.get_component("ParametersFrame").sliders)
-    checkboxes = my_builder.get_component("ScenarioFrame").get_checkboxes()
+    ButtonsController.bind_functions(view_builder.components["ScenarioFrame"].buttons)
+    SlidersController.bind_functions(view_builder.get_component("ParametersFrame").sliders)
+
     window.mainloop()

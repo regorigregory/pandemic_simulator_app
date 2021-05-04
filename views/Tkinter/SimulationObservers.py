@@ -1,8 +1,10 @@
+import tkinter as tk
+from abc import ABC, abstractmethod
 
 import numpy as np
-import tkinter as tk
+
 from models.ConfigureMe import Theme, MainConfiguration
-from abc import ABC, abstractmethod
+
 
 class Observer(ABC):
     def __init__(self):
@@ -11,6 +13,7 @@ class Observer(ABC):
         self.subject_number = MainConfiguration().SUBJECT_NUMBER
         self.log = dict()
         self.default_keys = ["INFECTED", "SUSCEPTIBLE", "IMMUNE", "ASYMPTOMATIC"]
+        self.frames = 0
 
     @abstractmethod
     def update(self, new_data):
@@ -20,7 +23,7 @@ class Observer(ABC):
         observable.attach(self)
 
     def init_log(self):
-        self.log = dict(INFECTED = [[0, 0]], SUSCEPTIBLE = [[0, 0]], IMMUNE = [[0, 0]], ASYMPTOMATIC = [[0, 0]])
+        self.log = dict(INFECTED=[[0, 0]], SUSCEPTIBLE=[[0, 0]], IMMUNE=[[0, 0]], ASYMPTOMATIC=[[0, 0]])
 
     def update_logs(self, newdata):
         for k, v in newdata.items():
@@ -36,21 +39,25 @@ class TKStats(Observer):
         self.second_row = tk.Frame(self.fig, bg=self.theme.default_bg)
         self.second_row.grid(row=3, column=0, sticky="we", columnspan=3)
 
-        self.data_label = dict(DAY = tk.Label(self.fig, text ="Day",**self.theme.label_data),
+        self.data_label = dict(DAY=tk.Label(self.fig, text="Day", **self.theme.label_data),
                                R_RATE=tk.Label(self.fig, text="R-rate", **self.theme.label_data),
                                R_GROWTH=tk.Label(self.fig, text="R-growth-rate", **self.theme.label_data),
-                               ASYMPTOMATIC=tk.Label(self.second_row, text = "Asymptomatic", **self.theme.label_data),
-                               INFECTED=tk.Label(self.second_row, text = "Infected", **self.theme.label_data),
-                               SUSCEPTIBLE=tk.Label(self.second_row, text = "Susceptible", **self.theme.label_data),
-                               IMMUNE= tk.Label(self.second_row, text = "Immune", **self.theme.label_data)
+                               ASYMPTOMATIC=tk.Label(self.second_row, text="Asymptomatic", **self.theme.label_data),
+                               INFECTED=tk.Label(self.second_row, text="Infected", **self.theme.label_data),
+                               SUSCEPTIBLE=tk.Label(self.second_row, text="Susceptible", **self.theme.label_data),
+                               IMMUNE=tk.Label(self.second_row, text="Immune", **self.theme.label_data)
                                )
         self.data_value = dict(DAY=tk.Label(self.fig, text="-", **self.theme.label_value),
                                R_RATE=tk.Label(self.fig, text="-", **self.theme.label_value),
                                R_GROWTH=tk.Label(self.fig, text="-", **self.theme.label_value),
-                               ASYMPTOMATIC=tk.Label(self.second_row, text="-", fg=self.theme.asymptomatic,  **self.theme.label_value),
-                               INFECTED=tk.Label(self.second_row, text="-", fg=self.theme.infected, **self.theme.label_value),
-                               SUSCEPTIBLE=tk.Label(self.second_row, text="-", fg=self.theme.susceptible, **self.theme.label_value),
-                               IMMUNE=tk.Label(self.second_row, text="-",fg=self.theme.immune, **self.theme.label_value)
+                               ASYMPTOMATIC=tk.Label(self.second_row, text="-", fg=self.theme.asymptomatic,
+                                                     **self.theme.label_value),
+                               INFECTED=tk.Label(self.second_row, text="-", fg=self.theme.infected,
+                                                 **self.theme.label_value),
+                               SUSCEPTIBLE=tk.Label(self.second_row, text="-", fg=self.theme.susceptible,
+                                                    **self.theme.label_value),
+                               IMMUNE=tk.Label(self.second_row, text="-", fg=self.theme.immune,
+                                               **self.theme.label_value)
                                )
 
         column = 0
@@ -62,7 +69,6 @@ class TKStats(Observer):
             column += 1
 
         self.fig.grid(row=1, column=0, sticky="nswe")
-
 
     def update_stats(self, data):
         self.subject_number = MainConfiguration().SUBJECT_NUMBER
@@ -78,7 +84,6 @@ class TKStats(Observer):
             for v in self.data_value.values():
                 v.configure({"text": "-"})
 
-
     def update(self, data):
         self.update_stats(data)
 
@@ -92,7 +97,7 @@ class TKAreaChart(Observer):
         self.frames = 0
         self.init_log()
 
-        self.fig = tk.Canvas(root, width=self.width, height = self.height, bg = self.theme.susceptible)
+        self.fig = tk.Canvas(root, width=self.width, height=self.height, bg=self.theme.susceptible)
 
     @property
     def width(self):
@@ -144,18 +149,14 @@ class TKAreaChart(Observer):
         infected_points[:, 1] = self._height - (infected_points[:, 1] + asymptomatic_points[:, 1])
         asymptomatic_points[:, 1] = self._height - asymptomatic_points[:, 1]
 
-        #immune_points[:, 1] = infected_points[:, 1] + infected_points[:, 1] - immune_points[:, 1]
         immune_points = immune_points.tolist()
         infected_points = infected_points.tolist()
         asymptomatic_points = asymptomatic_points.tolist()
 
-
-
-
         self.fig.create_polygon(immune_points,
                                 fill=self.theme.immune,
-                                #fill=self.theme.area_plot_bg,
-                                #width=3
+                                # fill=self.theme.area_plot_bg,
+                                # width=3
                                 )
 
         self.fig.create_polygon(infected_points,
@@ -168,5 +169,6 @@ class TKAreaChart(Observer):
                                 # fill=self.theme.area_plot_bg,
                                 # width=3
                                 )
+
     def observe(self, observable):
         observable.attach(self)
