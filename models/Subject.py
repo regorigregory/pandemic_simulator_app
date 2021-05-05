@@ -31,7 +31,7 @@ class Subject:
         self._infection_probability = Subject.set_random_attribute_safely(
             self.config.SUBJECT_CHANCE_OF_INFECTION / self.frames_per_day)
         self._do_i_socially_distance = MainConfiguration().SUBJECT_COMPLIANCE > np.random.uniform(0, 1) \
-            if MainConfiguration().SOCIAL_DISTANCING_MODE.get() else False
+            if MainConfiguration().SOCIAL_DISTANCING_MODE else False
 
         self._particle = Particle(boundaries=boundaries, position=position)
         self._infection_radius = self._particle.get_radius() + self.config.SUBJECT_INFECTION_RADIUS
