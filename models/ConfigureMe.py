@@ -285,7 +285,7 @@ class MainConfiguration(object):
 
     def get_particle_movement_canvas_bounds(self):
         canvas_dims = self.get_simulation_canvas_total_bounds()
-        if self.QUARANTINE_MODE.get():
+        if (isinstance(self.QUARANTINE_MODE, bool) and self.QUARANTINE_MODE) or (not isinstance(self.QUARANTINE_MODE, bool) and self.QUARANTINE_MODE.get()):
             q_dims = self.get_quarantine_dimensions()
             canvas_dims[0][0] = q_dims["x"] + q_dims["width"]
         return np.array(canvas_dims)

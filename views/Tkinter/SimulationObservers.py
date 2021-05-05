@@ -1,34 +1,8 @@
 import tkinter as tk
-from abc import ABC, abstractmethod
-
 import numpy as np
 
 from models.ConfigureMe import Theme, MainConfiguration
-
-
-class Observer(ABC):
-    def __init__(self):
-        self.config = MainConfiguration()
-        self.theme = Theme()
-        self.subject_number = MainConfiguration().SUBJECT_NUMBER
-        self.log = dict()
-        self.default_keys = ["INFECTED", "SUSCEPTIBLE", "IMMUNE", "ASYMPTOMATIC"]
-        self.frames = 0
-
-    @abstractmethod
-    def update(self, new_data):
-        pass
-
-    def observe(self, observable):
-        observable.attach(self)
-
-    def init_log(self):
-        self.log = dict(INFECTED=[[0, 0]], SUSCEPTIBLE=[[0, 0]], IMMUNE=[[0, 0]], ASYMPTOMATIC=[[0, 0]])
-
-    def update_logs(self, newdata):
-        for k, v in newdata.items():
-            if k in self.default_keys:
-                self.log[k] = np.concatenate((self.log[k], [[self.frames, len(v)]]), axis=0)
+from views.AbstractClasses import Observer
 
 
 class TKStats(Observer):

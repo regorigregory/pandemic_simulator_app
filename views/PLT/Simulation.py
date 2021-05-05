@@ -9,85 +9,21 @@ from matplotlib.animation import FuncAnimation
 
 from models.ConfigureMe import MainConfiguration, Theme
 from models.SubjectContainers import DefaultContainer, CommunitiesContainer
-
+from views.AbstractClasses import ObserverClient, AbstractSimulation
 debug = False
 
 
-class AbstractSimulation(ABC):
-    @abstractmethod
-    def resume(self):
-        pass
+class ConcreteSimulation(AbstractSimulation, ObserverClient):
 
-    def pause(self):
-        pass
-
-    def start_animation(self):
-        pass
-
-    def reset(self):
-        pass
-
-
-class ObserverClient(object):
     def __init__(self):
-        self.observers = []
-
-    def attach(self, observer):
-        if observer not in self.observers:
-            self.observers.append(observer)
-
-    def detach(self, observer):
-        if observer in self.observers:
-            self.observers.remove(observer)
-
-    def notify(self, data):
-        for observer in self.observers:
-            observer.update(data)
-
-
-class ConcreteSimulation(ObserverClient, AbstractSimulation):
-
-    def __init__(self, config=MainConfiguration()):
         super().__init__()
         plt.ioff()
-        self.config = config
-        self.width, self.height = config.get_frame_dimensions_of("SimulationFrame")
-        self.DPI = config.DPI
-        self._marker_radius = config.SUBJECT_SIZE
-        self._infection_zone_radius = config.SUBJECT_INFECTION_RADIUS + config.SUBJECT_SIZE
+        self.DPI = self.config.DPI
         self.ani = None
-        self._box_of_particles = CommunitiesContainer() if self.config.COMMUNITY_MODE.get() else DefaultContainer()
-        self._communities_handler = None
-
         self.fig = plt.figure(figsize=(self.width / self.DPI, self.height / self.DPI), dpi=self.DPI)
         self.ax = self.fig.add_subplot()
-        self.previous_infected = 0
 
-        self.previous_r = 0
 
-    @property
-    def width(self):
-        return self._width
-
-    @width.setter
-    def width(self, x):
-        self._width = x
-
-    @property
-    def height(self):
-        return self._height
-
-    @height.setter
-    def height(self, y):
-        self._height = y
-
-    def get_current_coordinates(self, subjects):
-
-        return np.array([[p.get_particle_component().position_x for p in subjects],
-                         [p.get_particle_component().position_y for p in subjects]])
-
-    def move_guys(self, i):
-        self._box_of_particles.move_guys(i)
 
     def get_init_func(self):
 

@@ -6,25 +6,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from models.ConfigureMe import MainConfiguration, Theme
 from views.PLT.Simulation import ConcreteSimulation
 from views.Tkinter.SimulationObservers import TKAreaChart, TKStats
-
-
-class AbstractFrame(Frame):
-    def __init__(self, root, config=MainConfiguration()):
-        self.config = config
-        self.dim_dict = {"width": (self.config.get_frame_dimensions_of(self.__class__.__name__))[0],
-                         "height": (self.config.get_frame_dimensions_of(self.__class__.__name__))[1]}
-        self.frame_settings = self.config.FRAME_SETTINGS[self.__class__.__name__]
-        super().__init__(root, bg=config.DEFAULT_BG, **self.dim_dict,
-                         **config.FRAME_PADDING)
-        self.components = []
-        self.grid_kwargs = self.frame_settings["grid_kwargs"]
-
-    def grid(self, **kwargs):
-        if len(kwargs) == 0:
-            super().grid(**self.grid_kwargs)
-        else:
-            super().grid(kwargs)
-
+from views.AbstractClasses import AbstractFrame
 
 class MasterHeaderFrame(AbstractFrame):
     def __init__(self, root):
