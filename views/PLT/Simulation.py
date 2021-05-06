@@ -131,7 +131,6 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
 
             self.ax.lines[6].set_data(*infected_coords)
             self.ax.lines[7].set_data(*infected_coords)
-            print(len(self.ax.lines))
             # self._box_of_particles    .print_counts()
             return self.ax.lines
 

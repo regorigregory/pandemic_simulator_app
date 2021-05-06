@@ -101,9 +101,6 @@ class SimulationParametersUIConfig(object):
                                                   "What ratio of subjects comply with restrictions:",
                                                   [0, 1]]
 
-            self.general["LOCKDOWN_AFTER"] = ["Scale",
-                                              "Start of the lockdown after the first infection (days):",
-                                              [0, 100]]
 
 
             self.general["COMMUNITIES_VISIT_CHANCE"] = ["Scale",
@@ -130,7 +127,6 @@ class MainConfiguration(object):
             # general settings
 
             self.NUMBER_OF_THREADS = 3
-            self.FRAME_MULTIPLIER = 5
             self.SOCIAL_DISTANCING_MODE = False
             self.QUARANTINE_MODE = False
             self.LOCKDOWN_MODE = False
@@ -149,7 +145,7 @@ class MainConfiguration(object):
             self.SUBJECT_NUMBER = 200
             self.SUBJECT_SIZE = 2
             self.SUBJECT_INITIAL_INFECTION_RATIO = 0.05
-            self.SUBJECT_INFECTION_RADIUS = 10
+            self.SUBJECT_INFECTION_RADIUS = 6
             self.SUBJECT_CHANCE_OF_INFECTION = 0.8
             self.SUBJECT_RECOVERY_TIME = 30
             self.SUBJECT_INCUBATION_PERIOD = 3

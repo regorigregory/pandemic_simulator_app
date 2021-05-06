@@ -77,8 +77,8 @@ class DefaultContainer(AbstractContainerOfSubjects):
     def __init__(self):
         super().__init__()
         self.subjects_in_cells = []
-        self.rows = 2
-        self.columns = 2
+        self.rows = 3
+        self.columns = 3
         self.cell_count = self.rows * self.columns
         self.init_cells()
 
@@ -103,14 +103,14 @@ class DefaultContainer(AbstractContainerOfSubjects):
         for i in range(0, limit):
             j = 0
             position = AbstractContainerOfSubjects.get_evenly_spaced_coordinates(i, n_of_subjects=limit, bounds = self.config.get_particle_movement_bounds())
-            s = constructor(position = position)
+            s = constructor(position=position)
 
             self.contents.add(s)
 
             self.add_subject_to_cell(s, self.subjects_in_cells)
 
-
     def add_subject_to_cell(self, s: Subject, cells: list[set[Subject]] = None):
+
         subject_radius = self.config.SUBJECT_SIZE + self.config.SUBJECT_INFECTION_RADIUS
         left = int((s.get_particle_component().position_vector[0] - subject_radius)
                    / (self.config.MAIN_CANVAS_SIZE[0] / self.columns))
@@ -120,11 +120,17 @@ class DefaultContainer(AbstractContainerOfSubjects):
                      / (self.config.MAIN_CANVAS_SIZE[1] / self.rows))
         top = int((s.get_particle_component().position_vector[1] + subject_radius) / (
                 self.config.MAIN_CANVAS_SIZE[1] / self.rows))
+
+        top = top if top < self.rows else self.rows-1
+        bottom = bottom if bottom >= 0 else 0
+        right = right if right < self.columns else self.columns - 1
+        left = left if left >= 0 else 0
+
         try:
-            cells[left][top].add(s)
-            cells[right][top].add(s)
-            cells[left][top].add(s)
-            cells[right][bottom].add(s)
+            cells[top][left].add(s)
+            cells[top][right].add(s)
+            cells[bottom][left].add(s)
+            cells[bottom][right].add(s)
         except:
             print("Oooops")
 
@@ -132,15 +138,13 @@ class DefaultContainer(AbstractContainerOfSubjects):
     def move_guys(self, timestamp):
 
         self.init_counts()
-        new_cells = [[set(), set()], [set(), set()]]
+        new_cells = [[set() for _ in range(self.columns)] for _ in range(self.rows)]
         self.r_rate = 0
 
         frames_per_day = self.config.get_frames_per_day()
         count_r = False
         if timestamp % frames_per_day == 0:
             count_r = True
-            print("Going to count r!")
-
         for row in self.subjects_in_cells:
             for column in row:
                 x_sorted = sorted(column, key=lambda s: s.get_particle_component().position_x)
@@ -220,7 +224,6 @@ class CommunitiesContainer(AbstractContainerOfSubjects):
         count_r = False
         if timestamp % frames_per_day == 0:
             count_r = True
-            print("Going to count r!")
 
         for cell in self.subjects_in_cells:
             x_sorted = sorted(cell, key=lambda s: s.get_particle_component().position_x)
