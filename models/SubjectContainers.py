@@ -57,7 +57,9 @@ class AbstractContainerOfSubjects(ABC):
         h = bounds[1, 1] - bounds[1, 0]
         n_x = ((w / h) * n + (w - h) ** 2 / (4 * (h ** 2))) ** 0.5 - (w - h) / (2 * h)
         n_y = n / n_x
-        spacing = h / (n_y - 1)
+        divisor = (n_y - 1)
+        divisor = divisor if (n_y - 1) > 0 else 1
+        spacing = h / divisor
         return dict(n_per_column=abs(n_x), n_per_row=abs(n_y), spacing=abs(spacing), w_h_ratio = w/h)
 
     @staticmethod
@@ -169,7 +171,9 @@ class DefaultContainer(AbstractContainerOfSubjects):
                         self.r_rate += subject.estimate_total_infections(timestamp)
 
         if count_r:
-            self.r_rate /= len(self.counts["INFECTED"]) + len(self.counts["ASYMPTOMATIC"])
+            divisor = len(self.counts["INFECTED"]) + len(self.counts["ASYMPTOMATIC"])
+
+            self.r_rate = self.r_rate / divisor if divisor > 0 else 0
         self.subjects_in_cells = new_cells
 
 
@@ -238,7 +242,7 @@ class CommunitiesContainer(AbstractContainerOfSubjects):
                 else:
                     if not subject.travelling:
                         chance = np.random.uniform(0, 1)
-                        if chance < self.config.COMMUNITIES_VISIT_CHANCE:
+                        if chance < self.config.COMMUNITIES_VISIT_CHANCE/100:
                             self._community_handler.set_direction_to_destination(subject)
                             subject.get_particle_component().update_location_guided(timestamp)
                         else:
@@ -257,7 +261,9 @@ class CommunitiesContainer(AbstractContainerOfSubjects):
                 if count_r:
                     self.r_rate += subject.estimate_total_infections(timestamp)
         if count_r:
-            self.r_rate /= len(self.counts["INFECTED"]) + len(self.counts["ASYMPTOMATIC"])
+            divisor = len(self.counts["INFECTED"]) + len(self.counts["ASYMPTOMATIC"])
+
+            self.r_rate = self.r_rate / divisor if divisor > 0 else 0
         self.subjects_in_cells = new_cells
 
 

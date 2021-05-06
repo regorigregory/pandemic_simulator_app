@@ -71,7 +71,7 @@ class Particle:
 
     @velocity_vector.setter
     def velocity_vector(self, values):
-        self._velocity_vector = np.array(values) / self.config.FRAMES_PER_SECOND
+        self._velocity_vector = np.array(values) / self.config.get_frames_per_day()
 
     @property
     def velocity_x(self):
@@ -93,7 +93,7 @@ class Particle:
         if self.last_location_update == timestamp:
             return
         self.last_location_update = timestamp
-        self.position_vector = self.position_vector + self.velocity_vector * rate_of_change
+        self.position_vector = self.position_vector + self.velocity_vector * self.config.SUBJECT_VELOCITY_MULTIPLIER
         self.bounce_back_if_needed()
 
     def update_location_guided(self, timestamp, rate_of_change=1) -> None:

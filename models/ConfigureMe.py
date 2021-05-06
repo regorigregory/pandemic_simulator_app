@@ -74,8 +74,9 @@ class SimulationParametersUIConfig(object):
                                               [1, 300]]
             self.general["DAYS_PER_MINUTE"] = ["Scale",
                                                "Days per minute:",
-                                               [1, 60]]
-            self.general["SUBJECT_VELOCITY"] = ["Scale", "The maximum movement speed of a subject per second:", [10, 500]]
+                                               [1, 120]]
+            self.general["SUBJECT_VELOCITY_MULTIPLIER"] = ["Scale",
+                                                "The maximum movement speed of a subject per second:", [1, 100]]
 
             self.general["SUBJECT_INITIAL_INFECTION_RATIO"] = ["Scale",
                                                                "The ratio of the initially infected subjects:",
@@ -150,7 +151,8 @@ class MainConfiguration(object):
             self.SUBJECT_RECOVERY_TIME = 30
             self.SUBJECT_INCUBATION_PERIOD = 3
             self.SUBJECT_COMPLIANCE = 1
-            self.SUBJECT_VELOCITY = 100
+            self.SUBJECT_VELOCITY = 10
+            self.SUBJECT_VELOCITY_MULTIPLIER = 10
             self.SUBJECT_TYPE = SubjectTypes.SUBJECT
 
 
@@ -160,7 +162,7 @@ class MainConfiguration(object):
             self.COMMUNITIES_ROWS = 3
             self.COMMUNITIES_COLUMNS = 3
 
-            self.COMMUNITIES_VISIT_CHANCE = 0.001
+            self.COMMUNITIES_VISIT_CHANCE = 0.01
 
             # Layout configuration
 

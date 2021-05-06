@@ -22,7 +22,7 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
         self.ani = None
         self.fig = plt.figure(figsize=(self.width / self.DPI, self.height / self.DPI), dpi=self.DPI)
         self.ax = self.fig.add_subplot()
-
+        self.days = 0
         self.ax.set_facecolor(Theme().plot_bg)
 
         self.ax.set_xticks([])
@@ -90,12 +90,13 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
         return func
 
     def get_animation_function(self):
-        frames_per_day = self.config.get_frames_per_day()
 
         def func(i):
+            frames_per_day = self.config.get_frames_per_day()
+
             self.move_guys(i)
             if i % frames_per_day == 0 and i != 0:
-                day = i / frames_per_day
+                self.days += 1
 
                 r_rate = self._box_of_particles.r_rate
                 try:
@@ -106,7 +107,7 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
                 r_rate = "{0:.2f}".format(r_rate)
                 r_growth = "{0:.2f}%".format(r_growth*100)
                 self.notify(
-                    {"DAY": int(day), "R_RATE": r_rate, "R_GROWTH": r_growth})
+                    {"DAY": int(self.days), "R_RATE": r_rate, "R_GROWTH": r_growth})
 
             self.notify(self._box_of_particles.counts)
 
