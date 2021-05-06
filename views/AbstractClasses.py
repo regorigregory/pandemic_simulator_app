@@ -35,7 +35,7 @@ class AbstractSimulation(ABC):
 
     def get_current_coordinates(self, subjects):
         return np.array([[p.get_particle_component().position_x for p in subjects],
-                         [p.get_particle_component().position_y for p in subjects]])
+                         [p.get_particle_component().position_y for p in subjects]]).astype(int)
 
     def move_guys(self, i):
         self._box_of_particles.move_guys(i)

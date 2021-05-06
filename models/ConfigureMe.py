@@ -147,12 +147,12 @@ class MainConfiguration(object):
             # subject settings
 
             self.SUBJECT_NUMBER = 200
-            self.SUBJECT_SIZE = 4
-            self.SUBJECT_INITIAL_INFECTION_RATIO = 0.5
-            self.SUBJECT_INFECTION_RADIUS = 5
+            self.SUBJECT_SIZE = 2
+            self.SUBJECT_INITIAL_INFECTION_RATIO = 0.05
+            self.SUBJECT_INFECTION_RADIUS = 10
             self.SUBJECT_CHANCE_OF_INFECTION = 0.8
             self.SUBJECT_RECOVERY_TIME = 30
-            self.SUBJECT_INCUBATION_PERIOD = 15
+            self.SUBJECT_INCUBATION_PERIOD = 3
             self.SUBJECT_COMPLIANCE = 1
             self.SUBJECT_VELOCITY = 100
             self.SUBJECT_TYPE = SubjectTypes.SUBJECT

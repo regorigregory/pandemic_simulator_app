@@ -23,7 +23,7 @@ class Subject:
         self.quarantine_mode = False
         self.travelling = False
         self.cell_id = -1
-
+        self.total_sickness_time = self.config.SUBJECT_INCUBATION_PERIOD + self.config.SUBJECT_RECOVERY_TIME
         self._infection_radius = Subject.set_random_attribute_safely(self.config.SUBJECT_INFECTION_RADIUS)
         self.frames_per_day = self.config.get_frames_per_day()
         self._recovery_time = self.config.SUBJECT_RECOVERY_TIME * self.frames_per_day
@@ -97,8 +97,7 @@ class Subject:
                      or other_status == InfectionStatuses.INFECTED)
                 and self.get_infection_probability() >= np.random.uniform()):
             self._infect_me(timestamp)
-            self._last_checkup = self._last_checkup - 1
-            return self.get_infection_status(timestamp) == InfectionStatuses.ASYMPTOMATIC
+            return True
         return False
 
     def _infect_me(self, timestamp) -> None:
@@ -108,6 +107,16 @@ class Subject:
 
     def increment_infected_count(self):
         self.n_infected += 1
+
+    def estimate_total_infections(self, timestamp: int) -> float:
+        current_status = self.get_infection_status(timestamp)
+        if current_status == InfectionStatuses.SUSCEPTIBLE or current_status == InfectionStatuses.IMMUNE:
+            return 0
+        span = (timestamp - self._got_infected_at)
+        if span == 0:
+            span = 1
+        return ((self.n_infected / span)
+                * self.total_sickness_time)
 
     def encounter_with(self, timestamp, other: Subject) -> None:
         if self.infect_me_if_you_can(timestamp, other):

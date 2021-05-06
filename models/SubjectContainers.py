@@ -20,6 +20,7 @@ class AbstractContainerOfSubjects(ABC):
         self.counts = dict()
         self.count_keys = ["SUSCEPTIBLE", "ASYMPTOMATIC", "INFECTED", "IMMUNE"]
         self.init_counts()
+        self.r_rate = 0
 
     @abstractmethod
     def reset(self) -> None:
@@ -128,6 +129,14 @@ class DefaultContainer(AbstractContainerOfSubjects):
 
         self.init_counts()
         new_cells = [[set(), set()], [set(), set()]]
+        self.r_rate = 0
+
+        frames_per_day = self.config.get_frames_per_day()
+        count_r = False
+        if timestamp % frames_per_day == 0:
+            count_r = True
+            print("Going to count r!")
+
         for row in self.subjects_in_cells:
             for column in row:
                 x_sorted = sorted(column, key=lambda s: s.get_particle_component().position_x)
@@ -145,7 +154,10 @@ class DefaultContainer(AbstractContainerOfSubjects):
                     self.add_subject_to_cell(subject, new_cells)
 
                     self.counts[subject.get_infection_status(timestamp).name].add(subject)
-
+                    if count_r:
+                        self.r_rate += subject.estimate_total_infections(timestamp)
+        if count_r:
+            self.r_rate /= len(self.counts["INFECTED"]) + len(self.counts["ASYMPTOMATIC"])
         self.subjects_in_cells = new_cells
 
 
@@ -194,6 +206,13 @@ class CommunitiesContainer(AbstractContainerOfSubjects):
 
         self.init_counts()
         new_cells = [set() for _ in range(self.cell_count)]
+        self.r_rate = 0
+
+        frames_per_day = self.config.get_frames_per_day()
+        count_r = False
+        if timestamp % frames_per_day == 0:
+            count_r = True
+            print("Going to count r!")
 
         for cell in self.subjects_in_cells:
             x_sorted = sorted(cell, key=lambda s: s.get_particle_component().position_x)
@@ -219,6 +238,10 @@ class CommunitiesContainer(AbstractContainerOfSubjects):
 
                 self.counts[subject.get_infection_status(timestamp).name].add(subject)
                 new_cells[subject.cell_id].add(subject)
+                if count_r:
+                    self.r_rate += subject.estimate_total_infections(timestamp)
+        if count_r:
+            self.r_rate /= len(self.counts["INFECTED"]) + len(self.counts["ASYMPTOMATIC"])
         self.subjects_in_cells = new_cells
 
 
