@@ -143,7 +143,7 @@ class MainConfiguration(object):
             self.CENTRAL_VISIT_CHANCE = 1
             self.CENTRAL_SUBJECT_NUMBER = 100
             self.QUARANTINE_APPROACHING_SPEED = 500
-
+            self.COUNT_R_RATE = True
             # subject settings
 
             self.SUBJECT_NUMBER = 200

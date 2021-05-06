@@ -115,8 +115,7 @@ class Subject:
         span = (timestamp - self._got_infected_at)
         if span == 0:
             span = 1
-        return ((self.n_infected / span)
-                * self.total_sickness_time)
+        return self.total_sickness_time * self.frames_per_day * self.n_infected / span
 
     def encounter_with(self, timestamp, other: Subject) -> None:
         if self.infect_me_if_you_can(timestamp, other):
