@@ -32,7 +32,7 @@ class SimulationFrame(AbstractFrame):
         self.canvas = FigureCanvasTkAgg(self.ViewBox.fig, self)
 
         self.canvas.get_tk_widget().grid(row=0, column=0, sticky="n", ipady=0, pady=0)
-        self.ViewBox.start_animation()
+        #self.ViewBox.start_animation()
 
     def get_animated_object(self):
         return self.ViewBox

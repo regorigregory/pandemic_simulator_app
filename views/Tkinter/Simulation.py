@@ -71,7 +71,7 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
         self.canvas.move(self.circles[subject.id][0], *delta_position.tolist())
         self.canvas.move(self.circles[subject.id][1], *delta_position.tolist())
 
-    def start_animation(self):
+    def start(self):
         frame = 0
         while True:
             frame += 1
@@ -113,7 +113,7 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
         self._box_of_particles = DefaultContainer() if self.config.COMMUNITY_MODE.get() is not True\
             else CommunitiesContainer()
         self.canvas.axes[0].clear()
-        self.start_animation()
+        self.start()
         self.notify(None)
         self.canvas.canvas.draw()
 
@@ -134,6 +134,6 @@ if __name__ == "__main__":
     window.geometry(MainConfiguration().get_main_canvas_size_tkinter())
 
     sim = ConcreteSimulation(window)
-    window.after(0, sim.start_animation())
+    window.after(0, sim.start())
     window.mainloop()
     pass

@@ -210,8 +210,8 @@ class MainConfiguration(object):
 
             # scenario and buttons config
 
-            self.BUTTONS_CONFIG = {"PAUSE": dict(text="Pause", **Theme().button_attributes),
-                                   "RESET": dict(text="Reset", **Theme().button_attributes)}
+            self.BUTTONS_CONFIG = {"START": dict(text="Start", **Theme().button_attributes),
+                                   "STOP": dict(text="Stop", **Theme().button_attributes)}
 
             self.SCENARIO_CONFIG = {"SIMPLE": ["Button", dict(text="Simple", **Theme().scenario_attributes)],
                                     "CENTRAL": ["Button", dict(text="Central Location", **Theme().scenario_attributes)],

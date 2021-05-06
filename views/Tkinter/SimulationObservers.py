@@ -49,6 +49,8 @@ class TKStats(Observer):
 
         if data:
             for k, v in data.items():
+                if k == "R_GROWTH":
+                    stop = True
                 data = len(v) if isinstance(v, set) or isinstance(v, list) else v
 
                 self.data_value[k].configure({"text": data})

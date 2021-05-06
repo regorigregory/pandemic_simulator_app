@@ -19,6 +19,8 @@ class AbstractContainerOfSubjects(ABC):
         self._infection_radius = self.config.SUBJECT_INFECTION_RADIUS + self.config.SUBJECT_SIZE
         self.counts = dict()
         self.count_keys = ["SUSCEPTIBLE", "ASYMPTOMATIC", "INFECTED", "IMMUNE"]
+        self.positions_by_status = {v: np.empty([0,2]) for v in self.count_keys}
+
         self.init_counts()
         self.r_rate = 0
 
@@ -38,6 +40,8 @@ class AbstractContainerOfSubjects(ABC):
         for k in self.count_keys:
             if exception is None or k not in exception:
                 self.counts[k] = set()
+        self.positions_by_status = {v: np.empty([0,2]) for v in self.count_keys}
+
 
     def count_them(self, timestamp=0):
         for s in self.contents:
@@ -152,10 +156,14 @@ class DefaultContainer(AbstractContainerOfSubjects):
                         subject.get_particle_component().update_location(timestamp)
 
                     self.add_subject_to_cell(subject, new_cells)
-
-                    self.counts[subject.get_infection_status(timestamp).name].add(subject)
+                    status_key = subject.get_infection_status(timestamp).name
+                    """self.positions_by_status[status_key] = \
+                        np.concatenate((self.positions_by_status[status_key], subject.get_particle_component().position_vector.reshape(1 , 2)), axis = 0 )
+                    """
+                    self.counts[status_key].add(subject)
                     if count_r:
                         self.r_rate += subject.estimate_total_infections(timestamp)
+
         if count_r:
             self.r_rate /= len(self.counts["INFECTED"]) + len(self.counts["ASYMPTOMATIC"])
         self.subjects_in_cells = new_cells
@@ -236,7 +244,12 @@ class CommunitiesContainer(AbstractContainerOfSubjects):
                     else:
                         self._community_handler.guide_subject_journey(subject, timestamp)
 
-                self.counts[subject.get_infection_status(timestamp).name].add(subject)
+                status_key = subject.get_infection_status(timestamp).name
+                """self.positions_by_status[status_key] = \
+                    np.concatenate(
+                        (self.positions_by_status[status_key], subject.get_particle_component().position_vector),
+                        axis=0)"""
+                self.counts[status_key].add(subject)
                 new_cells[subject.cell_id].add(subject)
                 if count_r:
                     self.r_rate += subject.estimate_total_infections(timestamp)

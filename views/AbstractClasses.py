@@ -14,6 +14,7 @@ class AbstractSimulation(ABC):
         self._marker_radius = config.SUBJECT_SIZE
         self._infection_zone_radius = config.SUBJECT_INFECTION_RADIUS + config.SUBJECT_SIZE
         self._box_of_particles = CommunitiesContainer() if self.config.COMMUNITY_MODE.get() else DefaultContainer()
+
         self.previous_infected = 0
         self.previous_r = 0
 
@@ -49,7 +50,7 @@ class AbstractSimulation(ABC):
         pass
 
     @abstractmethod
-    def start_animation(self):
+    def start(self):
         pass
 
     @abstractmethod

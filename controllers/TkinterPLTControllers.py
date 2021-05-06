@@ -14,16 +14,26 @@ class TkinterButtons(AbstractController):
     def __init__(self, animated_object):
         self.funcs = {}
         self.paused = False
-        self.reset = animated_object.reset
+        self.stop = animated_object.reset
         self.pause = animated_object.pause
         self.resume = animated_object.resume
+        self.start = animated_object.start
 
-        self.funcs[MainConfiguration().BUTTONS_CONFIG["RESET"]["text"]] = self.handle_clear
 
-        self.funcs[MainConfiguration().BUTTONS_CONFIG["PAUSE"]["text"]] = self.handle_pause
+        self.funcs["Start"] = self.handle_start
 
-    def handle_pause(self, event):
-        if(self.paused):
+        self.funcs[MainConfiguration().BUTTONS_CONFIG["START"]["text"]] = self.handle_start
+
+        self.funcs[MainConfiguration().BUTTONS_CONFIG["STOP"]["text"]] = self.handle_clear
+        self.running = False
+
+    def handle_start(self, event):
+        if not self.running:
+            self.stop()
+            self.ui_elements[0].configure(text="Pause")
+            self.running = True
+            self.start()
+        elif self.paused:
             self.resume()
             self.paused = False
             event.widget.configure(text = "Pause")
@@ -34,7 +44,10 @@ class TkinterButtons(AbstractController):
 
 
     def handle_clear(self, event):
-        self.reset()
+        self.stop()
+        self.paused = False
+        self.running = False
+        self.ui_elements[0].configure(text="Start")
 
     def bind_functions(self, buttons):
         self.ui_elements = buttons
