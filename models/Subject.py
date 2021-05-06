@@ -12,10 +12,11 @@ from models.Particle import Particle
 class Subject:
     _subject_counter = 0
 
-    def __init__(self, boundaries=None, position = None):
+    def __init__(self, boundaries=None, position=None):
         Subject._subject_counter += 1
-        self.id = Subject._subject_counter
 
+        self.id = Subject._subject_counter
+        self.n_infected = 0
         self.config = MainConfiguration()
         self.on_my_way_to_quarantine = False
         self.already_in_quarantine = False
@@ -96,15 +97,23 @@ class Subject:
                      or other_status == InfectionStatuses.INFECTED)
                 and self.get_infection_probability() >= np.random.uniform()):
             self._infect_me(timestamp)
+            self._last_checkup = self._last_checkup - 1
+            return self.get_infection_status(timestamp) == InfectionStatuses.ASYMPTOMATIC
+        return False
 
     def _infect_me(self, timestamp) -> None:
         if self.get_infection_status(timestamp) == InfectionStatuses.SUSCEPTIBLE:
             self._infection_status = InfectionStatuses.ASYMPTOMATIC
             self._got_infected_at = timestamp
 
-    def encounter_with(self, timestamp, other) -> None:
-        self.infect_me_if_you_can(timestamp, other)
-        other.infect_me_if_you_can(timestamp, self)
+    def increment_infected_count(self):
+        self.n_infected += 1
+
+    def encounter_with(self, timestamp, other: Subject) -> None:
+        if self.infect_me_if_you_can(timestamp, other):
+            other.increment_infected_count()
+        if other.infect_me_if_you_can(timestamp, self):
+            self.increment_infected_count()
 
     def get_behavioural_distance(self):
         if self.am_i_compliant():

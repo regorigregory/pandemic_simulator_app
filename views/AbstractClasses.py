@@ -13,7 +13,7 @@ class AbstractSimulation(ABC):
         self.width, self.height = config.get_frame_dimensions_of("SimulationFrame")
         self._marker_radius = config.SUBJECT_SIZE
         self._infection_zone_radius = config.SUBJECT_INFECTION_RADIUS + config.SUBJECT_SIZE
-        #self._box_of_particles = CommunitiesContainer() if self.config.COMMUNITY_MODE.get() else DefaultContainer()
+        self._box_of_particles = CommunitiesContainer() if self.config.COMMUNITY_MODE.get() else DefaultContainer()
         self.previous_infected = 0
         self.previous_r = 0
 

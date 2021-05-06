@@ -1,6 +1,6 @@
 from __future__ import annotations
 import matplotlib.patches as patches
-
+import time
 import numpy as np
 from tkinter import Canvas, Tk
 
@@ -8,47 +8,78 @@ from models.ConfigureMe import MainConfiguration, Theme
 from models.SubjectContainers import DefaultContainer, CommunitiesContainer
 from models.Subject import Subject
 from views.AbstractClasses import ObserverClient, AbstractSimulation
+from views.TkinterPLTFrames import SimulationFrame
+
 debug = False
 
 
 class ConcreteSimulation(AbstractSimulation, ObserverClient):
 
-    def __init__(self, root, config=MainConfiguration()):
+    def __init__(self, root):
         super().__init__()
         self.master = root
 
-        self.fig = Canvas(root, width=self.width, height=self.height, bg=self.theme.plot_bg)
-        self.fig.grid()
+        self.canvas = Canvas(root, width=self.width, height=self.height, bg=self.theme.plot_bg)
+        print("Canvas size: {}, {}".format(self.width, self.height))
+        self.canvas.grid()
         self.previous_infected = 0
 
         self.previous_r = 0
         self.circles = dict()
+        self.init_simulation()
+
+
+    def init_simulation(self):
+        if self.config.QUARANTINE_MODE:
+            ConcreteSimulation.draw_quarantine_boundaries(self.canvas)
+
+        if self.config.COMMUNITY_MODE:
+            ConcreteSimulation.draw_community_boundaries_on_ax(self.canvas)
+        else:
+            ConcreteSimulation.draw_main_simulation_canvas_movement_bounds(self.canvas)
+        for s in self._box_of_particles.contents:
+            self.draw_subject_with_radius(s)
 
     def draw_subject_with_radius(self, subject: Subject) -> None:
         sid = subject.id
-        particle_position = subject.get_particle_component().position_vector
+        particle_position = subject.get_particle_component().position_vector.astype(int)
         infection_status = subject.get_infection_status(0).name
         current_colour = getattr(Theme(), infection_status.lower())
 
         core_radius = self.config.SUBJECT_SIZE
         infection_radius = self.config.SUBJECT_INFECTION_RADIUS
+        core_ellipse_bounds = [(particle_position + core_radius).tolist(), (particle_position - core_radius ).tolist()]
+        infection_ellipse_bounds = [(particle_position - core_radius - infection_radius).tolist(),
+                                    (particle_position + core_radius + infection_radius).tolist()]
 
-        o1 = self.fig.create_oval((particle_position-core_radius).tolist(),
-                                (particle_position+core_radius).tolist(),
-                                fill=current_colour,
-                                outline = current_colour)
-        o2 = self.fig.create_oval((particle_position-core_radius-infection_radius).tolist(),
-                                (particle_position+core_radius+infection_radius).tolist(),
-                                outline=current_colour)
+        o1 = self.canvas.create_oval(*core_ellipse_bounds,
+                                     fill=current_colour,
+                                     outline = current_colour)
+        o2 = self.canvas.create_oval(*infection_ellipse_bounds,
+                                     outline=current_colour)
+
+
         self.circles[sid] = [o1, o2]
         pass
 
-    def update_subject_location_on_canvas(self, subject):
-        subject_location = subject.get_particle_component().position_vector
-        self.fig.move(self.circles[subject.id][0], *subject_location.tolist())
-        self.fig.move(self.circles[subject.id][1], *subject_location.tolist())
-        self.fig.update()
+    def update_subject_location_on_canvas(self, subject, frame):
 
+        old_position = subject.get_particle_component().position_vector
+        subject.get_particle_component().update_location(frame)
+        delta_position = subject.get_particle_component().position_vector - old_position
+        print("{}, {}".format(*delta_position))
+        self.canvas.move(self.circles[subject.id][0], *delta_position.tolist())
+        self.canvas.move(self.circles[subject.id][1], *delta_position.tolist())
+
+    def start_animation(self):
+        frame = 0
+        while True:
+            frame += 1
+
+            #time.sleep(0.001)
+            for s in self._box_of_particles.contents:
+                self.update_subject_location_on_canvas(s, frame)
+            self.canvas.update()
 
     @staticmethod
     def draw_community_boundaries_on_ax(ax):
@@ -69,19 +100,9 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
     def draw_main_simulation_canvas_movement_bounds(ax):
         dims = MainConfiguration().get_particle_movement_border_bounds()
         ax.create_rectangle(dims[0][0], dims[1][0], dims[0][1], dims[1][1], outline=Theme().infected, dash=(4, 2))
-
-
-    def start_animation(self):
-        pass
-        """init_func = self.get_init_func()
-        animation_function = self.get_animation_function()
-        self.ani = FuncAnimation(self.fig,
-                                 animation_function,
-                                 init_func=init_func,
-                                 interval=1000 / self.config.FRAMES_PER_SECOND,
-                                 blit=True)
-        return self.ani"""
-
+        ax.create_text(dims[0][1]-20, dims[1][1]-20,
+                                       fill=Theme().infected,
+                                       font="Courier 8", text="({:.2f},{:.2f})".format(dims[0][1], dims[1][1]))
     def reset(self):
         self._marker_radius = MainConfiguration().SUBJECT_SIZE
         self._infection_zone_radius = MainConfiguration().SUBJECT_INFECTION_RADIUS + MainConfiguration().SUBJECT_SIZE
@@ -91,10 +112,10 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
         #self.ani = None
         self._box_of_particles = DefaultContainer() if self.config.COMMUNITY_MODE.get() is not True\
             else CommunitiesContainer()
-        self.fig.axes[0].clear()
+        self.canvas.axes[0].clear()
         self.start_animation()
         self.notify(None)
-        self.fig.canvas.draw()
+        self.canvas.canvas.draw()
 
     def resume(self):
         self.ani.event_source.start()
@@ -102,26 +123,17 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
     def pause(self):
         self.ani.event_source.stop()
 
-
-
-
 if __name__ == "__main__":
+    import ctypes
+
     window = Tk()
     window.title("Pandemic Simulator")
     window.configure({"bg": Theme().default_bg})
-
     MainConfiguration().MAIN_CANVAS_SIZE = [window.winfo_screenwidth(), window.winfo_screenheight()]
 
     window.geometry(MainConfiguration().get_main_canvas_size_tkinter())
+
     sim = ConcreteSimulation(window)
-    sub = Subject()
-    print(sub.get_particle_component().position_vector)
-    sub.get_particle_component().update_location(10)
-    print(sub.get_particle_component().position_vector)
-
-    sim.draw_subject_with_radius(sub)
-    ConcreteSimulation.draw_community_boundaries_on_ax(sim.fig)
-    window.after(1, sim.update_subject_location_on_canvas(sub))
-
+    window.after(0, sim.start_animation())
     window.mainloop()
     pass
