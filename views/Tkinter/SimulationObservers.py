@@ -73,8 +73,39 @@ class TKAreaChart(Observer):
         self.DPI = self.config.DPI
         self.frames = 0
         self.init_log()
+        self.y_axis_width = 50
+        self.are_chart_height = self.height-20
+        self.fig = tk.Canvas(root,
+                             width=self.width - self.y_axis_width,
+                             height=self.are_chart_height,
+                             bg=self.theme.default_bg,
+                             highlightthickness=0,
+                             bd=0,
+                             relief='ridge')
+        self.y_axis = tk.Canvas(root,
+                                width=self.y_axis_width,
+                                height=self.height,
+                                bg=self.theme.default_bg,
+                                highlightthickness=0,
+                                bd=0,
+                                relief='ridge')
 
-        self.fig = tk.Canvas(root, width=self.width, height=self.height, bg=self.theme.default_bg, highlightthickness=0, bd=0, relief='ridge')
+        self.init_y_axis()
+
+    def init_y_axis(self):
+        offset = 10
+
+        ax_height = self.height - offset * 2
+        self.y_axis.create_line(0, offset, 0, self.height - offset, fill=self.theme.infected)
+
+        for f in [1, 0.75, 0.5, 0.25, 0]:
+
+            self.y_axis.create_text(30, offset + (1-f)*ax_height, text="{:.0f}%".format(f*100), fill=self.theme.infected)
+
+            self.y_axis.create_line(0, offset + (1-f) * ax_height, 10, offset + (1-f) * ax_height, fill=self.theme.infected)
+
+
+
 
     @property
     def width(self):
@@ -106,7 +137,7 @@ class TKAreaChart(Observer):
 
     def get_area_chart_strip(self, key):
         width_frame_ratio = self._width / self.frames
-        height_frame_ratio = self._height / self.subject_number
+        height_frame_ratio = self.are_chart_height / self.subject_number
 
         point_coordinates = np.array(self.log[key])
 
@@ -121,10 +152,10 @@ class TKAreaChart(Observer):
         infected_points = self.get_area_chart_strip("INFECTED")
         immune_points = self.get_area_chart_strip("IMMUNE")
 
-        immune_points[:, 1] = self._height - (immune_points[:, 1] + infected_points[:, 1] + asymptomatic_points[:, 1])
+        immune_points[:, 1] = self.are_chart_height - (immune_points[:, 1] + infected_points[:, 1] + asymptomatic_points[:, 1])
 
-        infected_points[:, 1] = self._height - (infected_points[:, 1] + asymptomatic_points[:, 1])
-        asymptomatic_points[:, 1] = self._height - asymptomatic_points[:, 1]
+        infected_points[:, 1] = self.are_chart_height - (infected_points[:, 1] + asymptomatic_points[:, 1])
+        asymptomatic_points[:, 1] = self.are_chart_height - asymptomatic_points[:, 1]
 
         immune_points = immune_points.tolist()
         infected_points = infected_points.tolist()

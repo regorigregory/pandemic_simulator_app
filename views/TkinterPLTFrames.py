@@ -42,7 +42,10 @@ class GraphFrame(AbstractFrame):
         super().__init__(root)
         self.ViewBox = TKAreaChart(root=self)
         self.canvas = self.ViewBox.fig
-        self.canvas.grid(row=1, column=0, sticky="we")
+        self.axis = self.ViewBox.y_axis
+        self.canvas.grid(row=1, column=0, sticky="ne", pady=10, padx=10)
+        self.axis.grid(row=1, column=1, sticky="we")
+
 
 
 class IdentifiableScale(tk.Scale):

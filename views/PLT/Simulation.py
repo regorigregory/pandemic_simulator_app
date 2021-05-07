@@ -31,6 +31,9 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
         self.fig.set_edgecolor(Theme().plot_bg)
         self.ax.set_xticks([])
         self.ax.set_yticks([])
+        self.last_core_radius = MainConfiguration().SUBJECT_SIZE * 2
+        self.last_infection_radius = (MainConfiguration().SUBJECT_INFECTION_RADIUS + MainConfiguration().SUBJECT_SIZE) * 2
+
         ConcreteSimulation.draw_main_simulation_canvas_movement_bounds(self.ax)
 
     def get_init_func(self):
@@ -63,32 +66,32 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
         self.notify({"DAY": 0, "R_RATE": "{:.2f}".format(self.previous_r), "R_GROWTH": "0.0%"})
 
         self.ax.plot([], marker=".",
-                     fillstyle="full", linestyle="", color=Theme().immune, markersize=self._marker_radius * 2)
+                     fillstyle="full", linestyle="", color=Theme().immune, markersize=self.last_core_radius)
 
         self.ax.plot([], marker=".",
                      fillstyle="none", linestyle="", color=Theme().immune,
-                     markersize=self._infection_zone_radius * 2)
+                     markersize=self.last_infection_radius)
 
         # susceptible
         self.ax.plot([], marker=".",
-                     fillstyle="full", linestyle="", color=Theme().susceptible, markersize=self._marker_radius * 2)
+                     fillstyle="full", linestyle="", color=Theme().susceptible, markersize=self.last_core_radius)
 
         self.ax.plot([], marker=".", fillstyle="none", color=Theme().susceptible, linestyle="",
-                     markersize=self._infection_zone_radius * 2)
+                     markersize=self.last_infection_radius)
 
         # asymptomatic
         self.ax.plot([], marker=".",
-                     fillstyle="full", linestyle="", color=Theme().asymptomatic, markersize=self._marker_radius * 2)
+                     fillstyle="full", linestyle="", color=Theme().asymptomatic, markersize=self.last_core_radius)
 
         self.ax.plot([], marker=".", fillstyle="none", color=Theme().asymptomatic, linestyle="",
-                     markersize=self._infection_zone_radius * 2)
+                     markersize=self.last_infection_radius)
         # infected
 
         self.ax.plot([], marker=".",
-                     fillstyle="full", linestyle="", color=Theme().infected, markersize=self._marker_radius * 2)
+                     fillstyle="full", linestyle="", color=Theme().infected, markersize=self.last_core_radius)
 
         self.ax.plot([], marker=".", fillstyle="none", color=Theme().infected, linestyle="",
-                     markersize=self._infection_zone_radius * 2)
+                     markersize=self.last_infection_radius)
 
         def func():
             return self.ax.lines
@@ -130,8 +133,6 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
             self.ax.lines[0].set_data(*immune_coords)
             self.ax.lines[1].set_data(*immune_coords)
 
-            core_radius = MainConfiguration().SUBJECT_SIZE * 2
-            infection_radius = (MainConfiguration().SUBJECT_INFECTION_RADIUS + MainConfiguration().SUBJECT_SIZE) * 2
 
             self.ax.lines[2].set_data(*susceptible_coords)
             self.ax.lines[3].set_data(*susceptible_coords)
@@ -141,21 +142,26 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
 
             self.ax.lines[6].set_data(*infected_coords)
             self.ax.lines[7].set_data(*infected_coords)
+            core_radius = MainConfiguration().SUBJECT_SIZE * 2
+            infection_radius = (MainConfiguration().SUBJECT_INFECTION_RADIUS + MainConfiguration().SUBJECT_SIZE) * 2
 
-            self.ax.lines[0].set_markersize(core_radius)
-            self.ax.lines[1].set_markersize(infection_radius)
+            if core_radius != self.last_core_radius or infection_radius != self.last_infection_radius:
+                self.last_core_radius = core_radius
+                self.last_infection_radius = infection_radius
+                self.ax.lines[0].set_markersize(core_radius)
+                self.ax.lines[1].set_markersize(infection_radius)
 
-            self.ax.lines[0].set_markersize(core_radius)
-            self.ax.lines[1].set_markersize(infection_radius)
+                self.ax.lines[0].set_markersize(core_radius)
+                self.ax.lines[1].set_markersize(infection_radius)
 
-            self.ax.lines[2].set_markersize(core_radius)
-            self.ax.lines[3].set_markersize(infection_radius)
+                self.ax.lines[2].set_markersize(core_radius)
+                self.ax.lines[3].set_markersize(infection_radius)
 
-            self.ax.lines[4].set_markersize(core_radius)
-            self.ax.lines[5].set_markersize(infection_radius)
-            self.ax.lines[6].set_markersize(core_radius)
-            self.ax.lines[7].set_markersize(infection_radius)
-            # self._box_of_particles    .print_counts()
+                self.ax.lines[4].set_markersize(core_radius)
+                self.ax.lines[5].set_markersize(infection_radius)
+                self.ax.lines[6].set_markersize(core_radius)
+                self.ax.lines[7].set_markersize(infection_radius)
+            # self._box_of_particles    .print_counts()"""
             return self.ax.lines
 
         return func

@@ -79,7 +79,7 @@ class SimulationParametersUIConfig(object):
                                                "Days per minute:",
                                                [1, 120]]
             self.general["SUBJECT_VELOCITY_MULTIPLIER"] = ["Scale",
-                                                "Speed multiplier:", [1, 100]]
+                                                "Movement speed multiplier:", [1, 100]]
 
             self.general["SUBJECT_INITIAL_INFECTION_RATIO"] = ["Scale",
                                                                "The ratio of the initially infected subjects:",
@@ -136,7 +136,7 @@ class MainConfiguration(object):
             self.LOCKDOWN_MODE = False
             self.COMMUNITY_MODE = False
             self.DAYS_PER_MINUTE = 60
-            self.FRAMES_PER_SECOND = 30
+            self.FRAMES_PER_SECOND = 60
             self.QUARANTINE_AFTER = 0
             self.ASYMPTOMATIC_RATIO = 1
             self.LOCKDOWN_AFTER = 0

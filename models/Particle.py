@@ -143,8 +143,8 @@ class Particle:
 
             angle = np.arctan2(otherParticle.position_y - particle.position_y,
                                otherParticle.position_x - particle.position_x)
-            u1 = particle.rotate_velocity(angle) * self.config.FRAMES_PER_SECOND
-            u2 = otherParticle.rotate_velocity(angle) * self.config.FRAMES_PER_SECOND
+            u1 = particle.rotate_velocity(angle) * 30
+            u2 = otherParticle.rotate_velocity(angle) * 30
 
             # one dimensional Newtonian
             # since each particle's mass == 1, the equation has been simplified
