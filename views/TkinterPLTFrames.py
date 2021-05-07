@@ -28,9 +28,8 @@ class SimulationFrame(AbstractFrame):
         super().__init__(root)
 
         self.ViewBox = ConcreteSimulation()
-        self.ViewBox.fig.subplots_adjust(left=0, bottom=0.1, right=0.95, top=1, wspace=0, hspace=0)
         self.canvas = FigureCanvasTkAgg(self.ViewBox.fig, self)
-
+        self.canvas.get_tk_widget().configure(bg=Theme().default_bg, highlightthickness=0, bd=0, relief='ridge')
         self.canvas.get_tk_widget().grid(row=0, column=0, sticky="n", ipady=0, pady=0)
         #self.ViewBox.start_animation()
 
@@ -43,7 +42,7 @@ class GraphFrame(AbstractFrame):
         super().__init__(root)
         self.ViewBox = TKAreaChart(root=self)
         self.canvas = self.ViewBox.fig
-        self.canvas.grid(row=1, column=0, sticky="w")
+        self.canvas.grid(row=1, column=0, sticky="we")
 
 
 class IdentifiableScale(tk.Scale):
@@ -52,16 +51,22 @@ class IdentifiableScale(tk.Scale):
         self.my_name_is = my_name
 
 
+class HeaderFrame(tk.Frame):
+    def __init__(self, root, text):
+        super().__init__(root, bg=Theme().darkest_bg)
+        header = tk.Label(self, text=text.upper(), **Theme().header_text_kwargs)
+        header.grid(sticky="w")
+
+
 class ParametersFrame(AbstractFrame):
     def __init__(self, root):
         super().__init__(root)
+        header_frame = HeaderFrame(self, "Simulation settings")
+        canvas = tk.Canvas(self, **self.dim_dict, bg=Theme().default_bg, highlightthickness=0, bd=0, relief='ridge')
 
-        header = tk.Label(self, text="Simulation settings", bg=Theme().default_bg, font=("Courier", 14))
-        canvas = tk.Canvas(self, **self.dim_dict, bg=Theme().default_bg)
+        #scrollbar = Scrollbar(self, orient="vertical", command=canvas.yview)
 
-        scrollbar = Scrollbar(self, orient="vertical", command=canvas.yview)
-
-        scrollable_frame = Frame(canvas, bg=self.config.DEFAULT_BG, width=self.dim_dict["width"])
+        scrollable_frame = Frame(canvas, bg=Theme().default_bg, width=self.dim_dict["width"], pady= 20, highlightthickness=0, bd=0)
 
         scrollable_frame.bind(
             "<Configure>",
@@ -72,16 +77,16 @@ class ParametersFrame(AbstractFrame):
 
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw", width=self.dim_dict["width"])
 
-        canvas.configure(yscrollcommand=scrollbar.set)
+        #canvas.configure(yscrollcommand=scrollbar.set)
         self.sliders = []
         i = j = 0
         for k, v in self.config.PARAMETERS_UI_SETTINGS.general.items():
             _constructor = IdentifiableScale
-            label = tk.Label(scrollable_frame, text=v[1], bg=self.config.DEFAULT_BG)
+            label = tk.Label(scrollable_frame, text=v[1], fg=Theme().default_text, bg=Theme().default_bg, anchor="w", font=("Roboto", 12))
             col = j % 2
             j += 1
 
-            label.grid(row=i, column=col, sticky="we")
+            label.grid(row=i, column=col, sticky="e")
             resolution = 1 / 100 if v[2][1] == 1 else 1
             min_, max_ = v[2]
 
@@ -90,10 +95,13 @@ class ParametersFrame(AbstractFrame):
                                            k,
                                            from_=min_,
                                            to=max_,
-                                           length=self.dim_dict["width"] / 2,
+                                           length=self.dim_dict["width"] / 2 + 10,
                                            resolution=resolution,
                                            orient=tk.HORIZONTAL,
-                                           bg=self.config.DEFAULT_BG)
+                                           fg=Theme().default_text,
+                                           bg=Theme().default_bg,
+                                           highlightthickness=0,
+                                           bd=5)
 
             if "SUBJECT_VELOCITY" == k:
                 config_value = getattr(MainConfiguration(), k)[1]
@@ -106,16 +114,16 @@ class ParametersFrame(AbstractFrame):
             control_element.grid(row=i, column=col, sticky="we")
             self.sliders.append(control_element)
             i += 1
-        header.grid(row=0, column=0, columnspan=2)
-        canvas.grid(row=1, column=1, sticky="nwse")
-        scrollbar.grid(row=1, column=0, sticky="ns")
+        header_frame.grid(row=0, column=0, columnspan=2, sticky="we")
+        canvas.grid(row=1, column=0, sticky="nwse")
+        #scrollbar.grid(row=1, column=0, sticky="ns")
 
 
 class StatsFrame(AbstractFrame):
     def __init__(self, root):
         super().__init__(root)
-        self.header = tk.Label(self, text="Simulation statistics", font=("Courier", 14), bg=Theme().default_bg)
-        self.header.grid(row=0, column=0, columnspan=3)
+        self.header_frame = HeaderFrame(self, "Simulation statistics")
+        self.header_frame.grid(row=0, column=0, columnspan=3, sticky="we")
 
         self.ViewBox = TKStats(self)
 
@@ -184,17 +192,17 @@ class TkinterPLTBuilder:
         # child components
         for f in frames:
             name = f.__name__
-            frame_settings = self.config.FRAME_SETTINGS[name]
+            frame_settings = self.config.GRID_SETTINGS[name]
             parent = self.columns[frame_settings["column"]]
             self.components[name] = f(parent)
-            self.components[name].grid(**frame_settings["grid_kwargs"])
+            self.components[name].grid()
 
         # The plot observing the simulation
         self.components["GraphFrame"].ViewBox.observe(self.components["SimulationFrame"].ViewBox)
         self.components["StatsFrame"].ViewBox.observe(self.components["SimulationFrame"].ViewBox)
 
-        self.columns[0].grid(**self.config.FRAME_SETTINGS["MasterLeftFrame"]["grid_kwargs"])
-        self.columns[1].grid(**self.config.FRAME_SETTINGS["MasterRightFrame"]["grid_kwargs"])
+        self.columns[0].grid(**self.config.GRID_SETTINGS["MasterLeftFrame"]["grid_kwargs"])
+        self.columns[1].grid(**self.config.GRID_SETTINGS["MasterRightFrame"]["grid_kwargs"])
 
     def get_component(self, key):
         if key in list(self.components.keys()):

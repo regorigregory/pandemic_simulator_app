@@ -2,6 +2,7 @@ if __name__ == "__main__":
     from models.ConfigureMe import MainConfiguration, Theme
     from tkinter import Tk
     from views.TkinterPLTFrames import TkinterPLTBuilder
+    from views.Tkinter.MyMenu import MyMenu
     import controllers.TkinterPLTControllers as Controllers
 
     #plt.ioff()
@@ -22,5 +23,6 @@ if __name__ == "__main__":
 
     ButtonsController.bind_functions(view_builder.components["ScenarioFrame"].buttons)
     SlidersController.bind_functions(view_builder.get_component("ParametersFrame").sliders)
-
+    m = MyMenu(window)
+    window.configure(menu = m)
     window.mainloop()

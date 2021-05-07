@@ -41,15 +41,18 @@ class Theme(object):
             self.scenario_attributes = {"bg": self.one, "fg": self.three, "width": 15, "pady": 5, "padx": 5}
             self.checkbox_attributes = {"bg": self.five, "fg": self.three, "width": 15, "pady": 5, "padx": 5,
                                         "selectcolor": self.two}
-            self.default_bg = "white"
-            self.label_data = dict(bg=self.default_bg, fg="#666", width=20, pady=3, padx=3)
-            self.label_value = dict(bg=self.default_bg, font=("Courier", 22), width=4, pady=3, padx=3)
+            self.darkest_bg = "#000405"
+            self.default_bg = "#0B1A1A"
+            self.default_text = "white"
 
-            self.plot_bg = "#21213D"
+            self.label_data = dict(bg=self.default_bg, fg=self.default_text, width=20, pady=3, padx=3)
+            self.label_value = dict(bg=self.default_bg, font=("Courier", 26), width=8, pady=3, padx=4)
+            self.header_text_kwargs = dict(fg="#95AFA2", bg=self.darkest_bg, font=("Roboto", 16), pady=5, padx=15)
+            self.plot_bg = self.default_bg
             self.infected = "#CC1F7F"
             self.asymptomatic = "#E58342"
             self.susceptible = "#03A0D3"  # "#E6C645"
-            self.immune = "#666666"
+            self.immune = "#999999"
 
 
 class SimulationParametersUIConfig(object):
@@ -76,7 +79,7 @@ class SimulationParametersUIConfig(object):
                                                "Days per minute:",
                                                [1, 120]]
             self.general["SUBJECT_VELOCITY_MULTIPLIER"] = ["Scale",
-                                                "The maximum movement speed of a subject per second:", [1, 100]]
+                                                "Speed multiplier:", [1, 100]]
 
             self.general["SUBJECT_INITIAL_INFECTION_RATIO"] = ["Scale",
                                                                "The ratio of the initially infected subjects:",
@@ -173,36 +176,31 @@ class MainConfiguration(object):
             self.DEFAULT_BG = Theme().default_bg
             self.FRAME_PADDING = dict(padx=10, pady=10)
 
-            self.COLUMNS_RATIO = [0.4, 0.55]
+            self.COLUMNS_RATIO = [0.45, 0.50]
 
-            self.FRAME_SETTINGS = dict()
-            self.FRAME_SETTINGS["MasterHeaderFrame"] = dict(height=0.1, column=0,
-                                                            grid_kwargs=dict(row=0, column=0, columnspan=2,
-                                                                             sticky="we"))
+            self.GRID_SETTINGS = dict()
 
-            self.FRAME_SETTINGS["MasterLeftFrame"] = dict(height=0.9, column=0,
-                                                          grid_kwargs=dict(row=0, column=0, sticky="nwes"))
+            self.GRID_SETTINGS["MasterLeftFrame"] = dict(height=0.9, column=0,
+                                                         grid_kwargs=dict(row=0, column=0, sticky="nwes"))
 
-            self.FRAME_SETTINGS["MasterRightFrame"] = dict(height=0.9, column=1,
-                                                           grid_kwargs=dict(row=0, column=1, sticky="nwes"))
+            self.GRID_SETTINGS["MasterRightFrame"] = dict(height=0.9, column=1,
+                                                          grid_kwargs=dict(row=0, column=1, sticky="nwes"))
 
-            self.FRAME_SETTINGS["GraphFrame"] = dict(height=0.2, column=1,
-                                                     grid_kwargs=dict(row=2, column=0, sticky="w"))
+            self.GRID_SETTINGS["GraphFrame"] = dict(height=0.15, column=1,
+                                                    grid_kwargs=dict(row=1, column=0, sticky="we"))
 
-            self.FRAME_SETTINGS["StatsFrame"] = dict(height=0.3, column=1,
-                                                     grid_kwargs=dict(row=1, column=0))
+            self.GRID_SETTINGS["StatsFrame"] = dict(height=0.3, column=1,
+                                                    grid_kwargs=dict(row=0, column=0, sticky="we"))
 
-            self.FRAME_SETTINGS["SimulationFrame"] = dict(height=0.5, column=1,
-                                                          grid_kwargs=dict(row=3, column=0))
+            self.GRID_SETTINGS["SimulationFrame"] = dict(height=0.45, column=1,
+                                                         grid_kwargs=dict(row=2, column=0))
 
-            self.FRAME_SETTINGS["ButtonsFrame"] = dict(height=0.05, column=1,
-                                                       grid_kwargs=dict(row=2, column=0))
 
-            self.FRAME_SETTINGS["ScenarioFrame"] = dict(height=0.1, column=0,
-                                                        grid_kwargs=dict(row=1, column=0))
+            self.GRID_SETTINGS["ScenarioFrame"] = dict(height=0.1, column=0,
+                                                       grid_kwargs=dict(row=1, column=0))
 
-            self.FRAME_SETTINGS["ParametersFrame"] = dict(height=0.7, column=0,
-                                                          grid_kwargs=dict(row=0, column=0))
+            self.GRID_SETTINGS["ParametersFrame"] = dict(height=0.73, column=0,
+                                                         grid_kwargs=dict(row=0, column=0))
 
             self.PARAMETERS_UI_SETTINGS = SimulationParametersUIConfig()
 
@@ -255,7 +253,7 @@ class MainConfiguration(object):
         super().__setattr__(key, value)
 
     def get_frame_dimensions_of(self, key):
-        sett = self.FRAME_SETTINGS[key]
+        sett = self.GRID_SETTINGS[key]
         row_ratio = sett["height"]
         column_ratio = self.COLUMNS_RATIO[sett["column"]]
 

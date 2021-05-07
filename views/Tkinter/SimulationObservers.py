@@ -9,7 +9,10 @@ class TKStats(Observer):
     def __init__(self, root):
         super().__init__()
         self.init_log()
-        self.fig = tk.Frame(root, bg=self.theme.default_bg)
+        self.width, self.height = self.config.get_frame_dimensions_of("StatsFrame")
+        print(self.__class__.__name__)
+        print(self.width, self.height)
+        self.fig = tk.Frame(root, bg=self.theme.default_bg, pady= 20)
         self.second_row = tk.Frame(self.fig, bg=self.theme.default_bg)
         self.second_row.grid(row=3, column=0, sticky="we", columnspan=3)
 
@@ -21,9 +24,9 @@ class TKStats(Observer):
                                SUSCEPTIBLE=tk.Label(self.second_row, text="Susceptible", **self.theme.label_data),
                                IMMUNE=tk.Label(self.second_row, text="Immune", **self.theme.label_data)
                                )
-        self.data_value = dict(DAY=tk.Label(self.fig, text="-", **self.theme.label_value),
-                               R_RATE=tk.Label(self.fig, text="-", **self.theme.label_value),
-                               R_GROWTH=tk.Label(self.fig, text="-", **self.theme.label_value),
+        self.data_value = dict(DAY=tk.Label(self.fig, text="-", fg=self.theme.default_text, **self.theme.label_value),
+                               R_RATE=tk.Label(self.fig, text="-",fg=self.theme.default_text, **self.theme.label_value),
+                               R_GROWTH=tk.Label(self.fig, text="-",fg=self.theme.default_text, **self.theme.label_value),
                                ASYMPTOMATIC=tk.Label(self.second_row, text="-", fg=self.theme.asymptomatic,
                                                      **self.theme.label_value),
                                INFECTED=tk.Label(self.second_row, text="-", fg=self.theme.infected,
@@ -42,7 +45,7 @@ class TKStats(Observer):
             self.data_value[k].grid(row=1, column=column, sticky="we")
             column += 1
 
-        self.fig.grid(row=1, column=0, sticky="nswe")
+        self.fig.grid(row=1, column=0, sticky="we")
 
     def update_stats(self, data):
         self.subject_number = MainConfiguration().SUBJECT_NUMBER
@@ -71,7 +74,7 @@ class TKAreaChart(Observer):
         self.frames = 0
         self.init_log()
 
-        self.fig = tk.Canvas(root, width=self.width, height=self.height, bg=self.theme.susceptible)
+        self.fig = tk.Canvas(root, width=self.width, height=self.height, bg=self.theme.default_bg, highlightthickness=0, bd=0, relief='ridge')
 
     @property
     def width(self):

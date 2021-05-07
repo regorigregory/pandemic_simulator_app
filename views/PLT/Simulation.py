@@ -21,14 +21,20 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
         self.DPI = self.config.DPI
         self.ani = None
         self.fig = plt.figure(figsize=(self.width / self.DPI, self.height / self.DPI), dpi=self.DPI)
+        self.fig.subplots_adjust(left=0, bottom=0.1, right=0.95, top=1, wspace=0, hspace=0)
+        self.fig.patch.set_facecolor(Theme().default_bg)
         self.ax = self.fig.add_subplot()
+        for spine in self.ax.spines.values():
+            spine.set_visible(False)
         self.days = 0
         self.ax.set_facecolor(Theme().plot_bg)
-
+        self.fig.set_edgecolor(Theme().plot_bg)
         self.ax.set_xticks([])
         self.ax.set_yticks([])
+        ConcreteSimulation.draw_main_simulation_canvas_movement_bounds(self.ax)
 
     def get_init_func(self):
+        self.days = 0
 
         if self.config.QUARANTINE_MODE.get():
             ConcreteSimulation.draw_quarantine_boundaries(self.ax)
@@ -45,7 +51,7 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
         self.ax.set_yticks([])
         self.ax.set_xlim(0, self.width)
         self.ax.set_ylim(0, self.height)
-
+        #self.ax.axis('off')
 
         self._box_of_particles.count_them()
 
@@ -124,6 +130,9 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
             self.ax.lines[0].set_data(*immune_coords)
             self.ax.lines[1].set_data(*immune_coords)
 
+            core_radius = MainConfiguration().SUBJECT_SIZE * 2
+            infection_radius = (MainConfiguration().SUBJECT_INFECTION_RADIUS + MainConfiguration().SUBJECT_SIZE) * 2
+
             self.ax.lines[2].set_data(*susceptible_coords)
             self.ax.lines[3].set_data(*susceptible_coords)
 
@@ -132,6 +141,20 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
 
             self.ax.lines[6].set_data(*infected_coords)
             self.ax.lines[7].set_data(*infected_coords)
+
+            self.ax.lines[0].set_markersize(core_radius)
+            self.ax.lines[1].set_markersize(infection_radius)
+
+            self.ax.lines[0].set_markersize(core_radius)
+            self.ax.lines[1].set_markersize(infection_radius)
+
+            self.ax.lines[2].set_markersize(core_radius)
+            self.ax.lines[3].set_markersize(infection_radius)
+
+            self.ax.lines[4].set_markersize(core_radius)
+            self.ax.lines[5].set_markersize(infection_radius)
+            self.ax.lines[6].set_markersize(core_radius)
+            self.ax.lines[7].set_markersize(infection_radius)
             # self._box_of_particles    .print_counts()
             return self.ax.lines
 
@@ -200,7 +223,8 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
             inner_padding = MainConfiguration().INNER_PADDING
             ax.text(q_dims["x"] + inner_padding,
                     q_dims["y"] + inner_padding,
-                    "QUARANTINE", color=Theme().infected,
+                    "QUARANTINE",
+                    color=Theme().infected,
                     fontsize="large",
                     rotation=90)
             ax.add_patch(patches.Rectangle((q_dims["x"], q_dims["y"]), q_dims["width"], q_dims["height"],

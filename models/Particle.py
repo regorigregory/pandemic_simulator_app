@@ -71,7 +71,7 @@ class Particle:
 
     @velocity_vector.setter
     def velocity_vector(self, values):
-        self._velocity_vector = np.array(values) / self.config.get_frames_per_day()
+        self._velocity_vector = np.array(values) / 30
 
     @property
     def velocity_x(self):

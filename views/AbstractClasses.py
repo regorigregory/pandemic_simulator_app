@@ -63,10 +63,12 @@ class AbstractFrame(Frame):
         self.config = config
         self.dim_dict = {"width": (self.config.get_frame_dimensions_of(self.__class__.__name__))[0],
                          "height": (self.config.get_frame_dimensions_of(self.__class__.__name__))[1]}
-        self.frame_settings = self.config.FRAME_SETTINGS[self.__class__.__name__]
-        super().__init__(root, bg=config.DEFAULT_BG, **self.dim_dict,
+        self.frame_settings = self.config.GRID_SETTINGS[self.__class__.__name__]
+        super().__init__(root, bg=Theme().default_bg, **self.dim_dict,
                          **config.FRAME_PADDING)
         self.components = []
+        print(self.__class__.__name__)
+        print(self.dim_dict)
         self.grid_kwargs = self.frame_settings["grid_kwargs"]
 
     def grid(self, **kwargs):
