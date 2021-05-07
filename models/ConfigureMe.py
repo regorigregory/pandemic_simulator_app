@@ -47,7 +47,7 @@ class Theme(object):
 
             self.label_data = dict(bg=self.default_bg, fg=self.default_text, width=20, pady=3, padx=3)
             self.label_value = dict(bg=self.default_bg, font=("Courier", 26), width=8, pady=3, padx=4)
-            self.header_text_kwargs = dict(fg="#95AFA2", bg=self.darkest_bg, font=("Roboto", 16), pady=5, padx=15)
+            self.header_text_kwargs = dict(fg="#95AFA2", bg=self.darkest_bg, font=("Roboto", 16), pady=4, padx=15)
             self.plot_bg = self.default_bg
             self.infected = "#CC1F7F"
             self.asymptomatic = "#E58342"
@@ -70,46 +70,47 @@ class SimulationParametersUIConfig(object):
     def __init__(self):
 
         if SimulationParametersUIConfig.instance is None:
-            self.general = dict()
+            self.constants = dict()
+            self.live = dict()
 
-            self.general["SUBJECT_NUMBER"] = ["Scale",
+            self.constants["SUBJECT_NUMBER"] = ["Scale",
                                               "The number of subjects:",
-                                              [1, 300]]
-            self.general["DAYS_PER_MINUTE"] = ["Scale",
-                                               "Days per minute:",
-                                               [1, 120]]
-            self.general["SUBJECT_VELOCITY_MULTIPLIER"] = ["Scale",
+                                                [1, 300]]
+
+            self.constants["SUBJECT_INITIAL_INFECTION_RATIO"] = ["Scale",
+                                                               "The ratio of the initially infected subjects:",
+                                                                 [0, 1]]
+
+            self.constants["SUBJECT_INCUBATION_PERIOD"] = ["Scale",
+                                                           "Incubation period (days):",
+                                                           [0, 100]]
+
+            self.constants["SUBJECT_RECOVERY_TIME"] = ["Scale",
+                                                     "Recovery time (days):",
+                                                       [0, 100]]
+
+            self.live["SUBJECT_COMPLIANCE"] = ["Scale",
+                                                  "What ratio of subjects comply with restrictions:",
+                                                    [0, 1]]
+
+            self.live["DAYS_PER_MINUTE"] = ["Scale",
+                                               "Days per minute (~):",
+                                                 [1, 120]]
+            self.live["SUBJECT_VELOCITY_MULTIPLIER"] = ["Scale",
                                                 "Movement speed multiplier:", [1, 100]]
 
-            self.general["SUBJECT_INITIAL_INFECTION_RATIO"] = ["Scale",
-                                                               "The ratio of the initially infected subjects:",
-                                                               [0, 1]]
 
-            self.general["SUBJECT_SIZE"] = ["Scale", "Subject size (radius) in pixels:", [1, 5]]
+            self.live["SUBJECT_SIZE"] = ["Scale", "Subject size (radius) in pixels:", [1, 5]]
 
-            self.general["SUBJECT_INFECTION_RADIUS"] = ["Scale", "Infection radius around a subject in pixels:",
-                                                        [1, 10]]
-            self.general["SUBJECT_CHANCE_OF_INFECTION"] = ["Scale",
+            self.live["SUBJECT_INFECTION_RADIUS"] = ["Scale", "Infection radius around a subject in pixels:",
+                                                          [1, 10]]
+            self.live["SUBJECT_CHANCE_OF_INFECTION"] = ["Scale",
                                                            "Infection chance per each day:",
-                                                           [0, 1]]
+                                                             [0, 1]]
 
-            self.general["SUBJECT_RECOVERY_TIME"] = ["Scale",
-                                                     "Recovery time (days):",
-                                                     [0, 100]]
-
-            self.general["SUBJECT_INCUBATION_PERIOD"] = ["Scale",
-                                                         "Incubation period (days):",
-                                                         [0, 100]]
-
-            self.general["SUBJECT_COMPLIANCE"] = ["Scale",
-                                                  "What ratio of subjects comply with restrictions:",
-                                                  [0, 1]]
-
-
-
-            self.general["COMMUNITIES_VISIT_CHANCE"] = ["Scale",
+            self.live["COMMUNITIES_VISIT_CHANCE"] = ["Scale",
                                                         "Travelling chance between communities:",
-                                                        [0, 1]]
+                                                          [0, 1]]
 
 
 class MainConfiguration(object):
@@ -186,21 +187,23 @@ class MainConfiguration(object):
             self.GRID_SETTINGS["MasterRightFrame"] = dict(height=0.9, column=1,
                                                           grid_kwargs=dict(row=0, column=1, sticky="nwes"))
 
-            self.GRID_SETTINGS["GraphFrame"] = dict(height=0.15, column=1,
+            self.GRID_SETTINGS["StatsFrame"] = dict(height=0.3, column=1,
                                                     grid_kwargs=dict(row=1, column=0, sticky="we"))
 
-            self.GRID_SETTINGS["StatsFrame"] = dict(height=0.3, column=1,
-                                                    grid_kwargs=dict(row=0, column=0, sticky="we"))
+            self.GRID_SETTINGS["GraphFrame"] = dict(height=0.15, column=1,
+                                                    grid_kwargs=dict(row=2, column=0, sticky="we"))
 
-            self.GRID_SETTINGS["SimulationFrame"] = dict(height=0.45, column=1,
-                                                         grid_kwargs=dict(row=2, column=0))
-
+            self.GRID_SETTINGS["SimulationFrame"] = dict(height=0.394, column=1,
+                                                         grid_kwargs=dict(row=0, column=0))
 
             self.GRID_SETTINGS["ScenarioFrame"] = dict(height=0.1, column=0,
                                                        grid_kwargs=dict(row=1, column=0))
 
-            self.GRID_SETTINGS["ParametersFrame"] = dict(height=0.73, column=0,
+            self.GRID_SETTINGS["ConstantsParametersFrame"] = dict(height=0.25, column=0,
                                                          grid_kwargs=dict(row=0, column=0))
+
+            self.GRID_SETTINGS["LiveParametersFrame"] = dict(height=0.4, column=0,
+                                                                grid_kwargs=dict(row=2, column=0))
 
             self.PARAMETERS_UI_SETTINGS = SimulationParametersUIConfig()
 

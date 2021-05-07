@@ -21,7 +21,7 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
         self.DPI = self.config.DPI
         self.ani = None
         self.fig = plt.figure(figsize=(self.width / self.DPI, self.height / self.DPI), dpi=self.DPI)
-        self.fig.subplots_adjust(left=0, bottom=0.1, right=0.95, top=1, wspace=0, hspace=0)
+        self.fig.subplots_adjust(left=0, bottom=0.05, right=0.95, top=1, wspace=0, hspace=0)
         self.fig.patch.set_facecolor(Theme().default_bg)
         self.ax = self.fig.add_subplot()
         for spine in self.ax.spines.values():

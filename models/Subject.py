@@ -23,16 +23,16 @@ class Subject:
         self.quarantine_mode = False
         self.travelling = False
         self.cell_id = -1
+
         self.total_sickness_time = self.config.SUBJECT_INCUBATION_PERIOD + self.config.SUBJECT_RECOVERY_TIME
         self._infection_radius = Subject.set_random_attribute_safely(self.config.SUBJECT_INFECTION_RADIUS)
+
         self.frames_per_day = self.config.get_frames_per_day()
+
         self._recovery_time = self.config.SUBJECT_RECOVERY_TIME * self.frames_per_day
         self._incubation_period = self.config.SUBJECT_INCUBATION_PERIOD * self.frames_per_day
 
-        self._infection_probability = Subject.set_random_attribute_safely(
-            self.config.SUBJECT_CHANCE_OF_INFECTION / self.frames_per_day)
-        self._do_i_socially_distance = MainConfiguration().SUBJECT_COMPLIANCE > np.random.uniform(0, 1) \
-            if MainConfiguration().SOCIAL_DISTANCING_MODE else False
+        self._compliance_chance =  np.random.uniform(0, 1)
 
         self._particle = Particle(boundaries=boundaries, position=position)
         self._infection_radius = self._particle.get_radius() + self.config.SUBJECT_INFECTION_RADIUS
@@ -52,7 +52,7 @@ class Subject:
         return self._infection_status == InfectionStatuses.IMMUNE
 
     def am_i_compliant(self) -> bool:
-        return self._do_i_socially_distance
+        return self._compliance_chance < self.config.SUBJECT_COMPLIANCE
 
     def get_infection_timestamp(self) -> int:
         return self._got_infected_at
@@ -84,7 +84,7 @@ class Subject:
         return self.get_infection_status(timestamp) == InfectionStatuses.SUSCEPTIBLE
 
     def get_infection_probability(self) -> float:
-        return self._infection_probability
+        return self.config.SUBJECT_CHANCE_OF_INFECTION / self.config.FRAMES_PER_SECOND
 
     def get_recovery_time(self) -> float:
         return self._recovery_time

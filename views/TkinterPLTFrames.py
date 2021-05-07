@@ -61,10 +61,10 @@ class HeaderFrame(tk.Frame):
         header.grid(sticky="w")
 
 
-class ParametersFrame(AbstractFrame):
-    def __init__(self, root):
+class ConstantsParametersFrame(AbstractFrame):
+    def __init__(self, root, key="constants"):
         super().__init__(root)
-        header_frame = HeaderFrame(self, "Simulation settings")
+        header_frame = HeaderFrame(self, "Simulation constants")
         canvas = tk.Canvas(self, **self.dim_dict, bg=Theme().default_bg, highlightthickness=0, bd=0, relief='ridge')
 
         #scrollbar = Scrollbar(self, orient="vertical", command=canvas.yview)
@@ -83,7 +83,7 @@ class ParametersFrame(AbstractFrame):
         #canvas.configure(yscrollcommand=scrollbar.set)
         self.sliders = []
         i = j = 0
-        for k, v in self.config.PARAMETERS_UI_SETTINGS.general.items():
+        for k, v in self.config.PARAMETERS_UI_SETTINGS.constants.items():
             _constructor = IdentifiableScale
             label = tk.Label(scrollable_frame, text=v[1], fg=Theme().default_text, bg=Theme().default_bg, anchor="w", font=("Roboto", 12))
             col = j % 2
@@ -104,7 +104,7 @@ class ParametersFrame(AbstractFrame):
                                            fg=Theme().default_text,
                                            bg=Theme().default_bg,
                                            highlightthickness=0,
-                                           bd=5)
+                                           bd=3)
 
             if "SUBJECT_VELOCITY" == k:
                 config_value = getattr(MainConfiguration(), k)[1]
@@ -120,6 +120,66 @@ class ParametersFrame(AbstractFrame):
         header_frame.grid(row=0, column=0, columnspan=2, sticky="we")
         canvas.grid(row=1, column=0, sticky="nwse")
         #scrollbar.grid(row=1, column=0, sticky="ns")
+
+
+class LiveParametersFrame(AbstractFrame):
+    def __init__(self, root):
+        super().__init__(root)
+        header_frame = HeaderFrame(self, "Live settings")
+        canvas = tk.Canvas(self, **self.dim_dict, bg=Theme().default_bg, highlightthickness=0, bd=0, relief='ridge')
+
+        #scrollbar = Scrollbar(self, orient="vertical", command=canvas.yview)
+
+        scrollable_frame = Frame(canvas, bg=Theme().default_bg, width=self.dim_dict["width"], pady= 20, highlightthickness=0, bd=0)
+
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw", width=self.dim_dict["width"])
+
+        #canvas.configure(yscrollcommand=scrollbar.set)
+        self.sliders = []
+        i = j = 0
+        for k, v in self.config.PARAMETERS_UI_SETTINGS.live.items():
+            _constructor = IdentifiableScale
+            label = tk.Label(scrollable_frame, text=v[1], fg=Theme().default_text, bg=Theme().default_bg, anchor="w", font=("Roboto", 12))
+            col = j % 2
+            j += 1
+
+            label.grid(row=i, column=col, sticky="e")
+            resolution = 1 / 100 if v[2][1] == 1 else 1
+            min_, max_ = v[2]
+
+
+            control_element = _constructor(scrollable_frame,
+                                           k,
+                                           from_=min_,
+                                           to=max_,
+                                           length=self.dim_dict["width"] / 2 + 10,
+                                           resolution=resolution,
+                                           orient=tk.HORIZONTAL,
+                                           fg=Theme().default_text,
+                                           bg=Theme().default_bg,
+                                           highlightthickness=0,
+                                           bd=3)
+
+            if "SUBJECT_VELOCITY" == k:
+                config_value = getattr(MainConfiguration(), k)[1]
+            else:
+                config_value = getattr(MainConfiguration(), k)
+            control_element.set(config_value)
+
+            col = j % 2
+            j += 1
+            control_element.grid(row=i, column=col, sticky="we")
+            self.sliders.append(control_element)
+            i += 1
+        header_frame.grid(row=0, column=0, columnspan=2, sticky="we")
+        canvas.grid(row=1, column=0, sticky="nwse")
 
 
 class StatsFrame(AbstractFrame):
@@ -190,7 +250,7 @@ class TkinterPLTBuilder:
     def build(self):
         # master grid components
         # self.components["MasterHeaderFrame"] = MasterHeaderFrame(self.window)
-        frames = [ScenarioFrame, ParametersFrame, GraphFrame, StatsFrame, SimulationFrame]
+        frames = [ScenarioFrame, ConstantsParametersFrame, LiveParametersFrame, GraphFrame, StatsFrame, SimulationFrame]
         # ButtonsFrame has been removed
         # child components
         for f in frames:

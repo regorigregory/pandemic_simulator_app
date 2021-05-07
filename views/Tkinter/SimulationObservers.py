@@ -82,6 +82,9 @@ class TKAreaChart(Observer):
                              highlightthickness=0,
                              bd=0,
                              relief='ridge')
+
+        self.init_area_chart()
+
         self.y_axis = tk.Canvas(root,
                                 width=self.y_axis_width,
                                 height=self.height,
@@ -105,8 +108,16 @@ class TKAreaChart(Observer):
             self.y_axis.create_line(0, offset + (1-f) * ax_height, 10, offset + (1-f) * ax_height, fill=self.theme.infected)
 
 
-
-
+    def init_area_chart(self):
+        self.fig.create_line(0, self.are_chart_height - 1, self.width - self.y_axis_width,
+                             self.are_chart_height - 1,
+                             fill=self.theme.infected)
+        self.fig.create_line(0, (self.are_chart_height - 1)/2, self.width - self.y_axis_width,
+                             (self.are_chart_height - 1)/2,
+                             fill=self.theme.infected, dash=(4,2))
+        self.fig.create_line(0, 0, self.width - self.y_axis_width,
+                             0,
+                             fill=self.theme.infected, dash=(4, 2))
     @property
     def width(self):
         return self._width
@@ -129,10 +140,13 @@ class TKAreaChart(Observer):
             self.frames = 0
             self.init_log()
             self.fig.delete("all")
+            self.init_area_chart()
+
         else:
             self.frames += 1
             self.update_logs(new_data)
             self.fig.delete("all")
+            self.init_area_chart()
             self.redraw_verts()
 
     def get_area_chart_strip(self, key):
