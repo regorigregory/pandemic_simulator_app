@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
-
 import numpy as np
-
+from abc import ABC, abstractmethod
 from models.ConfigureMe import MainConfiguration, InfectionStatuses
 from models.Subject import Subject
 
 
-class CollisionHandlerInterface(ABC):
+class AbstractCollisionHandler(ABC):
     def __init__(self):
         self.config = MainConfiguration()
         self.do_i_quarantine = self.config.QUARANTINE_MODE.get()
@@ -26,7 +24,8 @@ class CollisionHandlerInterface(ABC):
         pass
 
 
-class AxisBased(CollisionHandlerInterface):
+
+class AxisBased(AbstractCollisionHandler):
 
     def __init__(self):
         super().__init__()

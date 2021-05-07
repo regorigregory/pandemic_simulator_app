@@ -6,38 +6,7 @@ import numpy as np
 
 from models.ConfigureMe import MainConfiguration
 from models.Subject import Subject
-
-
-class AbstractMovementHandler(ABC):
-
-    def __init__(self):
-        self.config = MainConfiguration()
-        self.travelling_speed = self.config.QUARANTINE_APPROACHING_SPEED
-
-    def set_direction_to_destination(self, to_be_guided: Subject, coordinate: list[float, float]) -> None:
-        particle = to_be_guided.get_particle_component()
-        direction_vector = coordinate - particle.position_vector
-        direction_vector /= np.sum(direction_vector ** 2) ** 0.5
-        particle.velocity_vector = direction_vector * self.travelling_speed
-
-    def _get_box_centre(self, box_bounds: dict[str, float]) -> np.array[float, float]:
-        if isinstance(box_bounds, dict):
-            return np.array([box_bounds["x"] + box_bounds["width"] / 2,
-                      box_bounds["y"] + box_bounds["height"] / 2])
-        else:
-            width = box_bounds[0][1] - box_bounds[0][0]
-            height = box_bounds[1][1] - box_bounds[1][0]
-
-            return np.array([box_bounds[0][0] + width/2,
-                             box_bounds[1][0] + height/2])
-
-    @staticmethod
-    def calculate_distance(point_from, point_to) -> float:
-        return np.sum((point_to - point_from) ** 2) ** 0.5
-
-    @abstractmethod
-    def guide_subject_journey(self, to_be_guided: Subject) -> None:
-        pass
+from models.AbstractClasses import AbstractMovementHandler
 
 
 class QuarantineHandler(AbstractMovementHandler):

@@ -3,84 +3,18 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 
 import numpy as np
-
-from models.CollisionHandlers import AxisBased
+from models.AbstractClasses import AbstractContainerOfSubjects
 from models.ConfigureMe import InfectionStatuses, MainConfiguration
 from models.MovementHandlers import QuarantineHandler, CommunityHandler
 from models.Subject import Subject
-
-
-class AbstractContainerOfSubjects(ABC):
-    def __init__(self):
-        self.config = MainConfiguration()
-        self._infection_handler = AxisBased()
-        self.contents = set()
-        self._particle_radius = self.config.SUBJECT_SIZE
-        self._infection_radius = self.config.SUBJECT_INFECTION_RADIUS + self.config.SUBJECT_SIZE
-        self.counts = dict()
-        self.count_keys = ["SUSCEPTIBLE", "ASYMPTOMATIC", "INFECTED", "IMMUNE"]
-        self.positions_by_status = {v: np.empty([0,2]) for v in self.count_keys}
-
-        self.init_counts()
-        self.r_rate = 0
-
-    @abstractmethod
-    def reset(self) -> None:
-        pass
-
-    @abstractmethod
-    def populate_subjects(self) -> None:
-        pass
-
-    @abstractmethod
-    def move_guys(self, timestamp: int) -> None:
-        pass
-
-    def init_counts(self, exception=None) -> None:
-        for k in self.count_keys:
-            if exception is None or k not in exception:
-                self.counts[k] = set()
-        self.positions_by_status = {v: np.empty([0,2]) for v in self.count_keys}
-
-
-    def count_them(self, timestamp=0):
-        for s in self.contents:
-            self.counts[s.get_infection_status(timestamp).name].add(s)
-
-    @staticmethod
-    def get_evenly_spaced_specs(bounds: list[list[float, float]], n: int = MainConfiguration().SUBJECT_NUMBER) \
-            -> dict[str, float]:
-        # thanks to mvw @
-        # https://math.stackexchange.com/questions/1039482/how-to-evenly-space-a-number-of-points-in-a-rectangle
-
-        w = bounds[0, 1] - bounds[0, 0]
-        h = bounds[1, 1] - bounds[1, 0]
-        n_x = ((w / h) * n + (w - h) ** 2 / (4 * (h ** 2))) ** 0.5 - (w - h) / (2 * h)
-        n_y = n / n_x
-        divisor = (n_y - 1)
-        divisor = divisor if (n_y - 1) > 0 else 1
-        spacing = h / divisor
-        return dict(n_per_column=abs(n_x), n_per_row=abs(n_y), spacing=abs(spacing), w_h_ratio = w/h)
-
-    @staticmethod
-    def get_evenly_spaced_coordinates(i: int,
-                                      bounds: list[list[float, float]],
-                                      n_of_subjects: int = MainConfiguration().SUBJECT_NUMBER) \
-            -> list[float, float]:
-
-        dims = AbstractContainerOfSubjects.get_evenly_spaced_specs(bounds, n=n_of_subjects)
-        row = int(i / dims["n_per_row"])
-        column = i - (row * dims["n_per_row"])
-
-        return [abs(column * dims["spacing"] * dims["w_h_ratio"]) + bounds[0,0], abs(row * dims["spacing"]) + bounds[1,0]]
 
 
 class DefaultContainer(AbstractContainerOfSubjects):
     def __init__(self):
         super().__init__()
         self.subjects_in_cells = []
-        self.rows = 3
-        self.columns = 3
+        self.rows = 6
+        self.columns = 12
         self.cell_count = self.rows * self.columns
         self.init_cells()
 
@@ -163,9 +97,9 @@ class DefaultContainer(AbstractContainerOfSubjects):
 
                     self.add_subject_to_cell(subject, new_cells)
                     status_key = subject.get_infection_status(timestamp).name
-                    """self.positions_by_status[status_key] = \
-                        np.concatenate((self.positions_by_status[status_key], subject.get_particle_component().position_vector.reshape(1 , 2)), axis = 0 )
-                    """
+                    #self.positions_by_status[status_key][0].append(int(subject.get_particle_component().position_vector[0]))
+                    #self.positions_by_status[status_key][1].append(int(subject.get_particle_component().position_vector[1]))
+
                     self.counts[status_key].add(subject)
                     if count_r:
                         self.r_rate += subject.estimate_total_infections(timestamp)
@@ -252,6 +186,9 @@ class CommunitiesContainer(AbstractContainerOfSubjects):
                         self._community_handler.guide_subject_journey(subject, timestamp)
 
                 status_key = subject.get_infection_status(timestamp).name
+                #self.positions_by_status[status_key][0].append(int(subject.get_particle_component().position_vector[0]))
+                #self.positions_by_status[status_key][1].append(int(subject.get_particle_component().position_vector[1]))
+
                 """self.positions_by_status[status_key] = \
                     np.concatenate(
                         (self.positions_by_status[status_key], subject.get_particle_component().position_vector),

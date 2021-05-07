@@ -23,7 +23,6 @@ class Theme(object):
     def __new__(cls):
 
         if cls.instance is None:
-
             return super(Theme, cls).__new__(cls)
         else:
             return cls.instance

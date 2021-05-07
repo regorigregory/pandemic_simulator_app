@@ -125,10 +125,10 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
             susceptible_coords = np.swapaxes(self._box_of_particles.positions_by_status["SUSCEPTIBLE"], 0, 1).astype(int)
             asymptomatic_coords = np.swapaxes(self._box_of_particles.positions_by_status["ASYMPTOMATIC"], 0, 1).astype(int)
             """
-            infected_coords = self.get_current_coordinates(self._box_of_particles.counts["INFECTED"])
-            immune_coords = self.get_current_coordinates(self._box_of_particles.counts["IMMUNE"])
-            susceptible_coords = self.get_current_coordinates(self._box_of_particles.counts["SUSCEPTIBLE"])
-            asymptomatic_coords = self.get_current_coordinates(self._box_of_particles.counts["ASYMPTOMATIC"])
+            infected_coords = self.get_current_coordinates_by_key("INFECTED")
+            immune_coords = self.get_current_coordinates_by_key("IMMUNE")
+            susceptible_coords = self.get_current_coordinates_by_key("SUSCEPTIBLE")
+            asymptomatic_coords = self.get_current_coordinates_by_key("ASYMPTOMATIC")
 
             self.ax.lines[0].set_data(*immune_coords)
             self.ax.lines[1].set_data(*immune_coords)
