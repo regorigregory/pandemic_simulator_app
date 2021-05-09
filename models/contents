@@ -1,0 +1,20 @@
+1. Subject size and radius
+2. Subject colours
+3. Simulation constants
+    1. Number of subjects
+    2. Ratio of initially infected subjects
+    3. Incubation period
+    4. Recovery time
+4. Simulation modes
+    1. Social distancing
+    2. Quarantine
+    3. Community mode
+5. Live settings
+    1. Subject compliance ratio
+    2. Days per minute
+    3. Movement speed multiplier
+    4. Subject size
+    5. Infection radius
+    6. Infection chance per day
+    7. Travelling chance between communities
+6. Simulation statistics

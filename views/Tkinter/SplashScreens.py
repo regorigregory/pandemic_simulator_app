@@ -4,12 +4,13 @@ from PIL import ImageTk, Image
 from models.ConfigureMe import MainConfiguration, Theme
 
 
-class WelcomeScreen(Tk):
+class WelcomeFrame(Tk):
 
     def __init__(self, after_function):
         super().__init__()
         MainConfiguration().MAIN_CANVAS_SIZE = [self.winfo_screenwidth(), self.winfo_screenheight()]
         self.geometry(MainConfiguration().get_main_canvas_size_tkinter())
+        self.title(MainConfiguration().APPLICATION_TITLE)
 
         icon = ImageTk.PhotoImage(master=self, file=os.path.join(".", "assets", "pandemic_app_icon.png"))
         logo = Image.open(os.path.join(".", "assets", "pandemic_app_icon.png"))
@@ -32,6 +33,11 @@ class WelcomeScreen(Tk):
         mainloop()
 
 
-class AboutScreen(Tk):
+class AboutFrame(Tk):
+    def __init__(self):
+        super().__init__()
+
+
+class DocumentationFrame(Tk):
     def __init__(self):
         super().__init__()

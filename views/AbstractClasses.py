@@ -62,6 +62,9 @@ class AbstractSimulation(ABC):
     def reset(self):
         pass
 
+    def reset_settings(self):
+        self.config.load_defaults()
+
 
 class AbstractFrame(Frame):
     def __init__(self, root, config=MainConfiguration()):

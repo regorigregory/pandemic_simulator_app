@@ -18,8 +18,6 @@ class TkinterButtons(AbstractController):
         self.pause = animated_object.pause
         self.resume = animated_object.resume
         self.start = animated_object.start
-
-
         self.funcs["Start"] = self.handle_start
 
         self.funcs[MainConfiguration().BUTTONS_CONFIG["START"]["text"]] = self.handle_start
@@ -52,7 +50,10 @@ class TkinterButtons(AbstractController):
     def bind_functions(self, buttons):
         self.ui_elements = buttons
         for button in self.ui_elements:
-            button.bind('<Button>',  self.funcs[button.cget("text")])
+            func_key = button.cget("text")
+            if func_key in self.funcs.keys():
+                button.bind('<Button>',  self.funcs[button.cget("text")])
+
 
 class TkinterSimulationSettings(AbstractController):
     def __init__(self):
@@ -68,6 +69,7 @@ class TkinterSimulationSettings(AbstractController):
         self.ui_elements = sliders
         for slider in self.ui_elements:
             slider.bind("<ButtonRelease>", self.update_config)
+
 
 class LambdaController(AbstractController):
     def bind_functions(self, element, action, function):

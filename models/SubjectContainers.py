@@ -36,7 +36,7 @@ class DefaultContainer(AbstractContainerOfSubjects):
     def populate_subjects(self):
         constructor = Subject
         limit = self.config.SUBJECT_NUMBER
-        for i in range(0, limit):
+        for i in range(0, int(limit)):
             j = 0
             position = AbstractContainerOfSubjects.get_evenly_spaced_coordinates(i, n_of_subjects=limit, bounds = self.config.get_particle_movement_bounds())
             s = constructor(position=position)

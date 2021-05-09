@@ -72,15 +72,15 @@ class Subject:
             self._last_checkup = timestamp
         return self._infection_status
 
-    def is_immune(self, timestamp) -> bool:
+    def is_immune(self, timestamp: int) -> bool:
         return self.get_infection_status(timestamp) == InfectionStatuses.IMMUNE
 
-    def is_infected(self, timestamp) -> bool:
+    def is_infected(self, timestamp: int) -> bool:
         return \
             self.get_infection_status(timestamp) == InfectionStatuses.INFECTED \
             or self.get_infection_status(timestamp) == InfectionStatuses.ASYMPTOMATIC
 
-    def is_susceptible(self, timestamp) -> bool:
+    def is_susceptible(self, timestamp: int) -> bool:
         return self.get_infection_status(timestamp) == InfectionStatuses.SUSCEPTIBLE
 
     def get_infection_probability(self) -> float:
@@ -89,7 +89,7 @@ class Subject:
     def get_recovery_time(self) -> float:
         return self._recovery_time
 
-    def infect_me_if_you_can(self, timestamp, other) -> None:
+    def infect_me_if_you_can(self, timestamp: int, other: Subject) -> None:
         my_status = self.get_infection_status(timestamp)
         other_status = other.get_infection_status(timestamp)
         if (my_status == InfectionStatuses.SUSCEPTIBLE
@@ -100,7 +100,7 @@ class Subject:
             return True
         return False
 
-    def _infect_me(self, timestamp) -> None:
+    def _infect_me(self, timestamp: int) -> None:
         if self.get_infection_status(timestamp) == InfectionStatuses.SUSCEPTIBLE:
             self._infection_status = InfectionStatuses.ASYMPTOMATIC
             self._got_infected_at = timestamp
@@ -117,18 +117,18 @@ class Subject:
             span = 1
         return self.total_sickness_time * self.config.get_frames_per_day() * self.n_infected / span
 
-    def encounter_with(self, timestamp, other: Subject) -> None:
+    def encounter_with(self, timestamp: int, other: Subject) -> None:
         if self.infect_me_if_you_can(timestamp, other):
             other.increment_infected_count()
         if other.infect_me_if_you_can(timestamp, self):
             self.increment_infected_count()
 
-    def get_behavioural_distance(self):
+    def get_behavioural_distance(self) -> Union[float, int]:
         if self.am_i_compliant():
             return MainConfiguration().SUBJECT_INFECTION_RADIUS + MainConfiguration().SUBJECT_SIZE
         return MainConfiguration().SUBJECT_SIZE
 
-    def are_we_too_close(self, other) -> bool:
+    def are_we_too_close(self, other: Subject) -> bool:
 
         p1 = self.get_particle_component().position_vector
         p2 = other.get_particle_component().position_vector
@@ -140,22 +140,22 @@ class Subject:
             return True
         return False
 
-    def resolve_collision(self, other: Subject):
+    def resolve_collision(self, other: Subject) -> None:
             self.get_particle_component().resolve_collision(other.get_particle_component())
 
     @staticmethod
-    def set_random_attribute_safely(const_or_arr) -> Union[int, List, float]:
+    def set_random_attribute_safely(const_or_arr: Union[int, list, float]) -> Union[int, List, float]:
         if isinstance(const_or_arr, list):
             return np.random.uniform(*const_or_arr)
         return const_or_arr
 
-    def __key(self):
+    def __key(self) -> int:
         return self.id
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.__key())
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if isinstance(other, Subject):
             return self.__key() == other.__key()
         return NotImplemented

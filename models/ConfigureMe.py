@@ -127,35 +127,21 @@ class MainConfiguration(object):
         if MainConfiguration.instance is None:
             MainConfiguration.instance = self
             MainConfiguration.instance.__dict__ = MainConfiguration._shared_data
-
+            self.load_defaults()
             # general settings
 
-            self.NUMBER_OF_THREADS = 3
+            self.APPLICATION_TITLE = "Pandemic simulator"
             self.SOCIAL_DISTANCING_MODE = False
             self.QUARANTINE_MODE = False
             self.LOCKDOWN_MODE = False
             self.COMMUNITY_MODE = False
-            self.DAYS_PER_MINUTE = 60
-            self.FRAMES_PER_SECOND = 60
+
             self.QUARANTINE_AFTER = 0
-            self.ASYMPTOMATIC_RATIO = 1
             self.LOCKDOWN_AFTER = 0
-            self.CENTRAL_VISIT_CHANCE = 1
-            self.CENTRAL_SUBJECT_NUMBER = 100
             self.QUARANTINE_APPROACHING_SPEED = 500
             self.COUNT_R_RATE = True
             # subject settings
-
-            self.SUBJECT_NUMBER = 200
-            self.SUBJECT_SIZE = 2
-            self.SUBJECT_INITIAL_INFECTION_RATIO = 0.05
-            self.SUBJECT_INFECTION_RADIUS = 6
-            self.SUBJECT_CHANCE_OF_INFECTION = 0.8
-            self.SUBJECT_RECOVERY_TIME = 30
-            self.SUBJECT_INCUBATION_PERIOD = 3
-            self.SUBJECT_COMPLIANCE = 1
-            self.SUBJECT_VELOCITY = 10
-            self.SUBJECT_VELOCITY_MULTIPLIER = 10
+            self.SUBJECT_VELOCITY=10
             self.SUBJECT_TYPE = SubjectTypes.SUBJECT
 
 
@@ -165,7 +151,6 @@ class MainConfiguration(object):
             self.COMMUNITIES_ROWS = 3
             self.COMMUNITIES_COLUMNS = 3
 
-            self.COMMUNITIES_VISIT_CHANCE = 0.01
 
             # Layout configuration
 
@@ -209,7 +194,8 @@ class MainConfiguration(object):
             # scenario and buttons config
 
             self.BUTTONS_CONFIG = {"START": dict(text="Start", **Theme().button_attributes),
-                                   "STOP": dict(text="Stop", **Theme().button_attributes)}
+                                   "STOP": dict(text="Stop", **Theme().button_attributes),
+                                   "RESET": dict(text="Reset settings", **Theme().button_attributes)}
 
             self.SCENARIO_CONFIG = {"SIMPLE": ["Button", dict(text="Simple", **Theme().scenario_attributes)],
                                     "CENTRAL": ["Button", dict(text="Central Location", **Theme().scenario_attributes)],
@@ -231,6 +217,16 @@ class MainConfiguration(object):
 
             self.STATS_CONFIG = dict(LABEL_KWDS=dict(bg=Theme().default_bg),
                                      VALUE_KWDS=dict(bg=Theme().default_bg))
+
+    def load_defaults(self):
+        with open("./models/default_settings", "r") as f:
+            for line in f.readlines():
+                key, type,  value = line.split(":")
+                if type == "int":
+                    value = int(value)
+                else:
+                    value = float(value)
+                setattr(self, key, value)
 
     def __getattr__(self, item):
         temp = super().__getattribute__(item)
