@@ -17,27 +17,26 @@ class Subject:
 
         self.id = Subject._subject_counter
         self.n_infected = 0
-        self.config = MainConfiguration()
         self.on_my_way_to_quarantine = False
         self.already_in_quarantine = False
         self.quarantine_mode = False
         self.travelling = False
         self.cell_id = -1
 
-        self.total_sickness_time = self.config.SUBJECT_INCUBATION_PERIOD + self.config.SUBJECT_RECOVERY_TIME
-        self._infection_radius = Subject.set_random_attribute_safely(self.config.SUBJECT_INFECTION_RADIUS)
+        self.total_sickness_time = MainConfiguration().SUBJECT_INCUBATION_PERIOD + MainConfiguration().SUBJECT_RECOVERY_TIME
+        self._infection_radius = Subject.set_random_attribute_safely(MainConfiguration().SUBJECT_INFECTION_RADIUS)
 
-        self.frames_per_day = self.config.get_frames_per_day()
+        self.frames_per_day = MainConfiguration().get_frames_per_day()
 
-        self._recovery_time = self.config.SUBJECT_RECOVERY_TIME * self.frames_per_day
-        self._incubation_period = self.config.SUBJECT_INCUBATION_PERIOD * self.frames_per_day
+        self._recovery_time = MainConfiguration().SUBJECT_RECOVERY_TIME * self.frames_per_day
+        self._incubation_period = MainConfiguration().SUBJECT_INCUBATION_PERIOD * self.frames_per_day
 
         self._compliance_chance =  np.random.uniform(0, 1)
 
         self._particle = Particle(boundaries=boundaries, position=position)
-        self._infection_radius = self._particle.get_radius() + self.config.SUBJECT_INFECTION_RADIUS
+        self._infection_radius = self._particle.get_radius() + MainConfiguration().SUBJECT_INFECTION_RADIUS
 
-        if np.random.uniform() <= self.config.SUBJECT_INITIAL_INFECTION_RATIO:
+        if np.random.uniform() <= MainConfiguration().SUBJECT_INITIAL_INFECTION_RATIO:
             self._infection_status = InfectionStatuses.ASYMPTOMATIC
             self._got_infected_at = 0
         else:
@@ -52,7 +51,7 @@ class Subject:
         return self._infection_status == InfectionStatuses.IMMUNE
 
     def am_i_compliant(self) -> bool:
-        return self._compliance_chance < self.config.SUBJECT_COMPLIANCE
+        return self._compliance_chance < MainConfiguration().SUBJECT_COMPLIANCE
 
     def get_infection_timestamp(self) -> int:
         return self._got_infected_at
@@ -84,7 +83,7 @@ class Subject:
         return self.get_infection_status(timestamp) == InfectionStatuses.SUSCEPTIBLE
 
     def get_infection_probability(self) -> float:
-        return self.config.SUBJECT_CHANCE_OF_INFECTION / self.config.FRAMES_PER_SECOND
+        return MainConfiguration().SUBJECT_CHANCE_OF_INFECTION / MainConfiguration().FRAMES_PER_SECOND
 
     def get_recovery_time(self) -> float:
         return self._recovery_time
@@ -115,7 +114,7 @@ class Subject:
         span = (timestamp - self._got_infected_at)
         if span == 0:
             span = 1
-        return self.total_sickness_time * self.config.get_frames_per_day() * self.n_infected / span
+        return self.total_sickness_time * MainConfiguration().get_frames_per_day() * self.n_infected / span
 
     def encounter_with(self, timestamp: int, other: Subject) -> None:
         if self.infect_me_if_you_can(timestamp, other):

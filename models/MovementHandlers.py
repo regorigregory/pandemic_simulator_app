@@ -13,7 +13,7 @@ class QuarantineHandler(AbstractMovementHandler):
 
     def __init__(self):
         super().__init__()
-        self.q_dim = self.config.get_quarantine_dimensions()
+        self.q_dim = MainConfiguration().get_quarantine_dimensions()
         self.quarantine_centre = self._get_box_centre(self.q_dim)
 
         self.to_be_quarantined = set()
@@ -34,21 +34,21 @@ class QuarantineHandler(AbstractMovementHandler):
             if (future_location[0] < self.quarantine_centre[0]):
                 to_be_guided.get_particle_component().position_vector = self.quarantine_centre
                 to_be_guided.already_in_quarantine = True
-                to_be_guided.get_particle_component().velocity_vector = np.random.uniform(*self.config.SUBJECT_VELOCITY,
+                to_be_guided.get_particle_component().velocity_vector = np.random.uniform(*MainConfiguration().SUBJECT_VELOCITY,
                                                                                           [2, ])
                 to_be_guided.get_particle_component().set_boundaries(
-                    self.config.get_particle_quarantine_position_boundaries())
+                    MainConfiguration().get_particle_quarantine_position_boundaries())
 
 
 class CommunityHandler(AbstractMovementHandler):
 
     def __init__(self):
         super().__init__()
-        self.community_boundaries = self.config.get_community_cells_border_bounds()
+        self.community_boundaries = MainConfiguration().get_community_cells_border_bounds()
 
-        self.community_travel_chance = self.config.COMMUNITIES_VISIT_CHANCE
-        self.rows = self.config.COMMUNITIES_ROWS
-        self.columns = self.config.COMMUNITIES_COLUMNS
+        self.community_travel_chance = MainConfiguration().COMMUNITIES_VISIT_CHANCE
+        self.rows = MainConfiguration().COMMUNITIES_ROWS
+        self.columns = MainConfiguration().COMMUNITIES_COLUMNS
         self.cell_number = self.rows * self.columns
         self.cell_centres = [self._get_box_centre(arr) for arr in self.community_boundaries]
 
@@ -71,7 +71,7 @@ class CommunityHandler(AbstractMovementHandler):
 
         if comparison:
             to_be_guided.get_particle_component().position_vector = destination
-            to_be_guided.get_particle_component().velocity_vector = np.random.uniform(*self.config.SUBJECT_VELOCITY,
+            to_be_guided.get_particle_component().velocity_vector = np.random.uniform(*MainConfiguration().SUBJECT_VELOCITY,
                                                                                       [2, ])
             to_be_guided.get_particle_component().set_boundaries(self.community_boundaries[to_be_guided.cell_id])
             to_be_guided.travelling = False

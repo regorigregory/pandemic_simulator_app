@@ -8,9 +8,8 @@ from models.Subject import Subject
 
 class AbstractCollisionHandler(ABC):
     def __init__(self):
-        self.config = MainConfiguration()
-        self.do_i_quarantine = self.config.QUARANTINE_MODE.get()
-        self.do_i_socially_distance = self.config.SOCIAL_DISTANCING_MODE.get()
+        self.do_i_quarantine = MainConfiguration().QUARANTINE_MODE.get()
+        self.do_i_socially_distance = MainConfiguration().SOCIAL_DISTANCING_MODE.get()
         self.infection_distance = MainConfiguration().SUBJECT_SIZE + MainConfiguration().SUBJECT_INFECTION_RADIUS
 
     @staticmethod

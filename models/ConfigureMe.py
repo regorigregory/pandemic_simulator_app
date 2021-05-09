@@ -93,7 +93,7 @@ class SimulationParametersUIConfig(object):
                                                     [0, 1]]
 
             self.live["DAYS_PER_MINUTE"] = ["Scale",
-                                               "Days per minute (~):",
+                                               "Days multiplier (~ days per minute):",
                                                  [1, 120]]
             self.live["SUBJECT_VELOCITY_MULTIPLIER"] = ["Scale",
                                                 "Movement speed multiplier:", [1, 100]]

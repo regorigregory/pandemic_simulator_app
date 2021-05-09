@@ -19,7 +19,7 @@ class DefaultContainer(AbstractContainerOfSubjects):
         self.init_cells()
 
         self.populate_subjects()
-        self.do_i_quarantine = self.config.QUARANTINE_MODE.get()
+        self.do_i_quarantine = MainConfiguration().QUARANTINE_MODE.get()
         if self.do_i_quarantine:
             self._quarantine_handler = QuarantineHandler()
 
@@ -35,10 +35,10 @@ class DefaultContainer(AbstractContainerOfSubjects):
 
     def populate_subjects(self):
         constructor = Subject
-        limit = self.config.SUBJECT_NUMBER
+        limit = MainConfiguration().SUBJECT_NUMBER
         for i in range(0, int(limit)):
             j = 0
-            position = AbstractContainerOfSubjects.get_evenly_spaced_coordinates(i, n_of_subjects=limit, bounds = self.config.get_particle_movement_bounds())
+            position = AbstractContainerOfSubjects.get_evenly_spaced_coordinates(i, n_of_subjects=limit, bounds = MainConfiguration().get_particle_movement_bounds())
             s = constructor(position=position)
 
             self.contents.add(s)
@@ -47,15 +47,15 @@ class DefaultContainer(AbstractContainerOfSubjects):
 
     def add_subject_to_cell(self, s: Subject, cells: list[set[Subject]] = None):
 
-        subject_radius = self.config.SUBJECT_SIZE + self.config.SUBJECT_INFECTION_RADIUS
+        subject_radius = MainConfiguration().SUBJECT_SIZE + MainConfiguration().SUBJECT_INFECTION_RADIUS
         left = int((s.get_particle_component().position_vector[0] - subject_radius)
-                   / (self.config.MAIN_CANVAS_SIZE[0] / self.columns))
+                   / (MainConfiguration().MAIN_CANVAS_SIZE[0] / self.columns))
         right = int((s.get_particle_component().position_vector[0] + subject_radius)
-                    / (self.config.MAIN_CANVAS_SIZE[0] / self.columns))
+                    / (MainConfiguration().MAIN_CANVAS_SIZE[0] / self.columns))
         bottom = int((s.get_particle_component().position_vector[1] - subject_radius)
-                     / (self.config.MAIN_CANVAS_SIZE[1] / self.rows))
+                     / (MainConfiguration().MAIN_CANVAS_SIZE[1] / self.rows))
         top = int((s.get_particle_component().position_vector[1] + subject_radius) / (
-                self.config.MAIN_CANVAS_SIZE[1] / self.rows))
+                MainConfiguration().MAIN_CANVAS_SIZE[1] / self.rows))
 
         top = top if top < self.rows else self.rows-1
         bottom = bottom if bottom >= 0 else 0
@@ -77,7 +77,7 @@ class DefaultContainer(AbstractContainerOfSubjects):
         new_cells = [[set() for _ in range(self.columns)] for _ in range(self.rows)]
         self.r_rate = 0
 
-        frames_per_day = self.config.get_frames_per_day()
+        frames_per_day = MainConfiguration().get_frames_per_day()
         count_r = False
         if timestamp % frames_per_day == 0:
             count_r = True
@@ -114,13 +114,13 @@ class DefaultContainer(AbstractContainerOfSubjects):
 class CommunitiesContainer(AbstractContainerOfSubjects):
     def __init__(self):
         super().__init__()
-        self.cell_count = self.config.COMMUNITIES_COLUMNS * self.config.COMMUNITIES_ROWS
-        self.cell_coordinates = self.config.get_community_cells_border_bounds()
+        self.cell_count = MainConfiguration().COMMUNITIES_COLUMNS * MainConfiguration().COMMUNITIES_ROWS
+        self.cell_coordinates = MainConfiguration().get_community_cells_border_bounds()
         self.subjects_in_cells = [set() for _ in range(self.cell_count)]
         self.populate_subjects()
         self._community_handler = CommunityHandler()
 
-        self.do_i_quarantine = self.config.QUARANTINE_MODE.get()
+        self.do_i_quarantine = MainConfiguration().QUARANTINE_MODE.get()
         if self.do_i_quarantine:
             self._quarantine_handler = QuarantineHandler()
 
@@ -128,8 +128,8 @@ class CommunitiesContainer(AbstractContainerOfSubjects):
         self = CommunitiesContainer()
 
     def populate_subjects(self):
-        limit = int(self.config.SUBJECT_NUMBER / self.cell_count)
-        remainder = self.config.SUBJECT_NUMBER - self.cell_count * limit
+        limit = int(MainConfiguration().SUBJECT_NUMBER / self.cell_count)
+        remainder = MainConfiguration().SUBJECT_NUMBER - self.cell_count * limit
 
         for c in range(self.cell_count):
             self.populate_cell(c, limit)
@@ -140,8 +140,8 @@ class CommunitiesContainer(AbstractContainerOfSubjects):
         for i in range(limit):
             current_cell = self.subjects_in_cells[c]
             movement_boundaries = np.array(self.cell_coordinates[c])
-            movement_boundaries[:, 0] += self.config.SUBJECT_SIZE
-            movement_boundaries[:, 1] -= self.config.SUBJECT_SIZE
+            movement_boundaries[:, 0] += MainConfiguration().SUBJECT_SIZE
+            movement_boundaries[:, 1] -= MainConfiguration().SUBJECT_SIZE
             position = AbstractContainerOfSubjects\
                 .get_evenly_spaced_coordinates(i,
                                                n_of_subjects=limit,
@@ -158,7 +158,7 @@ class CommunitiesContainer(AbstractContainerOfSubjects):
         new_cells = [set() for _ in range(self.cell_count)]
         self.r_rate = 0
 
-        frames_per_day = self.config.get_frames_per_day()
+        frames_per_day = MainConfiguration().get_frames_per_day()
         count_r = False
         if timestamp % frames_per_day == 0:
             count_r = True
@@ -176,7 +176,7 @@ class CommunitiesContainer(AbstractContainerOfSubjects):
                 else:
                     if not subject.travelling:
                         chance = np.random.uniform(0, 1)
-                        if chance < self.config.COMMUNITIES_VISIT_CHANCE/100:
+                        if chance < MainConfiguration().COMMUNITIES_VISIT_CHANCE/1000:
                             self._community_handler.set_direction_to_destination(subject)
                             subject.get_particle_component().update_location_guided(timestamp)
                         else:

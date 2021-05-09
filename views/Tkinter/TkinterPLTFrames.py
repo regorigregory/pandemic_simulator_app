@@ -86,7 +86,7 @@ class ConstantsParametersFrame(AbstractFrame):
         #canvas.configure(yscrollcommand=scrollbar.set)
         self.sliders = []
         i = j = 0
-        for k, v in self.config.PARAMETERS_UI_SETTINGS.constants.items():
+        for k, v in MainConfiguration().PARAMETERS_UI_SETTINGS.constants.items():
             _constructor = IdentifiableScale
             label = tk.Label(scrollable_frame, text=v[1], fg=Theme().default_text, bg=Theme().default_bg, anchor="w", font=("Roboto", 12))
             col = j % 2
@@ -146,7 +146,7 @@ class LiveParametersFrame(AbstractFrame):
         #canvas.configure(yscrollcommand=scrollbar.set)
         self.sliders = []
         i = j = 0
-        for k, v in self.config.PARAMETERS_UI_SETTINGS.live.items():
+        for k, v in MainConfiguration().PARAMETERS_UI_SETTINGS.live.items():
             _constructor = IdentifiableScale
             label = tk.Label(scrollable_frame, text=v[1], fg=Theme().default_text, bg=Theme().default_bg, anchor="w", font=("Roboto", 12))
             col = j % 2
@@ -201,9 +201,9 @@ class ScenarioFrame(AbstractFrame):
         self.buttons = []
         self.checkboxes = []
 
-        for k, v in self.config.CHECKBOX_CONFIG.items():
+        for k, v in MainConfiguration().CHECKBOX_CONFIG.items():
             constructor = getattr(tk, v[0])
-            var = tk.BooleanVar(master=self, name=k, value=getattr(self.config, k))
+            var = tk.BooleanVar(master=self, name=k, value=getattr(MainConfiguration(), k))
             cb = constructor(self, variable=var, **v[1])
             self.checkboxes.append(cb)
             self.components.append(cb)
@@ -214,7 +214,7 @@ class ScenarioFrame(AbstractFrame):
 
         self.buttons_container = Frame(self)
 
-        for i, v in enumerate(self.config.BUTTONS_CONFIG.values()):
+        for i, v in enumerate(MainConfiguration().BUTTONS_CONFIG.values()):
             b = Button(self.buttons_container, **v)
             self.components.append(b)
             self.buttons.append(b)
@@ -233,7 +233,7 @@ class ButtonsFrame(AbstractFrame):
 
         self.components = []
 
-        for v in self.config.BUTTONS_CONFIG.values():
+        for v in MainConfiguration().BUTTONS_CONFIG.values():
             self.components.append(Button(self, **v))
 
         for i, c in enumerate(self.components):
@@ -241,9 +241,8 @@ class ButtonsFrame(AbstractFrame):
 
 
 class TkinterPLTBuilder:
-    def __init__(self, config=MainConfiguration(), window=None):
+    def __init__(self, window=None):
         self.window = tk.TK() if not window else window
-        self.config = config
         self.components = {}
 
         self.columns = [MasterLeftFrame(self.window),
@@ -257,7 +256,7 @@ class TkinterPLTBuilder:
         # child components
         for f in frames:
             name = f.__name__
-            frame_settings = self.config.GRID_SETTINGS[name]
+            frame_settings = MainConfiguration().GRID_SETTINGS[name]
             parent = self.columns[frame_settings["column"]]
             self.components[name] = f(parent)
             self.components[name].grid()
@@ -265,8 +264,8 @@ class TkinterPLTBuilder:
         # The plot observing the simulation
         self.components["GraphFrame"].ViewBox.observe(self.components["SimulationFrame"].ViewBox)
         self.components["StatsFrame"].ViewBox.observe(self.components["SimulationFrame"].ViewBox)
-        self.columns[0].grid(**self.config.GRID_SETTINGS["MasterLeftFrame"]["grid_kwargs"])
-        self.columns[1].grid(**self.config.GRID_SETTINGS["MasterRightFrame"]["grid_kwargs"])
+        self.columns[0].grid(**MainConfiguration().GRID_SETTINGS["MasterLeftFrame"]["grid_kwargs"])
+        self.columns[1].grid(**MainConfiguration().GRID_SETTINGS["MasterRightFrame"]["grid_kwargs"])
 
     def get_component(self, key):
         if key in list(self.components.keys()):

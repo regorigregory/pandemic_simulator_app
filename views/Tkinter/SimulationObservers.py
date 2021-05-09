@@ -9,7 +9,7 @@ class TKStats(Observer):
     def __init__(self, root):
         super().__init__()
         self.init_log()
-        self.width, self.height = self.config.get_frame_dimensions_of("StatsFrame")
+        self.width, self.height = MainConfiguration().get_frame_dimensions_of("StatsFrame")
         print(self.__class__.__name__)
         print(self.width, self.height)
         self.fig = tk.Frame(root, bg=self.theme.default_bg, pady= 20)
@@ -68,9 +68,9 @@ class TKStats(Observer):
 class TKAreaChart(Observer):
     def __init__(self, root=None):
         super().__init__()
-        self.width, self.height = self.config.get_frame_dimensions_of("GraphFrame")
-        self.width = self.width - 3 * self.config.INNER_PADDING
-        self.DPI = self.config.DPI
+        self.width, self.height = MainConfiguration().get_frame_dimensions_of("GraphFrame")
+        self.width = self.width - 3 * MainConfiguration().INNER_PADDING
+        self.DPI = MainConfiguration().DPI
         self.frames = 0
         self.init_log()
         self.y_axis_width = 50

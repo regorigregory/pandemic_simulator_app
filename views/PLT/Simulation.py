@@ -18,7 +18,7 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
     def __init__(self):
         super().__init__()
         plt.ioff()
-        self.DPI = self.config.DPI
+        self.DPI = MainConfiguration().DPI
         self.ani = None
         self.fig = plt.figure(figsize=(self.width / self.DPI, self.height / self.DPI), dpi=self.DPI)
         self.fig.subplots_adjust(left=0, bottom=0.05, right=0.95, top=1, wspace=0, hspace=0)
@@ -39,10 +39,10 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
     def get_init_func(self):
         self.days = 0
 
-        if self.config.QUARANTINE_MODE.get():
+        if MainConfiguration().QUARANTINE_MODE.get():
             ConcreteSimulation.draw_quarantine_boundaries(self.ax)
 
-        if self.config.COMMUNITY_MODE.get():
+        if MainConfiguration().COMMUNITY_MODE.get():
             ConcreteSimulation.draw_community_boundaries_on_ax(self.ax)
             if debug:
                 for center in self._box_of_particles._community_handler.cell_centres:
@@ -101,7 +101,7 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
     def get_animation_function(self):
 
         def func(i):
-            frames_per_day = self.config.get_frames_per_day()
+            frames_per_day = MainConfiguration().get_frames_per_day()
 
             self.move_guys(i)
             if i % frames_per_day == 0 and i != 0:
@@ -172,7 +172,7 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
         self.ani = FuncAnimation(self.fig,
                                  animation_function,
                                  init_func=init_func,
-                                 interval=1000 / self.config.FRAMES_PER_SECOND,
+                                 interval=1000 / MainConfiguration().FRAMES_PER_SECOND,
                                  blit=True)
         return self.ani
 
@@ -185,7 +185,7 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
             self.ani = None
         del self._box_of_particles
         #self.ani = None
-        self._box_of_particles = DefaultContainer() if self.config.COMMUNITY_MODE.get() is not True\
+        self._box_of_particles = DefaultContainer() if MainConfiguration().COMMUNITY_MODE.get() is not True\
             else CommunitiesContainer()
         for x in self.fig.axes:
             x.clear()

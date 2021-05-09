@@ -9,8 +9,7 @@ import numpy as np
 class AbstractMovementHandler(ABC):
 
     def __init__(self):
-        self.config = MainConfiguration()
-        self.travelling_speed = self.config.QUARANTINE_APPROACHING_SPEED
+        self.travelling_speed = MainConfiguration().QUARANTINE_APPROACHING_SPEED
 
     def set_direction_to_destination(self, to_be_guided: Subject, coordinate: list[float, float]) -> None:
         particle = to_be_guided.get_particle_component()
@@ -40,11 +39,10 @@ class AbstractMovementHandler(ABC):
 
 class AbstractContainerOfSubjects(ABC):
     def __init__(self):
-        self.config = MainConfiguration()
         self._infection_handler = AxisBased()
         self.contents = set()
-        self._particle_radius = self.config.SUBJECT_SIZE
-        self._infection_radius = self.config.SUBJECT_INFECTION_RADIUS + self.config.SUBJECT_SIZE
+        self._particle_radius = MainConfiguration().SUBJECT_SIZE
+        self._infection_radius = MainConfiguration().SUBJECT_INFECTION_RADIUS + MainConfiguration().SUBJECT_SIZE
         self.counts = dict()
         self.count_keys = ["SUSCEPTIBLE", "ASYMPTOMATIC", "INFECTED", "IMMUNE"]
         self.positions_by_status = {v: [] for v in self.count_keys}

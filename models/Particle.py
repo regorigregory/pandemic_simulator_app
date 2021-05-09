@@ -8,8 +8,7 @@ from models.ConfigureMe import MainConfiguration
 
 class Particle:
     def __init__(self, boundaries=None, position = None):
-        self.config = MainConfiguration()
-        bounding_box = self.config.get_particle_movement_bounds() if boundaries is None else boundaries
+        bounding_box = MainConfiguration().get_particle_movement_bounds() if boundaries is None else boundaries
         if position is None:
             self.position_vector = Particle.init_random_vector(bounding_box)
         else:
@@ -21,11 +20,11 @@ class Particle:
         self.max_y = 0
 
         self.set_boundaries(bounding_box)
-        self.velocity_vector = np.random.uniform(*self.config.SUBJECT_VELOCITY, [2, ])
+        self.velocity_vector = np.random.uniform(*MainConfiguration().SUBJECT_VELOCITY, [2, ])
 
         self.last_location_update = -1
 
-        self._radius = self.config.SUBJECT_SIZE
+        self._radius = MainConfiguration().SUBJECT_SIZE
         self.subject = None
         self.quarantine_mode = MainConfiguration().QUARANTINE_MODE
 
@@ -93,7 +92,7 @@ class Particle:
         if self.last_location_update == timestamp:
             return
         self.last_location_update = timestamp
-        self.position_vector = self.position_vector + self.velocity_vector * self.config.SUBJECT_VELOCITY_MULTIPLIER
+        self.position_vector = self.position_vector + self.velocity_vector * MainConfiguration().SUBJECT_VELOCITY_MULTIPLIER
         self.bounce_back_if_needed()
 
     def update_location_guided(self, timestamp: int, rate_of_change=1) -> None:
