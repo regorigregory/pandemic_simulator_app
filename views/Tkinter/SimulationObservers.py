@@ -10,8 +10,6 @@ class TKStats(Observer):
         super().__init__()
         self.init_log()
         self.width, self.height = MainConfiguration().get_frame_dimensions_of("StatsFrame")
-        print(self.__class__.__name__)
-        print(self.width, self.height)
         self.fig = tk.Frame(root, bg=self.theme.default_bg, pady= 20)
         self.second_row = tk.Frame(self.fig, bg=self.theme.default_bg)
         self.second_row.grid(row=3, column=0, sticky="we", columnspan=3)

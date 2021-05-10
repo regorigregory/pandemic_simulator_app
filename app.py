@@ -2,8 +2,8 @@ from models.ConfigureMe import MainConfiguration, Theme
 from tkinter import Tk, PhotoImage
 import os
 
-from views.Tkinter.SplashScreens import WelcomeFrame
-from views.Tkinter.TkinterPLTFrames import TkinterPLTBuilder
+from views.Tkinter.SplashScreens import WelcomeWindow
+from views.Tkinter.MainFrames import TkinterPLTBuilder
 from views.Tkinter.MyMenu import MyMenu
 import controllers.TkinterPLTControllers as Controllers
 
@@ -53,4 +53,4 @@ if __name__ == "__main__":
         window.configure(menu=m)
 
 
-    x = WelcomeFrame(f)
+    x = WelcomeWindow(f)

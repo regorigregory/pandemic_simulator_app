@@ -129,6 +129,7 @@ class MainConfiguration(object):
             MainConfiguration.instance.__dict__ = MainConfiguration._shared_data
             self.load_defaults()
             # general settings
+            self.VERSION = "0.0.0.1"
 
             self.APPLICATION_TITLE = "Pandemic simulator"
             self.SOCIAL_DISTANCING_MODE = False

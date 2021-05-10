@@ -75,8 +75,7 @@ class AbstractFrame(Frame):
         super().__init__(root, bg=Theme().default_bg, **self.dim_dict,
                          **config.FRAME_PADDING)
         self.components = []
-        print(self.__class__.__name__)
-        print(self.dim_dict)
+
         self.grid_kwargs = self.frame_settings["grid_kwargs"]
 
     def grid(self, **kwargs):
