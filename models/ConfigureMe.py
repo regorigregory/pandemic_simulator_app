@@ -276,7 +276,7 @@ class MainConfiguration(object):
 
     def get_simulation_canvas_total_bounds(self):
         max_x, max_y = self.get_frame_dimensions_of("SimulationFrame")
-        return [[0, max_x], [0, max_y]]
+        return np.array([[0, max_x], [0, max_y]])
 
     def get_particle_movement_canvas_bounds(self):
         canvas_dims = self.get_simulation_canvas_total_bounds()

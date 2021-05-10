@@ -33,8 +33,8 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
         self.ax.set_yticks([])
         self.last_core_radius = MainConfiguration().SUBJECT_SIZE * 2
         self.last_infection_radius = (MainConfiguration().SUBJECT_INFECTION_RADIUS + MainConfiguration().SUBJECT_SIZE) * 2
-
-        ConcreteSimulation.draw_main_simulation_canvas_movement_bounds(self.ax)
+        self.ax.plot()
+        self.draw_standby_pattern()
 
     def get_init_func(self):
         self.days = 0
@@ -44,9 +44,6 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
 
         if MainConfiguration().COMMUNITY_MODE.get():
             ConcreteSimulation.draw_community_boundaries_on_ax(self.ax)
-            if debug:
-                for center in self._box_of_particles._community_handler.cell_centres:
-                    self.ax.text(center[0], center[1], "x", c="green")
         else:
             ConcreteSimulation.draw_main_simulation_canvas_movement_bounds(self.ax)
 
@@ -167,6 +164,8 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
         return func
 
     def start(self):
+        for x in self.fig.axes:
+            x.clear()
         init_func = self.get_init_func()
         animation_function = self.get_animation_function()
         self.ani = FuncAnimation(self.fig,
@@ -193,6 +192,8 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
         self.ax.set_yticks([])
         #self.start()
         self.notify(None)
+        self.draw_standby_pattern()
+        self.ax.plot()
         self.fig.canvas.draw()
 
     def resume(self):
@@ -250,6 +251,29 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
                               linewidth=1,
                               edgecolor=Theme().infected,
                               linestyle="--"))
+
+    def draw_standby_pattern(self):
+        self.ax.set_xticks([])
+        self.ax.set_yticks([])
+        self.ax.set_xlim(0, self.width)
+        self.ax.set_ylim(0, self.height)
+        q_dims = MainConfiguration().get_simulation_canvas_total_bounds()
+        self.ax.add_patch(
+            patches.Rectangle((q_dims[0, 0] + MainConfiguration().INNER_PADDING,
+                               q_dims[1, 0] + MainConfiguration().INNER_PADDING),
+                              q_dims[0, 1] - q_dims[0, 0] - 2 * MainConfiguration().INNER_PADDING,
+                              q_dims[1, 1] - q_dims[1, 0] - 2 * MainConfiguration().INNER_PADDING,
+                              facecolor="none",
+                              linewidth=1,
+                              edgecolor=Theme().infected,
+                              linestyle="--"))
+        width = MainConfiguration().get_simulation_canvas_total_bounds()[0][1]
+        self.ax.text(width - 330,
+                2 * MainConfiguration().INNER_PADDING,
+                "Simulation area - standby".upper(),
+                color=Theme().infected,
+                fontsize="x-large",
+                rotation=0)
 
 
 if __name__ == "__main__":
