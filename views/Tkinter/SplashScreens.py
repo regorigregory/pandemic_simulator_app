@@ -1,8 +1,8 @@
-from tkinter import Tk, PhotoImage, Label, mainloop, Frame
+from tkinter import Tk, Label, mainloop, Frame, Button
 import os
 from PIL import ImageTk, Image
 from models.ConfigureMe import MainConfiguration, Theme
-
+from depreciated.UserGuide import ContentsBuilder
 
 class AbstractSplashScreen(Tk):
     def __init__(self, title_prefix=""):
@@ -18,15 +18,13 @@ class WelcomeWindow(AbstractSplashScreen):
         super().__init__()
         MainConfiguration().MAIN_CANVAS_SIZE = [self.winfo_screenwidth(), self.winfo_screenheight()]
         self.geometry(MainConfiguration().get_main_canvas_size_tkinter())
+        self.wm_overrideredirect(1)
 
-        logo = Image.open(os.path.join(".", "assets", "pandemic_app_icon.png"))
-        logo = logo.resize([int(logo.size[0]/4), int(logo.size[1]/4)])
-        logo = ImageTk.PhotoImage(logo)
         bg_image = ImageTk.PhotoImage(Image.open(os.path.join(".", "assets", "virus_closeup.jpg")))
 
         bg_container = Label(self, image=bg_image)
         app_title = Label(self, text="Pandemic simulator", font=("Roboto", 44), bg="white")
-        app_subtitle = Label(self, text="version 0.0.1", font=("Roboto", 16), bg="white")
+        app_subtitle = Label(self, text="version "+MainConfiguration().VERSION, font=("Roboto", 16), bg="white")
         bg_container.place(x=0, y=0, relwidth=2, relheight=2)
         app_title.place(relx=0.08, rely=0.15)
         app_subtitle.place(relx=0.08, rely=0.23)
@@ -45,14 +43,3 @@ class AboutWindow(AbstractSplashScreen):
                 "Released under: GNU GPL"]
         for d in data:
             Label(self, text = d).pack()
-
-
-class DocumentationWindow(AbstractSplashScreen):
-    def __init__(self):
-        super().__init__(title_prefix="Documentation - ")
-        self.toc = Frame(self)
-        self.contents = Frame(self)
-        l = Label(self.contents, text="Hello world!")
-        l.grid()
-        self.toc.grid(row=0, column=0, sticky="ns")
-        self.contents.grid(row=0, column=1, sticky="ns")

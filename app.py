@@ -3,7 +3,7 @@ from tkinter import Tk, PhotoImage
 import os
 
 from views.Tkinter.SplashScreens import WelcomeWindow
-from views.Tkinter.MainFrames import TkinterPLTBuilder
+from views.Tkinter.TKFrames import TkinterPLTBuilder
 from views.Tkinter.MyMenu import MyMenu
 import controllers.TkinterPLTControllers as Controllers
 
@@ -30,11 +30,11 @@ if __name__ == "__main__":
         SlidersController = Controllers.TkinterSimulationSettings()
 
         action = '<Button>'
-        element = view_builder.get_component("ScenarioFrame").buttons[2]
+        element = view_builder.get_component("ScenarioFrame").buttons["RESET"]
 
         def reset_to_defaults(event):
-            scales = view_builder.get_component("ConstantsParametersFrame").sliders
-            scales.extend(view_builder.get_component("LiveParametersFrame").sliders)
+            scales = list(view_builder.get_component("ConstantsParametersFrame").sliders.values())
+            scales.extend(list(view_builder.get_component("LiveParametersFrame").sliders.values()))
 
             MainConfiguration().load_defaults()
             for scale in scales:

@@ -48,7 +48,7 @@ class TkinterButtons(AbstractController):
         self.ui_elements[0].configure(text="Start")
 
     def bind_functions(self, buttons):
-        self.ui_elements = buttons
+        self.ui_elements = list(buttons.values())
         for button in self.ui_elements:
             func_key = button.cget("text")
             if func_key in self.funcs.keys():
@@ -64,12 +64,15 @@ class TkinterSimulationSettings(AbstractController):
         value = event.widget.get()
         setattr(MainConfiguration(), key, value)
 
-
     def bind_functions(self, sliders):
-        self.ui_elements = sliders
+        self.ui_elements = list(sliders.values())
         for slider in self.ui_elements:
             slider.bind("<ButtonRelease>", self.update_config)
 
+
+class DocumentationController:
+    def __init__(self):
+        pass
 
 class LambdaController(AbstractController):
     def bind_functions(self, element, action, function):

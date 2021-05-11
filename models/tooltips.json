@@ -1,0 +1,53 @@
+[{
+  "StatsFrame": {
+    "header_frame": "The live statistics of the simulation both in a numeric and visual form.\nThe graph and subject status counts are updated after each frame\nwhile r-statistics are only calculated only daily. \nThe default frame rate is 45.",
+    "ViewBox.data_value": {
+      "DAY": "The current day of the simulation.",
+      "R_RATE": "The momentarily R0 infection rate updated every 'day'. R-rate \nis calulated as the average of each infected subject's forecasted\ninfections during them being infected.\nIf each subject infects only one another during\nthem being infected, the r-rate will be one.\nHowever, if each subject has infected another on the first day\nof their infection,then the r-rate will be n * 1,\nwhere n is the number of days a subject is infected\n(including incubation period as well).",
+      "R_GROWTH": "The change in R0 compared\nto the value the previous day\nexpressed as percentage.",
+      "ASYMPTOMATIC": "Infected subject who is going through the incubation period. If the 'quarantine mode' is on,\nan infected subject gets quarantined only after the incubation period.",
+      "INFECTED": "An infected subject  who is capable of infecting susceptible subjects.",
+      "SUSCEPTIBLE": "A subject who has not been\ninfected therefore a prospective patient.",
+      "IMMUNE": "A subject that has fully\nrecovered from\nthe infection."
+    }
+  },
+  "GraphFrame": {
+    "widget": "The simulation's live statistics visualised in an area chart.\nNote: susceptible subjects are not annotated here."
+  },
+  "SimulationFrame": {
+    "widget": "The simulation area where the interactions according to\nuser specified settings and modes is performed."
+  },
+  "ConstantsParametersFrame": {
+    "header_frame": "These are parameters that have to be configured before\neach simulation and cannot be changed during the course of a simulation.",
+    "labels": {
+      "SUBJECT_NUMBER":"The number of subjects (circles) participating in the simulation.\n",
+      "SUBJECT_INITIAL_INFECTION_RATIO": "The number of infected subjects at the onset of the simulation and are calculated by multiplying the number of subjects with this ratio.\nIf it is not a whole number, it is rounded down to the closest integer.",
+      "SUBJECT_INCUBATION_PERIOD": "The amount of days while a subject does not show symptoms but already able to infect others.\n",
+      "SUBJECT_RECOVERY_TIME": "After the incubation period, the amount of days it takes until a subject becomes immune.\nWhile in real life this is not a certain outcome of an infection, it was thought to use a \nmore positive terminology for this application."
+    }
+  },
+  "LiveParametersFrame": {
+    "header_frame": "These parameters can be changed during the course of a simulation.",
+    "labels": {
+      "SUBJECT_COMPLIANCE": "The ratio of subjects complying with social distancing rules. For instance, if there are 100 subjects and the ratio is 0.8,\nthere will be 100 * 0.8 = 80 subjects who comply with the restrictions and 20, which won't.",
+      "DAYS_PER_MINUTE": "In an optimal scenario, it would equal to the number of days per minute,\nhowever, depending on the machine the application is run on it might be slower or faster. Based on experience,\nit is on average \"0.75 * Days multiplier\" days per minute.",
+      "SUBJECT_VELOCITY_MULTIPLIER": "The movement speed of the subjects. Since this application's animation is frame based,\nthe faster the subject the less chance they have to interact and infect each other.",
+      "SUBJECT_SIZE": "The size of the core of each subject.",
+      "SUBJECT_INFECTION_RADIUS": "The circle around the core of each subject which serves as social distancing and infection radius as well.",
+      "SUBJECT_CHANCE_OF_INFECTION": "If two subjects end up constantly within each other's infection radius for a day, this is\nthe chance of one infecting the another. However, depending on their movement speed and vector,\nthis might be far from the aforementioned scenario.",
+      "COMMUNITIES_VISIT_CHANCE": "The chance of a subject travelling from one community to another.\nIt is calculated as chance/1000/frame."
+    }
+  },
+  "ScenarioFrame": {
+    "checkboxes": {
+      "SOCIAL_DISTANCING_MODE": "Whether the subjects will perform social distancing. If so, the subjects will try\nto stay out of each other's infection zones. However, depending on\ntheir speed and the density of colliding subjects, they may end up within\nthe social distancing radius being able to infect each other.",
+      "QUARANTINE_MODE": "The subjects who are actively infected (their incubation period is over) will be moved to the\nquarantine zone (left side of the simulation area, \nif it is turned on). However, while they are asymptomatic, they are going through\ntheir so-called \"incubation period\", therefore they are able to infect other subjects.\n  ",
+      "COMMUNITY_MODE": "In this mode, the simulation area is divided into 9 communities where each subject stays within\ntheir designated community's boundaries unless the\n\"Travelling chance between communities\" setting is turned on.\n"
+    },
+    "buttons": {
+      "START": "Starting and pausing the current simulation.",
+      "STOP": "Stopping the simulation. If constant parameters have been changed, they will take their effect during the next run.",
+      "RESET": "Resetting the settings to defaults."
+    }
+  }
+}]

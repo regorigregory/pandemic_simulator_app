@@ -38,7 +38,7 @@ class AbstractUserGuideEntry(ABC):
     def title(self, title: str) -> None:
         if title is not None:
             title = title.strip()
-            self._title = title[0].upper() + title[1:].lower()
+            self._title = title
         else:
             self._title = "No title."
 
@@ -65,7 +65,7 @@ class ConcreteUserGuideEntryComposite(AbstractUserGuideEntry):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    def append_child(self, child: Union[dict, ConcreteUserGuideEntryChild]):
+    def append_child(self, child: Union[dict, ConcreteUserGuideEntryChild]) -> None:
         if isinstance(child, dict):
             temp = ConcreteUserGuideEntryChild()
             for k, v in child.items():
@@ -73,11 +73,11 @@ class ConcreteUserGuideEntryComposite(AbstractUserGuideEntry):
         if child not in self._children:
             self._children.append(child)
 
-    def remove_child(self, child):
+    def remove_child(self, child) -> None:
         if child in self._children:
             self._children.remove(child)
 
-    def get_children(self):
+    def get_children(self) -> list[ConcreteUserGuideEntryComposite]:
         return self._children
 
     def get_child_at(self, index: int) -> Union[ConcreteUserGuideEntryComposite, ConcreteUserGuideEntryChild]:
@@ -86,10 +86,13 @@ class ConcreteUserGuideEntryComposite(AbstractUserGuideEntry):
         else:
             return self._children[int(index)]
 
+    def has_children(self) -> bool:
+        return len(self._children) > 0
+
 
 class ContentsBuilder:
-    def __init__(self, path_to_file):
-
+    def __init__(self):
+        path_to_file = os.path.join(os.getcwd(), "models", "contents")
         if os.path.isfile(path_to_file):
             self._path_to_file = path_to_file
             self.root = ConcreteUserGuideEntryComposite(title="Contents")
@@ -106,9 +109,9 @@ class ContentsBuilder:
                 else:
                     self.root.append_child(ConcreteUserGuideEntryComposite(title=line))
                     last_root += 1
-                print(line)
 
-
+    def get_root(self) -> ConcreteUserGuideEntryComposite:
+        return self.root
 if __name__ == "__main__":
     fp = "contents"
     builder = ContentsBuilder(fp)

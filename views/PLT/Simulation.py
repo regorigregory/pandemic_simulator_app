@@ -1,8 +1,4 @@
 from __future__ import annotations
-
-from abc import ABC, abstractmethod
-
-import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import patches
 from matplotlib.animation import FuncAnimation
@@ -10,7 +6,6 @@ from matplotlib.animation import FuncAnimation
 from models.ConfigureMe import MainConfiguration, Theme
 from models.SubjectContainers import DefaultContainer, CommunitiesContainer
 from views.AbstractClasses import ObserverClient, AbstractSimulation
-debug = False
 
 
 class ConcreteSimulation(AbstractSimulation, ObserverClient):
@@ -114,14 +109,8 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
                 r_growth = "{0:.2f}%".format(r_growth*100)
                 self.notify(
                     {"DAY": int(self.days), "R_RATE": r_rate, "R_GROWTH": r_growth})
-
             self.notify(self._box_of_particles.counts)
 
-            """infected_coords = np.swapaxes(self._box_of_particles.positions_by_status["INFECTED"], 0, 1).astype(int)
-            immune_coords = np.swapaxes(self._box_of_particles.positions_by_status["IMMUNE"], 0, 1).astype(int)
-            susceptible_coords = np.swapaxes(self._box_of_particles.positions_by_status["SUSCEPTIBLE"], 0, 1).astype(int)
-            asymptomatic_coords = np.swapaxes(self._box_of_particles.positions_by_status["ASYMPTOMATIC"], 0, 1).astype(int)
-            """
             infected_coords = self.get_current_coordinates_by_key("INFECTED")
             immune_coords = self.get_current_coordinates_by_key("IMMUNE")
             susceptible_coords = self.get_current_coordinates_by_key("SUSCEPTIBLE")
@@ -220,8 +209,7 @@ class ConcreteSimulation(AbstractSimulation, ObserverClient):
                                            edgecolor=Theme().infected,
                                            linestyle="--"
                                            ))
-            if debug:
-                ax.text(x, y, "P({:.0f}, {:.0f})".format(x, y), c="green")
+
 
     @staticmethod
     def draw_quarantine_boundaries(ax):

@@ -1,0 +1,47 @@
+1. Subject size and radius: The subject size is the radius of the core whereas the infection radius is the circle
+around a subject. Any subject that gets within an infected subject's infection radius might get infected.
+2. Subject colours: The following colour coding has been used to annotate infection status throughout the application:matplotlibgraph
+3. Simulation constants: These are parameters that have to be configured before
+ each simulation and cannot be changed during the course of a simulation.
+    3.1 Number of subjects:
+    The number of subjects (circles) participating in the simulation.
+    3.2 Ratio of initially infected subjects:
+    The number of infected subjects at the onset of the simulation and
+    are calculated by multiplying the number of subjects with this ratio. If it is not a whole number, it is
+    rounded down to the closest integer.
+    3.3 Incubation period:
+     The amount of days while a subject does not show symptoms but already able to infect others.
+    3.4 Recovery time: After the incubation period, the amount of days it takes until a subject becomes immune.
+    While in real life this is not a certain outcome of an infection, it was thought to use a more positive terminology
+    for this application.
+4. Simulation modes: These are modes which can be switched on before each simulation accommodating
+ different scenarios.
+    4.1 Social distancing mode: Whether the subjects will perform social distancing. If so, the subjects will try
+     to stay out
+    of each other's infection zones. However, depending on their speed and the density of colliding subjects, they may
+    end up within the social distancing radius being able to infect each other.
+    4.2 Quarantine mode: The subjects who are actively infected (their incubation period is over) will be moved to the
+    quarantine zone (left side of the simulation area, if it is turned on). However, while they are asymptomatic, they are
+    going through their incubation period, they are able to infect other subjects.
+    4.3 Community mode: In this mode, the simulation area is divided into 9 communities where each subject stays within
+    their designated community's boundaries unless the "Travelling chance between communities" setting is turned on.
+5. Live settings: These parameters can be changed during the course of a simulation.
+    5.1 Subject compliance ratio: the ratio of subjects complying with social distancing rules.
+    If there are 100 subjects and the ratio is 0.8, there will be 100 * 0.8 = 80 subjects who comply with the restrictions and 20, which won't.
+    5.2 Days multiplier: In an optimal scenario, it would equal to the number of days per minute,
+     however, depending on the machine the application is run on it might be slower or faster. Based on experience,
+    it is on average "0.75 * Days multiplier" days per minute.
+    5.3 Movement speed multiplier: The movement speed of the subjects. Since this application's animation is frame based,
+    the faster the subject the less chance they have to interact and infect each other.
+    5.4 Subject size: The size of the core of each subject.
+    5.5 Infection radius: The circle around the core of each subject. Serves as social distancing and infection radius as well.
+    5.6 Infection chance per day: If two subjects end up constantly within each other's infection radius for a day, this is
+    the chance of one infecting the another. However, depending on their movement speed and vector, this is an unlikely scenario.
+    5.7 Travelling chance between communities: The chance of a subject travelling from one community to another.
+    It is calculated as chance/1000/frame.
+6. Simulation statistics: The live statistics of the simulation both in a numeric and visual form.
+The graph and subject status counts are updated after each frame while r-statistics are only calculated only daily. The default frame rate is 45.
+R-rate is calulated as the average of each infected subject's forecasted infections during them being infected.
+If each subject infects only one another during them being infected, the r-rate will be one.
+However, if each subject has infected another on the first day of their infection, then the r-rate will be
+n * 1, where n is the number of days a subject is infected (including incubation period as well).

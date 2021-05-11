@@ -1,4 +1,7 @@
+from __future__ import annotations
 import tkinter as tk
+import json
+import os
 from enum import Enum
 
 import numpy as np
@@ -14,6 +17,23 @@ class InfectionStatuses(Enum):
 class SubjectTypes(Enum):
     PARTICLE = 0,
     SUBJECT = 1
+
+
+class TooltipValues(object):
+    _shared_data = dict()
+    instance = None
+
+    def __new__(cls):
+
+        if cls.instance is None:
+            return super(TooltipValues, cls).__new__(cls)
+        else:
+            return cls.instance
+
+    def __init__(self):
+        if TooltipValues.instance is None:
+            pass
+
 
 
 class Theme(object):
@@ -42,6 +62,8 @@ class Theme(object):
                                         "selectcolor": self.two}
             self.darkest_bg = "#000405"
             self.default_bg = "#0B1A1A"
+            self.lighter_bg = "#333333"
+
             self.default_text = "white"
 
             self.label_data = dict(bg=self.default_bg, fg=self.default_text, width=20, pady=3, padx=3)
@@ -52,6 +74,9 @@ class Theme(object):
             self.asymptomatic = "#E58342"
             self.susceptible = "#03A0D3"  # "#E6C645"
             self.immune = "#999999"
+            self.docu_toc_entry = dict(bg=self.default_bg, fg=self.susceptible, pady=3, padx=3, anchor="w")
+            self.docu_toc_subentry = dict(bg=self.default_bg, fg=self.immune, pady=3, padx=3, anchor="w")
+
 
 
 class SimulationParametersUIConfig(object):
@@ -144,7 +169,7 @@ class MainConfiguration(object):
             # subject settings
             self.SUBJECT_VELOCITY=10
             self.SUBJECT_TYPE = SubjectTypes.SUBJECT
-
+            self.TOOLTIPS_ON = False
 
 
             # Communities settings
@@ -203,11 +228,11 @@ class MainConfiguration(object):
                                     "COMMUNITIES": ["Button", dict(text="Communities", **Theme().scenario_attributes)]}
 
             self.CHECKBOX_CONFIG = {"SOCIAL_DISTANCING_MODE":
-                                        ["Checkbutton", dict(text="Social distancing",
+                                        ["Checkbutton", dict(text="Social distancing mode",
                                                              name="SOCIAL_DISTANCING_MODE".lower(),
                                                              **Theme().checkbox_attributes)],
 
-                                    "QUARANTINE_MODE": ["Checkbutton", dict(text="Quarantine",
+                                    "QUARANTINE_MODE": ["Checkbutton", dict(text="Quarantine mdoe",
                                                                             name="QUARANTINE_MODE".lower(),
                                                                             **Theme().checkbox_attributes)],
                                     "COMMUNITY_MODE": ["Checkbutton",
@@ -327,5 +352,11 @@ class MainConfiguration(object):
                 cells.append([[x, x + width], [y, y + height]])
         return cells
 
-    def get_frames_per_day(self):
+    def get_frames_per_day(self) -> float:
         return (60 / self.DAYS_PER_MINUTE) * self.FRAMES_PER_SECOND
+
+    def get_tooltips_dict(self) -> dict:
+        tooltips_path = os.path.join(os.getcwd(), "models", "tooltips.json")
+        with open(tooltips_path, "r") as f:
+            data = json.loads(f.read())
+            return data[0]
