@@ -244,15 +244,6 @@ class MainConfiguration(object):
             self.STATS_CONFIG = dict(LABEL_KWDS=dict(bg=Theme().default_bg),
                                      VALUE_KWDS=dict(bg=Theme().default_bg))
 
-    def load_defaults(self):
-        with open("./models/default_settings", "r") as f:
-            for line in f.readlines():
-                key, type,  value = line.split(":")
-                if type == "int":
-                    value = int(value)
-                else:
-                    value = float(value)
-                setattr(self, key, value)
 
     def __getattr__(self, item):
         temp = super().__getattribute__(item)
@@ -356,7 +347,17 @@ class MainConfiguration(object):
         return (60 / self.DAYS_PER_MINUTE) * self.FRAMES_PER_SECOND
 
     def get_tooltips_dict(self) -> dict:
-        tooltips_path = os.path.join(os.getcwd(), "models", "tooltips.json")
+        tooltips_path = os.path.join(os.getcwd(), "models", "../assets/tooltips.json")
         with open(tooltips_path, "r") as f:
             data = json.loads(f.read())
             return data[0]
+
+    def load_defaults(self):
+        with open(os.path.join(os.getcwd(), "assets", "default_settings"), "r") as f:
+            for line in f.readlines():
+                key, type,  value = line.split(":")
+                if type == "int":
+                    value = int(value)
+                else:
+                    value = float(value)
+                setattr(self, key, value)
