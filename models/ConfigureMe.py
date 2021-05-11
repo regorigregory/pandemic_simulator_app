@@ -347,13 +347,13 @@ class MainConfiguration(object):
         return (60 / self.DAYS_PER_MINUTE) * self.FRAMES_PER_SECOND
 
     def get_tooltips_dict(self) -> dict:
-        tooltips_path = os.path.join(os.getcwd(), "models", "../assets/tooltips.json")
+        tooltips_path = os.path.join(os.getcwd(), "assets", "tooltips.json")
         with open(tooltips_path, "r") as f:
             data = json.loads(f.read())
             return data[0]
 
     def load_defaults(self):
-        with open(os.path.join(os.getcwd(), "assets", "default_settings"), "r") as f:
+        with open(os.path.join(os.getcwd(), "assets", "default_settings.txt"), "r") as f:
             for line in f.readlines():
                 key, type,  value = line.split(":")
                 if type == "int":
