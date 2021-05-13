@@ -34,12 +34,23 @@ class WelcomeWindow(AbstractSplashScreen):
 
 
 class AboutWindow(AbstractSplashScreen):
+    instance = None
+
     def __init__(self):
-        super().__init__(title_prefix="About - ")
-        self.geometry("300x100")
-        data = ["Pandemic simulator",
-                "Version: " + MainConfiguration().VERSION,
-                "Contact: contact.gergo.endresz@gmail.com",
-                "Released under: GNU GPL"]
-        for d in data:
-            Label(self, text = d).pack()
+        if AboutWindow.instance is None:
+            super().__init__(title_prefix="About - ")
+            self.geometry("300x100")
+            data = ["Pandemic simulator",
+                    "Version: " + MainConfiguration().VERSION,
+                    "Contact: contact.gergo.endresz@gmail.com",
+                    "Released under: GNU GPL"]
+            for d in data:
+                Label(self, text = d).pack()
+            self.protocol("WM_DELETE_WINDOW", self.handle_close_event)
+            AboutWindow.instance = self
+
+    @staticmethod
+    def handle_close_event():
+        if AboutWindow.instance is not None:
+            AboutWindow.instance.destroy()
+            AboutWindow.instance = None
