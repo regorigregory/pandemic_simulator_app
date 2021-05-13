@@ -8,6 +8,7 @@ from views.Tkinter.TKFrames import TkinterPLTBuilder
 from views.Tkinter.MyMenu import MyMenu
 import controllers.TkinterPLTControllers as Controllers
 
+
 class MainWindow(Tk):
     _instance = None
 
@@ -62,7 +63,6 @@ class MainWindow(Tk):
             attr_name = scale.get_my_name()
             attr_value = getattr(MainConfiguration(), attr_name)
             scale.set(attr_value)
-
 
     @staticmethod
     def handle_close_event():

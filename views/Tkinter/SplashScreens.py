@@ -1,8 +1,9 @@
-from tkinter import Tk, Label, mainloop, Frame, Button
+from tkinter import Tk, Label, mainloop, Frame, Button, ALL
 import os
 from PIL import ImageTk, Image
 from models.ConfigureMe import MainConfiguration, Theme
 from depreciated.UserGuide import ContentsBuilder
+
 
 class AbstractSplashScreen(Tk):
     def __init__(self, title_prefix=""):
@@ -39,7 +40,10 @@ class AboutWindow(AbstractSplashScreen):
     def __init__(self):
         if AboutWindow.instance is None:
             super().__init__(title_prefix="About - ")
-            self.geometry("300x100")
+            w, h = self.winfo_screenwidth(), self.winfo_screenheight()
+            w0 = int(w/2-150)
+            h0 = int(h/2 - 50)
+            self.geometry("300x100+{}+{}".format(w0, h0))
             data = ["Pandemic simulator",
                     "Version: " + MainConfiguration().VERSION,
                     "Contact: contact.gergo.endresz@gmail.com",
